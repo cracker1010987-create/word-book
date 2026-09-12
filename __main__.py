@@ -22,8 +22,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("quiz")
     subparsers.add_parser("stats")
+    subparsers.add_parser("list")
 
     return parser
+
+
+# 단어를 추가하고, 새 단어인지 이미 있던 단어인지 화면에 알려준다
+def run_add(word: str, meaning: str, path: str) -> None:
+    is_new = add_word(word, meaning, path)
+    if is_new:
+        print(f"'{word}' 단어를 추가했습니다.")
+    else:
+        print(f"'{word}'는 이미 있는 단어라서 뜻만 업데이트했습니다. (틀린 횟수는 그대로)")
 
 
 # 단어 하나를 골라 퀴즈를 내고, 답을 받아 채점한 뒤 결과를 반영하고 알려준다
@@ -31,6 +41,9 @@ def run_quiz(
     path: str, chain: Any, grammar_chain: Any, input_func: Callable[[str], str], today: str
 ) -> None:
     words = load_words(path)
+    if not words:
+        print("아직 추가된 단어가 없습니다. 먼저 단어를 추가해주세요.")
+        return
     word = pick_word_to_quiz(words)
     quiz = make_quiz_verified(word, words[word]["meaning"], chain=chain, grammar_chain=grammar_chain)
     print(quiz.sentence)
@@ -54,22 +67,34 @@ def print_stats(path: str) -> None:
     print(f"완전히 외운 단어 수: {stats['mastered_words']}")
 
 
+# 추가된 단어 전체를 목록으로 보여준다
+def print_word_list(path: str) -> None:
+    words = load_words(path)
+    if not words:
+        print("아직 추가된 단어가 없습니다.")
+        return
+    for word, info in words.items():
+        print(f"{word} - {info['meaning']} (틀린 횟수: {info['wrong_count']})")
+
+
 # 명령어를 직접 안 쳐도 되게, 번호를 고르는 메뉴를 계속 보여준다
 def run_interactive(
     path: str, chain: Any, grammar_chain: Any, input_func: Callable[[str], str], today: str
 ) -> None:
     while True:
-        print("1. 단어 추가\n2. 퀴즈 풀기\n3. 통계 보기\n4. 종료")
+        print("1. 단어 추가\n2. 퀴즈 풀기\n3. 통계 보기\n4. 목록 보기\n5. 종료")
         choice = input_func("번호를 입력하세요: ")
         if choice == "1":
             word = input_func("추가할 영어 단어: ")
             meaning = input_func("뜻: ")
-            add_word(word, meaning, path)
+            run_add(word, meaning, path)
         elif choice == "2":
             run_quiz(path, chain, grammar_chain, input_func, today)
         elif choice == "3":
             print_stats(path)
         elif choice == "4":
+            print_word_list(path)
+        elif choice == "5":
             break
 
 
@@ -84,11 +109,13 @@ def main(
 ) -> None:
     args = build_parser().parse_args(argv)
     if args.command == "add":
-        add_word(args.word, args.meaning, path)
+        run_add(args.word, args.meaning, path)
     elif args.command == "quiz":
         run_quiz(path, chain, grammar_chain, input_func, today)
     elif args.command == "stats":
         print_stats(path)
+    elif args.command == "list":
+        print_word_list(path)
     else:
         run_interactive(path, chain, grammar_chain, input_func, today)
 

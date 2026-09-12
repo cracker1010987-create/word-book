@@ -51,3 +51,25 @@ def test_add_word_keeps_existing_words(tmp_path: Path) -> None:
     words = load_words(str(path))
     assert words["apple"] == {"meaning": "사과", "wrong_count": 2}
     assert words["banana"] == {"meaning": "바나나", "wrong_count": 0}
+
+
+def test_add_word_returns_true_for_brand_new_word(tmp_path: Path) -> None:
+    # 새 단어를 추가하면 True를 돌려준다
+    path = tmp_path / "words.json"
+    assert add_word("apple", "사과", str(path)) is True
+
+
+def test_add_word_for_existing_word_preserves_progress(tmp_path: Path) -> None:
+    # 이미 있는 단어를 다시 추가하면 wrong_count/last_wrong_date는 그대로 두고 뜻만 바뀐다
+    path = tmp_path / "words.json"
+    save_words(
+        {"apple": {"meaning": "사과", "wrong_count": 3, "last_wrong_date": "2026-01-01"}}, str(path)
+    )
+    is_new = add_word("apple", "사과(고친 뜻)", str(path))
+    words = load_words(str(path))
+    assert is_new is False
+    assert words["apple"] == {
+        "meaning": "사과(고친 뜻)",
+        "wrong_count": 3,
+        "last_wrong_date": "2026-01-01",
+    }

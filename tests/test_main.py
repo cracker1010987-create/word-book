@@ -39,6 +39,25 @@ def test_add_command_saves_word(tmp_path: Path) -> None:
     assert load_words(str(path)) == {"apple": {"meaning": "사과", "wrong_count": 0}}
 
 
+def test_add_command_tells_user_when_word_is_new(tmp_path, capsys) -> None:
+    # 새 단어를 추가하면 새로 추가됐다고 알려준다
+    path = tmp_path / "words.json"
+    main(["add", "apple", "사과"], path=str(path))
+    assert "추가" in capsys.readouterr().out
+
+
+def test_add_command_tells_user_and_preserves_progress_when_word_exists(tmp_path, capsys) -> None:
+    # 이미 있는 단어를 다시 추가하면 업데이트됐다고 알려주고 wrong_count는 보존한다
+    path = tmp_path / "words.json"
+    save_words({"apple": {"meaning": "사과", "wrong_count": 3}}, str(path))
+    main(["add", "apple", "사과(고친 뜻)"], path=str(path))
+    output = capsys.readouterr().out
+    assert "이미" in output
+    words = load_words(str(path))
+    assert words["apple"]["wrong_count"] == 3
+    assert words["apple"]["meaning"] == "사과(고친 뜻)"
+
+
 def test_quiz_command_records_correct_answer(tmp_path: Path) -> None:
     # 정답을 맞히면 wrong_count가 그대로다
     path = tmp_path / "words.json"
@@ -71,6 +90,15 @@ def test_quiz_command_records_wrong_answer(tmp_path: Path) -> None:
     assert words["apple"]["last_wrong_date"] == "2026-01-01"
 
 
+def test_quiz_command_with_no_words_shows_message_instead_of_crashing(tmp_path, capsys) -> None:
+    # 단어가 하나도 없을 때 quiz를 실행하면 에러 없이 안내 메시지만 나온다
+    path = tmp_path / "words.json"
+    main(["quiz"], path=str(path))
+    output = capsys.readouterr().out
+    assert "단어" in output
+    assert load_words(str(path)) == {}
+
+
 def test_stats_command_prints_calculated_stats(tmp_path, capsys) -> None:
     # wordbook stats 실행 시 calculate_stats 결과가 화면에 출력된다
     path = tmp_path / "words.json"
@@ -89,9 +117,9 @@ def test_stats_command_prints_calculated_stats(tmp_path, capsys) -> None:
 
 
 def test_interactive_menu_add_then_quit(tmp_path: Path) -> None:
-    # 인자 없이 실행하면 메뉴가 뜨고, 1번(단어 추가) → 4번(종료)으로 단어를 추가할 수 있다
+    # 인자 없이 실행하면 메뉴가 뜨고, 1번(단어 추가) → 5번(종료)으로 단어를 추가할 수 있다
     path = tmp_path / "words.json"
-    answers = iter(["1", "apple", "사과", "4"])
+    answers = iter(["1", "apple", "사과", "5"])
     main([], path=str(path), input_func=lambda prompt: next(answers))
     assert load_words(str(path)) == {"apple": {"meaning": "사과", "wrong_count": 0}}
 
@@ -100,7 +128,7 @@ def test_interactive_menu_quiz_then_quit(tmp_path: Path) -> None:
     # 메뉴에서 2번(퀴즈)을 고르면 run_quiz와 똑같이 동작한다 (오답으로 실제 변화가 있는지 확인)
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["2", "banana", "4"])
+    answers = iter(["2", "banana", "5"])
     main(
         [],
         path=str(path),
@@ -118,7 +146,35 @@ def test_interactive_menu_stats_then_quit(tmp_path, capsys) -> None:
     # 메뉴에서 3번(통계)을 고르면 통계가 화면에 출력된다
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["3", "4"])
+    answers = iter(["3", "5"])
     main([], path=str(path), input_func=lambda prompt: next(answers))
     output = capsys.readouterr().out
     assert "총 단어 수: 1" in output
+
+
+def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
+    # 메뉴에서 4번(목록 보기)을 고르면 단어 목록이 화면에 출력된다
+    path = tmp_path / "words.json"
+    save_words({"apple": {"meaning": "사과", "wrong_count": 2}}, str(path))
+    answers = iter(["4", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers))
+    output = capsys.readouterr().out
+    assert "apple" in output
+    assert "사과" in output
+
+
+def test_list_command_shows_word_and_meaning(tmp_path, capsys) -> None:
+    # wordbook list 실행 시 단어와 뜻이 화면에 출력된다
+    path = tmp_path / "words.json"
+    save_words({"apple": {"meaning": "사과", "wrong_count": 1}}, str(path))
+    main(["list"], path=str(path))
+    output = capsys.readouterr().out
+    assert "apple" in output
+    assert "사과" in output
+
+
+def test_list_command_with_no_words_shows_message(tmp_path, capsys) -> None:
+    # 단어가 없을 때 wordbook list를 실행하면 안내 메시지가 나온다
+    path = tmp_path / "words.json"
+    main(["list"], path=str(path))
+    assert "단어" in capsys.readouterr().out
