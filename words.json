@@ -1,8 +1,8 @@
 {
   "elaborate": {
     "meaning": "정교한, 상세히 설명하다",
-    "wrong_count": 1,
-    "last_wrong_date": "2026-09-06"
+    "wrong_count": 6,
+    "last_wrong_date": "2026-09-13"
   },
   "resilient": {
     "meaning": "회복력 있는",
@@ -18,6 +18,10 @@
   },
   "brisk": {
     "meaning": "활기찬, 빠른",
+    "wrong_count": 0
+  },
+  "candid": {
+    "meaning": "솔직한",
     "wrong_count": 0
   }
 }

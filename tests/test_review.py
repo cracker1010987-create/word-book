@@ -40,11 +40,18 @@ def test_wrong_answer_sets_last_wrong_date() -> None:
     assert words["apple"]["last_wrong_date"] == "2026-01-01"
 
 
-def test_correct_answer_does_not_increment_wrong_count() -> None:
-    # 맞히면 wrong_count가 그대로다
+def test_correct_answer_decrements_wrong_count() -> None:
+    # 맞히면 wrong_count가 1 줄어든다 (계속 맞히면 우선순위가 낮아지도록)
     words = {"apple": {"meaning": "사과", "wrong_count": 2}}
     record_result(words, "apple", True, "2026-01-01")
-    assert words["apple"]["wrong_count"] == 2
+    assert words["apple"]["wrong_count"] == 1
+
+
+def test_correct_answer_does_not_go_below_zero() -> None:
+    # wrong_count가 이미 0이면 맞혀도 음수가 되지 않는다
+    words = {"apple": {"meaning": "사과", "wrong_count": 0}}
+    record_result(words, "apple", True, "2026-01-01")
+    assert words["apple"]["wrong_count"] == 0
 
 
 def test_correct_answer_does_not_set_last_wrong_date() -> None:
