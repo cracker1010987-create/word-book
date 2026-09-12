@@ -1,0 +1,11 @@
+{
+  "sentence": "In his presentation, he was asked to ___ on the topic.",
+  "options": [
+    "clarify",
+    "elaborate",
+    "simplify",
+    "summarize"
+  ],
+  "answer": "elaborate",
+  "explanation": "이 문장에서 '___' 부분은 주어진 주제에 대해 더 상세하게 설명하라는 요청을 나타냅니다. 'elaborate'는 '상세히 설명하다'라는 의미로, 주제에 대한 구체적인 세부사항을 추가하는 것을 뜻합니다. 반면 'clarify'는 명확하게 하다, 'simplify'는 단순화하다, 'summarize'는 요약하다라는 의미로, 주제를 더 설명하는 것과는 정반대의 개념입니다."
+}

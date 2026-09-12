@@ -1,0 +1,23 @@
+{
+  "elaborate": {
+    "meaning": "정교한, 상세히 설명하다",
+    "wrong_count": 1,
+    "last_wrong_date": "2026-09-06"
+  },
+  "resilient": {
+    "meaning": "회복력 있는",
+    "wrong_count": 0
+  },
+  "mundane": {
+    "meaning": "평범한, 지루한",
+    "wrong_count": 0
+  },
+  "generous": {
+    "meaning": "관대한",
+    "wrong_count": 0
+  },
+  "brisk": {
+    "meaning": "활기찬, 빠른",
+    "wrong_count": 0
+  }
+}

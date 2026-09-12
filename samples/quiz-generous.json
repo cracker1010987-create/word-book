@@ -1,0 +1,11 @@
+{
+  "sentence": "Even though he didn't have much to give, he was ___ with his time, volunteering every weekend at the local shelter to help those in need.",
+  "options": [
+    "stingy",
+    "generous",
+    "selfish",
+    "frugal"
+  ],
+  "answer": "generous",
+  "explanation": "이 문장에서 '___' 뒤에 오는 'with his time'은 'generous'와 자연스럽게 연결됩니다. 문맥상 그는 자원도 부족하지만 시간을 기꺼이 나누는 행동을 하고 있어 관대한 행동을 나타냅니다. 반면, 'stingy', 'selfish', 'frugal'은 이 문맥에서 시간에 대해 긍정적인 행동을 나타내지 않으므로 정답이 아닙니다."
+}

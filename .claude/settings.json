@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/checks/check.py",
+            "if": "Write(*.py)"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/checks/check.py",
+            "if": "Edit(*.py)"
+          }
+        ]
+      }
+    ]
+  }
+}
