@@ -116,11 +116,19 @@ def test_stats_command_prints_calculated_stats(tmp_path, capsys) -> None:
     assert "완전히 외운 단어 수: 1" in output
 
 
+CLEAR_MARK = "<<CLEAR>>"
+
+
+def fake_clear() -> None:
+    # 테스트에서 진짜로 화면을 지우는 대신, 지운 위치를 표시만 해둔다
+    print(CLEAR_MARK)
+
+
 def test_interactive_menu_add_then_quit(tmp_path: Path) -> None:
-    # 인자 없이 실행하면 메뉴가 뜨고, 1번(단어 추가) → 5번(종료)으로 단어를 추가할 수 있다
+    # 1번(단어 추가) → 엔터(메뉴로) → 5번(종료)으로 단어를 추가할 수 있다
     path = tmp_path / "words.json"
-    answers = iter(["1", "apple", "사과", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers))
+    answers = iter(["1", "apple", "사과", "", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     assert load_words(str(path)) == {"apple": {"meaning": "사과", "wrong_count": 0}}
 
 
@@ -128,7 +136,7 @@ def test_interactive_menu_quiz_then_quit(tmp_path: Path) -> None:
     # 메뉴에서 2번(퀴즈)을 고르면 run_quiz와 똑같이 동작한다 (오답으로 실제 변화가 있는지 확인)
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["2", "banana", "5"])
+    answers = iter(["2", "banana", "", "5"])
     main(
         [],
         path=str(path),
@@ -136,6 +144,7 @@ def test_interactive_menu_quiz_then_quit(tmp_path: Path) -> None:
         grammar_chain=FakeGrammarChain(),
         input_func=lambda prompt: next(answers),
         today="2026-01-01",
+        clear_func=fake_clear,
     )
     words = load_words(str(path))
     assert words["apple"]["wrong_count"] == 1
@@ -146,8 +155,8 @@ def test_interactive_menu_stats_then_quit(tmp_path, capsys) -> None:
     # 메뉴에서 3번(통계)을 고르면 통계가 화면에 출력된다
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["3", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers))
+    answers = iter(["3", "", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "총 단어 수: 1" in output
 
@@ -156,11 +165,57 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
     # 메뉴에서 4번(목록 보기)을 고르면 단어 목록이 화면에 출력된다
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 2}}, str(path))
-    answers = iter(["4", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers))
+    answers = iter(["4", "", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "apple" in output
     assert "사과" in output
+
+
+def test_quiz_after_list_starts_on_cleared_screen(tmp_path, capsys) -> None:
+    # 목록 보기 다음에 퀴즈를 풀면, 목록을 지운 뒤에 문제가 나와서 단어/뜻을 보고 풀 수 없다
+    path = tmp_path / "words.json"
+    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
+    answers = iter(["4", "", "2", "apple", "", "5"])
+    main(
+        [],
+        path=str(path),
+        chain=FakeChain(),
+        grammar_chain=FakeGrammarChain(),
+        input_func=lambda prompt: next(answers),
+        today="2026-01-01",
+        clear_func=fake_clear,
+    )
+    output = capsys.readouterr().out
+    list_pos = output.index("틀린 횟수: 0")
+    quiz_pos = output.index("I ate an ___")
+    last_clear_before_quiz = output.rfind(CLEAR_MARK, 0, quiz_pos)
+    assert list_pos < last_clear_before_quiz
+
+
+def test_interactive_quiz_shows_explanation_with_label(tmp_path, capsys) -> None:
+    # 퀴즈 결과에서 해설이 '해설' 제목 아래에 따로 나온다
+    path = tmp_path / "words.json"
+    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
+    answers = iter(["2", "apple", "", "5"])
+    main(
+        [],
+        path=str(path),
+        chain=FakeChain(),
+        grammar_chain=FakeGrammarChain(),
+        input_func=lambda prompt: next(answers),
+        today="2026-01-01",
+        clear_func=fake_clear,
+    )
+    assert "해설" in capsys.readouterr().out
+
+
+def test_interactive_menu_invalid_choice_shows_message(tmp_path, capsys) -> None:
+    # 메뉴에 없는 번호를 입력하면 화면이 조용히 다시 그려지지 않고 안내가 나온다
+    path = tmp_path / "words.json"
+    answers = iter(["9", "", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
+    assert "1~5" in capsys.readouterr().out
 
 
 def test_list_command_shows_word_and_meaning(tmp_path, capsys) -> None:

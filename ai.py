@@ -1,4 +1,5 @@
 # 단어와 뜻을 받아 AI가 객관식 퀴즈 문제를 만들어주는 함수들
+import re
 from typing import Any
 
 from dotenv import load_dotenv
@@ -125,6 +126,27 @@ def check_grammar(quiz: Quiz, grammar_chain: Any = None) -> bool:
     return all(result.fits_by_option)
 
 
+def is_valid_quiz(quiz: Quiz, word: str) -> bool:
+    # 퀴즈가 풀 수 있는 모양인지 코드로 확인한다 (정답=목표 단어, 정답이 보기에 있음, 빈칸 있음, 정답 노출 없음)
+    target = word.strip().lower()
+    options = [option.strip().lower() for option in quiz.options]
+    return (
+        quiz.answer.strip().lower() == target
+        and target in options
+        and len(options) == 4
+        and "___" in quiz.sentence
+        and re.search(rf"\b{re.escape(target)}\b", quiz.sentence.lower()) is None
+    )
+
+
+def put_answer_in_options(quiz: Quiz, word: str) -> Quiz:
+    # 정답이 보기에 없으면 마지막 보기를 정답으로 바꿔서, 최소한 풀 수 있는 퀴즈로 만든다
+    options = list(quiz.options[:4])
+    if word.lower() not in [option.lower() for option in options]:
+        options[-1] = word
+    return quiz.model_copy(update={"answer": word, "options": options})
+
+
 def make_quiz_verified(
     word: str,
     meaning: str,
@@ -132,10 +154,14 @@ def make_quiz_verified(
     grammar_chain: Any = None,
     max_attempts: int = 3,
 ) -> Quiz:
-    # 퀴즈를 만들고 문법 검사까지 통과할 때까지(최대 max_attempts번) 다시 만든다
-    quiz = make_quiz(word, meaning, chain=chain)
-    for _ in range(max_attempts - 1):
+    # 퀴즈 모양 확인과 문법 검사를 둘 다 통과할 때까지(최대 max_attempts번) 다시 만든다
+    quiz = None
+    valid_fallback = None
+    for _ in range(max_attempts):
+        quiz = make_quiz(word, meaning, chain=chain)
+        if not is_valid_quiz(quiz, word):
+            continue
+        valid_fallback = quiz
         if check_grammar(quiz, grammar_chain=grammar_chain):
             return quiz
-        quiz = make_quiz(word, meaning, chain=chain)
-    return quiz
+    return valid_fallback or put_answer_in_options(quiz, word)

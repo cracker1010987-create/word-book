@@ -1,5 +1,13 @@
 # build_chain, make_quiz, make_quiz_verified 함수를 확인하는 테스트
-from ai import GrammarCheck, Quiz, build_chain, check_grammar, make_quiz, make_quiz_verified
+from ai import (
+    GrammarCheck,
+    Quiz,
+    build_chain,
+    check_grammar,
+    is_valid_quiz,
+    make_quiz,
+    make_quiz_verified,
+)
 
 
 class FakeChain:
@@ -49,6 +57,57 @@ GOOD_QUIZ = Quiz(
     answer="elaborate",
     explanation="네 보기 모두 문법적으로 자연스럽다.",
 )
+# 실제로 나왔던 버그: 정답(elaborate)이 보기 안에 없어서 보기만 보고는 맞힐 수 없는 문제
+MISSING_ANSWER_QUIZ = Quiz(
+    sentence="The scientist was asked to ___ on the findings.",
+    options=["summarize", "explain", "expand", "describe"],
+    answer="elaborate",
+    explanation="정답이 보기에 없다.",
+)
+
+
+def test_is_valid_quiz_accepts_good_quiz() -> None:
+    # 정답이 목표 단어이고 보기 안에 있으면 올바른 퀴즈다
+    assert is_valid_quiz(GOOD_QUIZ, "elaborate") is True
+
+
+def test_is_valid_quiz_rejects_answer_missing_from_options() -> None:
+    # 정답이 보기 4개 중에 없으면 풀 수 없는 퀴즈다
+    assert is_valid_quiz(MISSING_ANSWER_QUIZ, "elaborate") is False
+
+
+def test_is_valid_quiz_rejects_answer_different_from_word() -> None:
+    # 정답이 목표 단어가 아닌 다른 단어로 바뀌어 있으면 안 된다
+    quiz = GOOD_QUIZ.model_copy(update={"answer": "describe"})
+    assert is_valid_quiz(quiz, "elaborate") is False
+
+
+def test_is_valid_quiz_rejects_word_leaked_in_sentence() -> None:
+    # 예문에 정답 단어가 그대로 적혀 있으면 안 된다
+    quiz = GOOD_QUIZ.model_copy(update={"sentence": "Please elaborate, he said, and ___."})
+    assert is_valid_quiz(quiz, "elaborate") is False
+
+
+def test_make_quiz_verified_retries_when_answer_missing_from_options() -> None:
+    # 정답이 보기에 없는 퀴즈가 나오면 문법 검사도 안 하고 바로 다시 만든다
+    chain = SequentialFakeChain([MISSING_ANSWER_QUIZ, GOOD_QUIZ])
+    grammar_chain = SequentialFakeGrammarChain([GrammarCheck(fits_by_option=[True] * 4)])
+    quiz = make_quiz_verified("elaborate", "정교한", chain=chain, grammar_chain=grammar_chain)
+    assert quiz is GOOD_QUIZ
+    assert chain.calls == 2
+    assert grammar_chain.calls == 1
+
+
+def test_make_quiz_verified_never_returns_unsolvable_quiz() -> None:
+    # 끝까지 정답이 보기에 없는 퀴즈만 나와도, 정답을 보기에 넣어서 풀 수 있게 만들어 돌려준다
+    chain = SequentialFakeChain([MISSING_ANSWER_QUIZ] * 3)
+    grammar_chain = SequentialFakeGrammarChain([])
+    quiz = make_quiz_verified(
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, max_attempts=3
+    )
+    assert quiz.answer == "elaborate"
+    assert "elaborate" in quiz.options
+    assert len(quiz.options) == 4
 
 
 def test_build_chain_returns_runnable_without_calling_api() -> None:

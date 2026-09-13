@@ -1,7 +1,7 @@
 {
   "elaborate": {
     "meaning": "정교한, 상세히 설명하다",
-    "wrong_count": 6,
+    "wrong_count": 4,
     "last_wrong_date": "2026-09-13"
   },
   "resilient": {
@@ -22,6 +22,14 @@
   },
   "candid": {
     "meaning": "솔직한",
+    "wrong_count": 0
+  },
+  "represent": {
+    "meaning": "나타내다, 대표하다",
+    "wrong_count": 0
+  },
+  "designate": {
+    "meaning": "지정하다",
     "wrong_count": 0
   }
 }
