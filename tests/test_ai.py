@@ -1,9 +1,13 @@
 # build_chain, make_quiz, make_quiz_verified 함수를 확인하는 테스트
 from ai import (
     GrammarCheck,
+    MeaningBatch,
     Quiz,
+    WordMeaning,
     build_chain,
     check_grammar,
+    generate_all_meanings,
+    generate_meanings,
     is_valid_quiz,
     make_quiz,
     make_quiz_verified,
@@ -186,3 +190,102 @@ def test_make_quiz_verified_gives_up_after_max_attempts() -> None:
     )
     assert quiz is BAD_QUIZ
     assert chain.calls == 3
+
+
+class FakeMeaningChain:
+    # 실제 LLM 대신, batch로 받은 입력을 기록하고 미리 정해둔 MeaningBatch를 순서대로 돌려주는 가짜 체인
+    def __init__(self, responses: list[MeaningBatch]) -> None:
+        self.responses = responses
+        self.inputs: list[dict] = []
+        self.batch_calls = 0
+
+    def batch(self, inputs: list[dict], config: dict | None = None) -> list[MeaningBatch]:
+        self.batch_calls += 1
+        self.inputs.extend(inputs)
+        return self.responses[: len(inputs)]
+
+
+def meaning(word: str, meaning_ko: str, pos: str = "noun") -> WordMeaning:
+    # 테스트용 WordMeaning을 짧게 만든다
+    return WordMeaning(word=word, meaning_ko=meaning_ko, pos=pos)
+
+
+def test_generate_meanings_sends_english_definition_as_reference() -> None:
+    # 원본의 쉬운 영어 뜻을 AI에게 참고로 넘기고, 한국어 뜻과 품사를 돌려받는다
+    chain = FakeMeaningChain([MeaningBatch(items=[meaning("abuse", "학대하다, 남용하다", "verb")])])
+    result = generate_meanings([{"word": "abuse", "definition": "to treat badly"}], chain=chain)
+    assert "to treat badly" in chain.inputs[0]["word_list"]
+    assert result == {"abuse": {"meaning_ko": "학대하다, 남용하다", "pos": "verb"}}
+
+
+def test_generate_meanings_marks_words_without_definition() -> None:
+    # 영어 뜻이 없는 단어(e-book 등)는 뜻이 없다고 표시해서 넘긴다
+    chain = FakeMeaningChain([MeaningBatch(items=[meaning("e-book", "전자책")])])
+    generate_meanings([{"word": "e-book", "definition": ""}], chain=chain)
+    assert "(영어 뜻 없음)" in chain.inputs[0]["word_list"]
+
+
+def test_generate_meanings_splits_words_into_batches_in_one_parallel_call() -> None:
+    # 5단어를 2개씩 묶으면 묶음 3개를 한 번의 batch 호출로 병렬 처리하고 결과를 합친다
+    words = [{"word": w, "definition": "d"} for w in ["a1", "a2", "a3", "a4", "a5"]]
+    responses = [
+        MeaningBatch(items=[meaning("a1", "뜻1"), meaning("a2", "뜻2")]),
+        MeaningBatch(items=[meaning("a3", "뜻3"), meaning("a4", "뜻4")]),
+        MeaningBatch(items=[meaning("a5", "뜻5")]),
+    ]
+    chain = FakeMeaningChain(responses)
+    result = generate_meanings(words, chain=chain, batch_size=2)
+    assert chain.batch_calls == 1
+    assert len(chain.inputs) == 3
+    assert sorted(result) == ["a1", "a2", "a3", "a4", "a5"]
+
+
+def test_generate_meanings_matches_changed_spelling_and_ignores_extra_words() -> None:
+    # AI가 철자를 바꿔 돌려줘도(E-mail) 요청한 철자(e-mail)로 저장하고, 요청 안 한 단어는 버린다
+    chain = FakeMeaningChain(
+        [MeaningBatch(items=[meaning("E-mail", "이메일"), meaning("banana", "바나나")])]
+    )
+    result = generate_meanings([{"word": "e-mail", "definition": "a message"}], chain=chain)
+    assert result == {"e-mail": {"meaning_ko": "이메일", "pos": "noun"}}
+
+
+def test_generate_meanings_leaves_out_missing_or_blank_meanings() -> None:
+    # AI가 빠뜨렸거나 뜻을 비워서 돌려준 단어는 결과에 넣지 않는다 (나중에 다시 요청할 수 있게)
+    chain = FakeMeaningChain([MeaningBatch(items=[meaning("add", "  ")])])
+    words = [{"word": "add", "definition": "d"}, {"word": "habit", "definition": "d"}]
+    assert generate_meanings(words, chain=chain) == {}
+
+
+class RoundFakeMeaningChain:
+    # batch를 부를 때마다 그 회차에 정해둔 MeaningBatch 목록을 돌려주는 가짜 체인 (재요청 확인용)
+    def __init__(self, rounds: list[list[MeaningBatch]]) -> None:
+        self.rounds = rounds
+        self.inputs_by_call: list[list[dict]] = []
+
+    def batch(self, inputs: list[dict], config: dict | None = None) -> list[MeaningBatch]:
+        responses = self.rounds[len(self.inputs_by_call)]
+        self.inputs_by_call.append(inputs)
+        return responses[: len(inputs)]
+
+
+def test_generate_all_meanings_requests_again_only_missing_words() -> None:
+    # 첫 요청에서 빠진 단어(habit)만 다시 요청해서, 결국 모든 단어의 뜻을 받는다
+    chain = RoundFakeMeaningChain(
+        [
+            [MeaningBatch(items=[meaning("add", "더하다", "verb")])],
+            [MeaningBatch(items=[meaning("habit", "습관")])],
+        ]
+    )
+    words = [{"word": "add", "definition": "d"}, {"word": "habit", "definition": "d"}]
+    result = generate_all_meanings(words, chain=chain)
+    assert sorted(result) == ["add", "habit"]
+    assert "add" not in chain.inputs_by_call[1][0]["word_list"]
+    assert "habit" in chain.inputs_by_call[1][0]["word_list"]
+
+
+def test_generate_all_meanings_gives_up_after_max_rounds() -> None:
+    # 끝까지 뜻을 못 받으면 max_rounds번만 요청하고 멈춘다 (무한 반복 방지)
+    chain = RoundFakeMeaningChain([[MeaningBatch(items=[])]] * 3)
+    result = generate_all_meanings([{"word": "add", "definition": "d"}], chain=chain, max_rounds=3)
+    assert result == {}
+    assert len(chain.inputs_by_call) == 3

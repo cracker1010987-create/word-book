@@ -150,15 +150,21 @@ prd.md를 기준으로 앱을 테스트 가능한 크기의 기능 조각으로 
 - **실제 결과**: NGSL 2,809 + TSL 1,251 → 합친 단어장 4,059개 (겹침: criteria). 순위 없음: born.
   뜻 없음(AI가 채울 것): e-book, cafe, entree, smartphone, by-law. 첫 50개 중 TSL 단어 15개.
 
-### 23. ⬜ 한국어 뜻 일괄 생성 `generate_meanings(words, chain)`
+### 23. ✅ 한국어 뜻 일괄 생성 `generate_meanings(words, chain)`
 - **파일**: `ai.py`
 - **검사 방법**: pytest (가짜 체인 주입, 영어 뜻을 참고로 넘기는지·여러 단어를 한 번에 처리하는지 확인)
 - **순서**: 1번째. 선행 조각 없음.
 
-### 24. ⬜ 단어장 파일 만들기 + 한국어 뜻 품질 확인
+### 24. ✅ 단어장 파일 만들기 + 한국어 뜻 품질 확인
 - **파일**: `scripts/build_word_bank.py`, `data/word_bank.json`, `rubric/meaning-rubric.md`
 - **검사 방법**: AI 심판 (무작위 표본 50개의 한국어 뜻이 정확한지 채점표로 판정)
 - **순서**: 2번째. 선행 조각: 21, 22, 23.
+- **과정**: gpt-4o-mini로 3차례 표본(`samples/meanings-round1~3.json`)이 모두 기준 미달
+  (뜻 누락 ↔ 동의어 채우기를 오감) → 뜻을 영어로 먼저 나열하는 답변 틀 + 모델을 CLAUDE.md대로
+  `gpt-5.6-luna`로 변경 → 4차 표본 PASS → 4,059개 전체 생성(뜻 못 받은 단어 0) →
+  완성본에서 새로 뽑은 표본(`samples/meanings-final.json`)도 PASS (정확성 4.82 / 토익 뜻 4.54 / 간결성 4.60 / 품사 4.96).
+- **남은 흠 (나중에 "뜻 고치기"나 프롬프트 보완으로)**: present에 "발표하다", charge에 "담당"이 없음.
+  원본 영어 뜻이 명사면 형용사 쓰임을 놓침(preliminary). 드물게 틀린 뜻(clap "쨍하는 소리").
 
 ### 25. ⬜ 단어장 불러오기 `load_word_bank(path)`
 - **파일**: `wordbank.py`

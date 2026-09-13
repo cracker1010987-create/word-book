@@ -63,3 +63,24 @@ def merge_word_lists(ngsl: list[dict], tsl: list[dict]) -> list[dict]:
             add_source(entry, source, item, len(words))
     ordered = sorted(merged.values(), key=lambda e: (e["position"], e["sources"][0] != "NGSL"))
     return [{key: value for key, value in e.items() if key != "position"} for e in ordered]
+
+
+# 합친 단어 목록과 AI가 만든 한국어 뜻을 묶어 최종 단어장 항목을 만든다 (뜻을 못 받은 단어는 뺀다)
+def make_bank_entries(merged: list[dict], meanings: dict[str, dict]) -> list[dict]:
+    entries = []
+    for item in merged:
+        meaning = meanings.get(item["word"])
+        if not meaning:
+            continue
+        entries.append(
+            {
+                "word": item["word"],
+                "meaning_ko": meaning["meaning_ko"],
+                "pos": meaning["pos"],
+                "definition_en": item["definition"],
+                "sources": item["sources"],
+                "ngsl_rank": item["ngsl_rank"],
+                "tsl_rank": item["tsl_rank"],
+            }
+        )
+    return entries

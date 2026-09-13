@@ -1,0 +1,502 @@
+[
+  {
+    "word": "justify",
+    "english_definition": "to give reasons why you did something or why it is right",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "정당화하다",
+    "pos": "verb"
+  },
+  {
+    "word": "module",
+    "english_definition": "part or unit with a specific job",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "모듈",
+    "pos": "noun"
+  },
+  {
+    "word": "material",
+    "english_definition": "substance from which a thing is made of",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "재료, 자료",
+    "pos": "noun"
+  },
+  {
+    "word": "interview",
+    "english_definition": "to formally ask questions about a given topic",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "면접하다, 면접",
+    "pos": "verb"
+  },
+  {
+    "word": "honest",
+    "english_definition": "good; always telling the truth and not stealing",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "정직한",
+    "pos": "adjective"
+  },
+  {
+    "word": "merely",
+    "english_definition": "only, simply, or nothing more than",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "단지",
+    "pos": "adverb"
+  },
+  {
+    "word": "page",
+    "english_definition": "one side of a sheet of paper",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "페이지, 웹 페이지",
+    "pos": "noun"
+  },
+  {
+    "word": "cheek",
+    "english_definition": "soft skin on each side of the face, below the eyes",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "뺨",
+    "pos": "noun"
+  },
+  {
+    "word": "finance",
+    "english_definition": "control of money a person/business has access to",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "재정, 자금을 조달하다",
+    "pos": "noun"
+  },
+  {
+    "word": "court",
+    "english_definition": "large, flat area, to play tennis or basketball",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "법정, 경기장",
+    "pos": "noun"
+  },
+  {
+    "word": "still",
+    "english_definition": "happening in the past and continuing into the present",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "여전히, 가만히 있는, 그럼에도 불구하고",
+    "pos": "adverb"
+  },
+  {
+    "word": "hard",
+    "english_definition": "difficult to bend, break or cut; solid",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "어려운, 단단한, 열심히",
+    "pos": "adjective"
+  },
+  {
+    "word": "ordinary",
+    "english_definition": "not special, different, or unusual",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "평범한",
+    "pos": "adjective"
+  },
+  {
+    "word": "scare",
+    "english_definition": "to make someone feel frightened or worried",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "겁먹게 하다, 놀람",
+    "pos": "verb"
+  },
+  {
+    "word": "urban",
+    "english_definition": "concerning a city; located in a city",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "도시의",
+    "pos": "adjective"
+  },
+  {
+    "word": "grant",
+    "english_definition": "to give or let someone do what they want",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "허가하다, 보조금",
+    "pos": "verb"
+  },
+  {
+    "word": "diet",
+    "english_definition": "the type of food that a person or animal usually eats",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "식습관, 식이요법",
+    "pos": "noun"
+  },
+  {
+    "word": "expose",
+    "english_definition": "to show something that is usually hidden, covered, or protected",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "드러내다, 노출시키다",
+    "pos": "verb"
+  },
+  {
+    "word": "number",
+    "english_definition": "symbols such as 1, 2, 56, 793",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "숫자, 번호를 매기다",
+    "pos": "noun"
+  },
+  {
+    "word": "carefully",
+    "english_definition": "in a manner that involves focus and care",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주의 깊게",
+    "pos": "adverb"
+  },
+  {
+    "word": "streamline",
+    "english_definition": "make smoother and more efficient",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "간소화하다",
+    "pos": "verb"
+  },
+  {
+    "word": "comb",
+    "english_definition": "make smooth by getting the knots out of",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "빗질하다, 빗",
+    "pos": "verb"
+  },
+  {
+    "word": "anytime",
+    "english_definition": "at a time you choose, it's not important when",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "언제든지",
+    "pos": "adverb"
+  },
+  {
+    "word": "ward",
+    "english_definition": "an electoral district, a small area within which the people can all vote for the same thing",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "선거구, 병동, 피보호자",
+    "pos": "noun"
+  },
+  {
+    "word": "antique",
+    "english_definition": "very old item, usually furniture or jewellery",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "골동품, 고풍스러운",
+    "pos": "noun"
+  },
+  {
+    "word": "adhere",
+    "english_definition": "to stay with or follow , e.g. adhere to rules",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "준수하다, 달라붙다",
+    "pos": "verb"
+  },
+  {
+    "word": "outdoor",
+    "english_definition": "outside in the open air",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "야외의",
+    "pos": "adjective"
+  },
+  {
+    "word": "overnight",
+    "english_definition": "from one day to the next",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "밤새, 하룻밤 사이에, 갑자기",
+    "pos": "adverb"
+  },
+  {
+    "word": "warranty",
+    "english_definition": "the promise to repair or replace a product if it ceases to work properly",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "품질 보증",
+    "pos": "noun"
+  },
+  {
+    "word": "fleet",
+    "english_definition": "a group of ships travelling together",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "선단, 차량 보유 대수",
+    "pos": "noun"
+  },
+  {
+    "word": "seafood",
+    "english_definition": "things you can eat as food that live in the sea",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "해산물",
+    "pos": "noun"
+  },
+  {
+    "word": "indirect",
+    "english_definition": "not in a straight way",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "간접적인, 우회적인",
+    "pos": "adjective"
+  },
+  {
+    "word": "steadily",
+    "english_definition": "in a slow and even manner",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "꾸준히",
+    "pos": "adverb"
+  },
+  {
+    "word": "calculation",
+    "english_definition": "to add, subtract, multiply, divide etc.",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "계산, 산출액",
+    "pos": "noun"
+  },
+  {
+    "word": "hallway",
+    "english_definition": "a passage or corridor that other rooms open out of",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "복도",
+    "pos": "noun"
+  },
+  {
+    "word": "apple",
+    "english_definition": "a type of fruit from trees that is green, red, or yellow",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "사과",
+    "pos": "noun"
+  },
+  {
+    "word": "appraisal",
+    "english_definition": "an evaluation",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "평가",
+    "pos": "noun"
+  },
+  {
+    "word": "disrupt",
+    "english_definition": "to interrupt and cause chaos",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "방해하다, 혼란을 일으키다",
+    "pos": "verb"
+  },
+  {
+    "word": "fortunately",
+    "english_definition": "happily, luckily",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "다행히",
+    "pos": "adverb"
+  },
+  {
+    "word": "weekday",
+    "english_definition": "All the working days in a week, usually Monday to Friday",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "평일",
+    "pos": "noun"
+  },
+  {
+    "word": "ice cream",
+    "english_definition": "Frozen food made of cream, very sweet and good to eat",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "아이스크림",
+    "pos": "noun"
+  },
+  {
+    "word": "e-mail",
+    "english_definition": "a system for sending messages electronically, especially from one computer to another using the internet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "이메일, 이메일을 보내다",
+    "pos": "noun"
+  },
+  {
+    "word": "e-book",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "전자책",
+    "pos": "noun"
+  },
+  {
+    "word": "present",
+    "english_definition": "gift",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "선물, 현재의, 제시하다",
+    "pos": "noun"
+  },
+  {
+    "word": "mister",
+    "english_definition": "a form of address for a man",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "(남성 호칭) ~님",
+    "pos": "other"
+  },
+  {
+    "word": "charge",
+    "english_definition": "to ask for money as a price for a service or goods",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "요금, 청구하다, 혐의",
+    "pos": "noun"
+  },
+  {
+    "word": "fine",
+    "english_definition": "good, acceptable or satisfactory",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "좋은, 벌금, 벌금을 부과하다",
+    "pos": "adjective"
+  },
+  {
+    "word": "book",
+    "english_definition": "thing made of pages with writing on that you read",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "책, 예약하다",
+    "pos": "noun"
+  },
+  {
+    "word": "issue",
+    "english_definition": "important topic discussed, debated, or argued over",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "문제, 발행하다, 호",
+    "pos": "noun"
+  },
+  {
+    "word": "smartphone",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "스마트폰",
+    "pos": "noun"
+  }
+]

@@ -2,3 +2,5 @@
 __pycache__/
 .pytest_cache/
 .venv/
+data/meanings_cache.json
+data/build_log.txt

@@ -1,0 +1,502 @@
+[
+  {
+    "word": "criticize",
+    "english_definition": "to say that someone or something is bad",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "비판하다, 혹평하다, 비난하다",
+    "pos": "verb"
+  },
+  {
+    "word": "biological",
+    "english_definition": "something related to life and living things",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "생물학의, 생물의",
+    "pos": "adjective"
+  },
+  {
+    "word": "under",
+    "english_definition": "in the same place as another thing, but lower",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "아래에, 하부에, (어떤 것의) 아래쪽에",
+    "pos": "preposition"
+  },
+  {
+    "word": "exposure",
+    "english_definition": "state of experiencing something directly",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "노출, 드러남, 경험",
+    "pos": "noun"
+  },
+  {
+    "word": "bridge",
+    "english_definition": "structure built over river or road so people, vehicles, or animals can cross",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "다리, (사람이나 차량이 건널 수 있는) 구조물",
+    "pos": "noun"
+  },
+  {
+    "word": "discovery",
+    "english_definition": "learning something for the first time",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "발견, 발견한 것, 발견의 과정",
+    "pos": "noun"
+  },
+  {
+    "word": "head",
+    "english_definition": "top part of your body with eyes and a mouth",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "머리, (신체의) 상부, 우두머리",
+    "pos": "noun"
+  },
+  {
+    "word": "teacher",
+    "english_definition": "person who teaches others, especially in a school",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "교사, 선생님, 교육자",
+    "pos": "noun"
+  },
+  {
+    "word": "ease",
+    "english_definition": "state of being comfortable or relaxed",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "편안함, 용이함, 안락함",
+    "pos": "noun"
+  },
+  {
+    "word": "attach",
+    "english_definition": "to be associated or connected with",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "부착하다, 연결하다, 첨부하다",
+    "pos": "verb"
+  },
+  {
+    "word": "cooperation",
+    "english_definition": "a situation where everyone works together to get something done",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "협력, 협동, 공동 작업",
+    "pos": "noun"
+  },
+  {
+    "word": "scheme",
+    "english_definition": "often dishonest plan to get or do something",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "계획, 음모, 설계",
+    "pos": "noun"
+  },
+  {
+    "word": "imagine",
+    "english_definition": "to think creatively about; form a mental picture of",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "상상하다, 마음속에 그리다, 생각하다",
+    "pos": "verb"
+  },
+  {
+    "word": "immediately",
+    "english_definition": "without any delay; straight away; right (after or before)",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "즉시, 곧바로, 바로",
+    "pos": "adverb"
+  },
+  {
+    "word": "concert",
+    "english_definition": "musical entertainment given in public by one or more performers",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "콘서트, 음악회, 공연",
+    "pos": "noun"
+  },
+  {
+    "word": "discount",
+    "english_definition": "an amount of money taken off the usual price of something",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "할인, 가격 인하, 할인액",
+    "pos": "noun"
+  },
+  {
+    "word": "stock",
+    "english_definition": "piece of a business bought in the form of shares",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주식, 재고, 자산",
+    "pos": "noun"
+  },
+  {
+    "word": "faith",
+    "english_definition": "a strong belief that someone or something is honest and good",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "신념, 믿음, 신뢰",
+    "pos": "noun"
+  },
+  {
+    "word": "careful",
+    "english_definition": "thinking about what you are doing in order to avoid a mistake",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "조심스러운, 신중한, 주의 깊은",
+    "pos": "adjective"
+  },
+  {
+    "word": "governor",
+    "english_definition": "person who leads a state or province",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주지사, (주 또는 지방의) 지도자",
+    "pos": "noun"
+  },
+  {
+    "word": "willingness",
+    "english_definition": "being happy to do something",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "의향, 자발성",
+    "pos": "noun"
+  },
+  {
+    "word": "adhere",
+    "english_definition": "to stay with or follow , e.g. adhere to rules",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "고수하다, 붙다",
+    "pos": "verb"
+  },
+  {
+    "word": "goods",
+    "english_definition": "resources or things bought or sold",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "상품, 물품",
+    "pos": "noun"
+  },
+  {
+    "word": "flyer",
+    "english_definition": "brochure, leaflet",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "전단, 안내서",
+    "pos": "noun"
+  },
+  {
+    "word": "interpreter",
+    "english_definition": "someone who translates from one language to another",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "통역사, 해석자",
+    "pos": "noun"
+  },
+  {
+    "word": "disrupt",
+    "english_definition": "to interrupt and cause chaos",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "방해하다, 중단시키다",
+    "pos": "verb"
+  },
+  {
+    "word": "homework",
+    "english_definition": "the work a teacher gives to students to be done outside of school",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "숙제, 과제",
+    "pos": "noun"
+  },
+  {
+    "word": "warranty",
+    "english_definition": "the promise to repair or replace a product if it ceases to work properly",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "보증, 보증서",
+    "pos": "noun"
+  },
+  {
+    "word": "complication",
+    "english_definition": "the act of making something more difficult",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "합병증, 복잡함",
+    "pos": "noun"
+  },
+  {
+    "word": "diagnose",
+    "english_definition": "to figure out what is wrong",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "진단하다, 원인을 찾다",
+    "pos": "verb"
+  },
+  {
+    "word": "customize",
+    "english_definition": "make or change something to suit the customer's  particular needs",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "맞춤 제작하다, 조정하다",
+    "pos": "verb"
+  },
+  {
+    "word": "skateboard",
+    "english_definition": "a flat board with small wheels on the bottom that you move by pushing on the ground with one foot",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "스케이트보드, 스케이트를 타다",
+    "pos": "noun"
+  },
+  {
+    "word": "cooperate",
+    "english_definition": "to work together nicely",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "협력하다, 협동하다",
+    "pos": "verb"
+  },
+  {
+    "word": "simplify",
+    "english_definition": "make easier to understand",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "단순화하다, 쉽게 하다",
+    "pos": "verb"
+  },
+  {
+    "word": "mislead",
+    "english_definition": "to lead someone in the wrong direction or give someone wrong directions",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "오도하다, 잘못 인도하다",
+    "pos": "verb"
+  },
+  {
+    "word": "reproduce",
+    "english_definition": "to make one or more copies of something",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "재생산하다, 복제하다",
+    "pos": "verb"
+  },
+  {
+    "word": "genre",
+    "english_definition": "type of art, literature, or film, e.g. romance",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "장르, 유형",
+    "pos": "noun"
+  },
+  {
+    "word": "bookstore",
+    "english_definition": "A place where you go to buy books",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "서점, 책방",
+    "pos": "noun"
+  },
+  {
+    "word": "physician",
+    "english_definition": "A doctor of medicine",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "의사, 의료인",
+    "pos": "noun"
+  },
+  {
+    "word": "advancement",
+    "english_definition": "gradual move forward",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "진보, 발전",
+    "pos": "noun"
+  },
+  {
+    "word": "ice cream",
+    "english_definition": "Frozen food made of cream, very sweet and good to eat",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "아이스크림, 아이스크림 가게",
+    "pos": "noun"
+  },
+  {
+    "word": "e-mail",
+    "english_definition": "a system for sending messages electronically, especially from one computer to another using the internet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "이메일, 전자 우편",
+    "pos": "noun"
+  },
+  {
+    "word": "e-book",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "전자책",
+    "pos": "noun"
+  },
+  {
+    "word": "present",
+    "english_definition": "gift",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "선물, 현재의, 출석한",
+    "pos": "noun"
+  },
+  {
+    "word": "mister",
+    "english_definition": "a form of address for a man",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "(남성 호칭) ~님, 씨",
+    "pos": "other"
+  },
+  {
+    "word": "charge",
+    "english_definition": "to ask for money as a price for a service or goods",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "요금, (요금을) 청구하다, 책임",
+    "pos": "verb"
+  },
+  {
+    "word": "fine",
+    "english_definition": "good, acceptable or satisfactory",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "좋은, 괜찮은, 벌금",
+    "pos": "adjective"
+  },
+  {
+    "word": "book",
+    "english_definition": "thing made of pages with writing on that you read",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "책, 예약하다, 기록하다",
+    "pos": "noun"
+  },
+  {
+    "word": "issue",
+    "english_definition": "important topic discussed, debated, or argued over",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "문제, 발행, (잡지의) 호",
+    "pos": "noun"
+  },
+  {
+    "word": "smartphone",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "스마트폰, 스마트 기기",
+    "pos": "noun"
+  }
+]

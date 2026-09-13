@@ -1,0 +1,502 @@
+[
+  {
+    "word": "propose",
+    "english_definition": "to offer or put forward an idea for consideration",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "제안하다, 계획을 제안하다",
+    "pos": "verb"
+  },
+  {
+    "word": "block",
+    "english_definition": "to stop from going forward or making progress",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "막다, 방해하다",
+    "pos": "verb"
+  },
+  {
+    "word": "positive",
+    "english_definition": "good or useful in qualities, constructive, confident",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "긍정적인, 건설적인, 자신감 있는",
+    "pos": "adjective"
+  },
+  {
+    "word": "stake",
+    "english_definition": "a strong stick with a pointed end that you push into the ground",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "말뚝, 이해관계",
+    "pos": "noun"
+  },
+  {
+    "word": "pull",
+    "english_definition": "to hold something and move it toward you",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "당기다, 끌다",
+    "pos": "verb"
+  },
+  {
+    "word": "repeat",
+    "english_definition": "to say something again",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "반복하다",
+    "pos": "verb"
+  },
+  {
+    "word": "suggestion",
+    "english_definition": "idea about what someone should do",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "제안",
+    "pos": "noun"
+  },
+  {
+    "word": "region",
+    "english_definition": "part of a country, of the world, area, etc.",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "지역, 구역",
+    "pos": "noun"
+  },
+  {
+    "word": "firstly",
+    "english_definition": "before anything else",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "첫째로",
+    "pos": "adverb"
+  },
+  {
+    "word": "people",
+    "english_definition": "human beings in general; plural of person",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "사람들, 인류",
+    "pos": "noun"
+  },
+  {
+    "word": "tension",
+    "english_definition": "feeling of anxiety and inability to relax",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "긴장, 불안감",
+    "pos": "noun"
+  },
+  {
+    "word": "grow",
+    "english_definition": "to develop and become bigger or taller over time",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "자라다, 성장하다",
+    "pos": "verb"
+  },
+  {
+    "word": "corner",
+    "english_definition": "place where two lines, sides, corners, etc., meet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "모서리, 구석",
+    "pos": "noun"
+  },
+  {
+    "word": "ancient",
+    "english_definition": "very old; having lived a very long time ago",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "고대의, 오래된",
+    "pos": "adjective"
+  },
+  {
+    "word": "cope",
+    "english_definition": "to deal successfully with a difficult problem",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "대처하다, 극복하다",
+    "pos": "verb"
+  },
+  {
+    "word": "step",
+    "english_definition": "flat horizontal piece that forms stairs",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "계단, 단계",
+    "pos": "noun"
+  },
+  {
+    "word": "bin",
+    "english_definition": "a container for storing things",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "통, 쓰레기통",
+    "pos": "noun"
+  },
+  {
+    "word": "joke",
+    "english_definition": "to say or do things that are meant to be funny",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "농담하다, 유머",
+    "pos": "verb"
+  },
+  {
+    "word": "right",
+    "english_definition": "on side where the hand that most people write with",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "오른쪽, 맞는",
+    "pos": "adjective"
+  },
+  {
+    "word": "unit",
+    "english_definition": "single thing or person; a part of something larger",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "단위, 구성 요소",
+    "pos": "noun"
+  },
+  {
+    "word": "portable",
+    "english_definition": "something that is small and easy to carry",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "휴대할 수 있는",
+    "pos": "adjective"
+  },
+  {
+    "word": "cooler",
+    "english_definition": "a box (filled with ice) that keeps drinks cold",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "냉각기",
+    "pos": "noun"
+  },
+  {
+    "word": "machinery",
+    "english_definition": "tools, equipment",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "기계",
+    "pos": "noun"
+  },
+  {
+    "word": "librarian",
+    "english_definition": "a person who works with books in a library",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "사서",
+    "pos": "noun"
+  },
+  {
+    "word": "administer",
+    "english_definition": "to manage an office",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "관리하다",
+    "pos": "verb"
+  },
+  {
+    "word": "stereo",
+    "english_definition": "a device that plays sound through two or more speakers",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "스테레오",
+    "pos": "noun"
+  },
+  {
+    "word": "approximate",
+    "english_definition": "to give a general number as a guess",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "대략적인",
+    "pos": "verb"
+  },
+  {
+    "word": "worldwide",
+    "english_definition": "Spanning or reaching across the whole earth",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "전 세계의",
+    "pos": "adjective"
+  },
+  {
+    "word": "streamline",
+    "english_definition": "make smoother and more efficient",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "효율적으로 만들다",
+    "pos": "verb"
+  },
+  {
+    "word": "sunshine",
+    "english_definition": "the warmth and light of the sun",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "햇빛",
+    "pos": "noun"
+  },
+  {
+    "word": "stripe",
+    "english_definition": "a line or band of a different color",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "줄무늬",
+    "pos": "noun"
+  },
+  {
+    "word": "comprehension",
+    "english_definition": "the act of understanding",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "이해",
+    "pos": "noun"
+  },
+  {
+    "word": "projection",
+    "english_definition": "a guess about future events, e.g. sales or income",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "예측",
+    "pos": "noun"
+  },
+  {
+    "word": "developer",
+    "english_definition": "someone who designs and builds properties",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "개발자",
+    "pos": "noun"
+  },
+  {
+    "word": "correspondence",
+    "english_definition": "communication by letter",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "서신",
+    "pos": "noun"
+  },
+  {
+    "word": "assemble",
+    "english_definition": "to gather people together",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "모이다",
+    "pos": "verb"
+  },
+  {
+    "word": "brainstorm",
+    "english_definition": "a group discussion to come up with a lot of ideas very quickly",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "브레인스토밍",
+    "pos": "verb"
+  },
+  {
+    "word": "headphone",
+    "english_definition": "a set of small speakers that fit into each ear so that only you can hear the sound",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "헤드폰",
+    "pos": "noun"
+  },
+  {
+    "word": "mentor",
+    "english_definition": "personal advisor or teacher",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "멘토",
+    "pos": "noun"
+  },
+  {
+    "word": "refresh",
+    "english_definition": "to put new life or energy into",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "새롭게 하다",
+    "pos": "verb"
+  },
+  {
+    "word": "ice cream",
+    "english_definition": "Frozen food made of cream, very sweet and good to eat",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "아이스크림, 달콤한 간식",
+    "pos": "noun"
+  },
+  {
+    "word": "e-mail",
+    "english_definition": "a system for sending messages electronically, especially from one computer to another using the internet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "이메일, 전자 메시지",
+    "pos": "noun"
+  },
+  {
+    "word": "e-book",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "전자책",
+    "pos": "noun"
+  },
+  {
+    "word": "present",
+    "english_definition": "gift",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "선물, (무언가를) 보여주다",
+    "pos": "noun"
+  },
+  {
+    "word": "mister",
+    "english_definition": "a form of address for a man",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "남성 호칭, ~씨",
+    "pos": "noun"
+  },
+  {
+    "word": "charge",
+    "english_definition": "to ask for money as a price for a service or goods",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "요금, (공식적으로) 고소하다",
+    "pos": "verb"
+  },
+  {
+    "word": "fine",
+    "english_definition": "good, acceptable or satisfactory",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "좋은, 괜찮은",
+    "pos": "adjective"
+  },
+  {
+    "word": "book",
+    "english_definition": "thing made of pages with writing on that you read",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "책, 예약하다",
+    "pos": "noun"
+  },
+  {
+    "word": "issue",
+    "english_definition": "important topic discussed, debated, or argued over",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "문제, 발행",
+    "pos": "noun"
+  },
+  {
+    "word": "smartphone",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "스마트폰",
+    "pos": "noun"
+  }
+]

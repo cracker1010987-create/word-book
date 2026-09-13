@@ -1,0 +1,502 @@
+[
+  {
+    "word": "from",
+    "english_definition": "starting at a particular place, time, or level",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "~부터, ~에서 나온",
+    "pos": "other"
+  },
+  {
+    "word": "suitable",
+    "english_definition": "acceptable or right for someone or something",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "적합한",
+    "pos": "adjective"
+  },
+  {
+    "word": "blind",
+    "english_definition": "unable to see; with eyes that cannot see",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "눈이 먼, 블라인드, 보이지 않게 하다",
+    "pos": "adjective"
+  },
+  {
+    "word": "communication",
+    "english_definition": "talking to people; giving information to people",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "의사소통, 전달 내용",
+    "pos": "noun"
+  },
+  {
+    "word": "know",
+    "english_definition": "to have knowledge of things in your mind",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "알다, 잘 알다",
+    "pos": "verb"
+  },
+  {
+    "word": "association",
+    "english_definition": "organization of people with the same interest",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "협회, 연관성",
+    "pos": "noun"
+  },
+  {
+    "word": "lip",
+    "english_definition": "top and bottom part of the outside of a person's mouth",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "입술, 가장자리",
+    "pos": "noun"
+  },
+  {
+    "word": "crack",
+    "english_definition": "to almost break something",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "금이 가다, 균열, 해결하다",
+    "pos": "verb"
+  },
+  {
+    "word": "bias",
+    "english_definition": "a strong feeling not based on facts to believe one thing over another",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "편견, 편향시키다",
+    "pos": "noun"
+  },
+  {
+    "word": "medicine",
+    "english_definition": "liquid or pills used to treat illness or pain; the study of treating illness or pain",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "약, 의학",
+    "pos": "noun"
+  },
+  {
+    "word": "screen",
+    "english_definition": "flat surface on a computer, or tv that shows images",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "화면, 심사하다",
+    "pos": "noun"
+  },
+  {
+    "word": "nor",
+    "english_definition": "used to show two things that are both untrue or do not happen",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "~도 또한 아니다",
+    "pos": "other"
+  },
+  {
+    "word": "switch",
+    "english_definition": "to change from one thing to another; a thing you move to change from one thing to another",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "바꾸다, 스위치",
+    "pos": "verb"
+  },
+  {
+    "word": "buy",
+    "english_definition": "to get something by paying money for it",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "사다",
+    "pos": "verb"
+  },
+  {
+    "word": "ship",
+    "english_definition": "large boat",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "배, 배송하다",
+    "pos": "noun"
+  },
+  {
+    "word": "land",
+    "english_definition": "the earth; the ground",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "땅, 착륙하다, 얻다",
+    "pos": "noun"
+  },
+  {
+    "word": "bear",
+    "english_definition": "large brown animal with fur that lives in forests",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "곰, 견디다, 지니다",
+    "pos": "noun"
+  },
+  {
+    "word": "actor",
+    "english_definition": "person who acts in the theater, movies, or tv",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "배우",
+    "pos": "noun"
+  },
+  {
+    "word": "joint",
+    "english_definition": "1. (n.) place where two things meet; 2. (adj.) done together",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "관절, 공동의",
+    "pos": "noun"
+  },
+  {
+    "word": "engage",
+    "english_definition": "to carry out, participate in; be involved in",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "참여하다, 고용하다, 관심을 끌다",
+    "pos": "verb"
+  },
+  {
+    "word": "preliminary",
+    "english_definition": "The first action that comes before a more important one",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "예비 단계",
+    "pos": "noun"
+  },
+  {
+    "word": "subway",
+    "english_definition": "a tunnel under the road for people to walk through",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "지하철, 지하도",
+    "pos": "noun"
+  },
+  {
+    "word": "fluctuate",
+    "english_definition": "comes and goes stronger and weaker",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "변동하다",
+    "pos": "verb"
+  },
+  {
+    "word": "abide",
+    "english_definition": "put up with",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "참다, 준수하다",
+    "pos": "verb"
+  },
+  {
+    "word": "continental",
+    "english_definition": "to do with the mainland",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "대륙의, 유럽 본토의",
+    "pos": "adjective"
+  },
+  {
+    "word": "gossip",
+    "english_definition": "to talk about someone behind his/her back",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "험담하다, 소문",
+    "pos": "verb"
+  },
+  {
+    "word": "warranty",
+    "english_definition": "the promise to repair or replace a product if it ceases to work properly",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "보증",
+    "pos": "noun"
+  },
+  {
+    "word": "clap",
+    "english_definition": "hitting your hands together to make a noise to show you enjoyed something",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "손뼉 치다, 쨍하는 소리",
+    "pos": "verb"
+  },
+  {
+    "word": "behalf",
+    "english_definition": "to speak or do something for someone else, e.g. on behalf of…",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "~을 대신하여",
+    "pos": "noun"
+  },
+  {
+    "word": "weekday",
+    "english_definition": "All the working days in a week, usually Monday to Friday",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "평일",
+    "pos": "noun"
+  },
+  {
+    "word": "wildlife",
+    "english_definition": "animals and plants that live in the natural world",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "야생 생물",
+    "pos": "noun"
+  },
+  {
+    "word": "terminate",
+    "english_definition": "bring to an end",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "종료하다, 해고하다",
+    "pos": "verb"
+  },
+  {
+    "word": "unemployed",
+    "english_definition": "having no job",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "실업 상태인",
+    "pos": "adjective"
+  },
+  {
+    "word": "seminar",
+    "english_definition": "a discussion session or class led by a teacher, or expert",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "세미나",
+    "pos": "noun"
+  },
+  {
+    "word": "dynamic",
+    "english_definition": "energetic",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "활동적인, 역동적인",
+    "pos": "adjective"
+  },
+  {
+    "word": "underline",
+    "english_definition": "to call attention to",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "밑줄을 긋다, 강조하다",
+    "pos": "verb"
+  },
+  {
+    "word": "periodically",
+    "english_definition": "every so often, at regular times",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주기적으로, 가끔",
+    "pos": "adverb"
+  },
+  {
+    "word": "celebrity",
+    "english_definition": "someone famous",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "유명인",
+    "pos": "noun"
+  },
+  {
+    "word": "recur",
+    "english_definition": "happens again",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "재발하다",
+    "pos": "verb"
+  },
+  {
+    "word": "plausible",
+    "english_definition": "it sounds like it could be true",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "그럴듯한",
+    "pos": "adjective"
+  },
+  {
+    "word": "ice cream",
+    "english_definition": "Frozen food made of cream, very sweet and good to eat",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "아이스크림",
+    "pos": "noun"
+  },
+  {
+    "word": "e-mail",
+    "english_definition": "a system for sending messages electronically, especially from one computer to another using the internet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "이메일, 이메일을 보내다",
+    "pos": "noun"
+  },
+  {
+    "word": "e-book",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "전자책",
+    "pos": "noun"
+  },
+  {
+    "word": "present",
+    "english_definition": "gift",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "선물, 현재의, 제시하다",
+    "pos": "noun"
+  },
+  {
+    "word": "mister",
+    "english_definition": "a form of address for a man",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "남성 호칭 ~씨",
+    "pos": "noun"
+  },
+  {
+    "word": "charge",
+    "english_definition": "to ask for money as a price for a service or goods",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "요금을 청구하다, 요금, 기소하다",
+    "pos": "verb"
+  },
+  {
+    "word": "fine",
+    "english_definition": "good, acceptable or satisfactory",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "좋은, 벌금, 벌금을 부과하다",
+    "pos": "adjective"
+  },
+  {
+    "word": "book",
+    "english_definition": "thing made of pages with writing on that you read",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "책, 예약하다",
+    "pos": "noun"
+  },
+  {
+    "word": "issue",
+    "english_definition": "important topic discussed, debated, or argued over",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "쟁점, 문제, 발행하다",
+    "pos": "noun"
+  },
+  {
+    "word": "smartphone",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "스마트폰",
+    "pos": "noun"
+  }
+]

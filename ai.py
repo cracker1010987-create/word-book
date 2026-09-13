@@ -1,13 +1,18 @@
 # 단어와 뜻을 받아 AI가 객관식 퀴즈 문제를 만들어주는 함수들
 import re
-from typing import Any
+from typing import Any, Literal
 
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
+from wordbank import normalize_word
+
 load_dotenv()
+
+# 이 파일의 모든 LLM 호출이 쓰는 모델 (CLAUDE.md의 기술 스택과 같게 유지한다)
+MODEL = "gpt-5.6-luna"
 
 
 class Quiz(BaseModel):
@@ -34,7 +39,7 @@ class Quiz(BaseModel):
 
 def build_chain() -> Any:
     # 단어와 뜻을 받아 Quiz를 만들어내는 LCEL 체인을 만들어 리턴하는 함수
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+    llm = ChatOpenAI(model=MODEL, temperature=0.7)
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -99,7 +104,7 @@ class GrammarCheck(BaseModel):
 
 def build_grammar_check_chain() -> Any:
     # 퀴즈 하나가 문법적으로 정답만 노출하는지 검사하는 체인을 만들어 리턴하는 함수
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model=MODEL, temperature=0)
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -165,3 +170,104 @@ def make_quiz_verified(
         if check_grammar(quiz, grammar_chain=grammar_chain):
             return quiz
     return valid_fallback or put_answer_in_options(quiz, word)
+
+
+class WordMeaning(BaseModel):
+    # 단어 하나의 한국어 뜻과 품사를 담는 모델 (서로 다른 뜻을 영어로 먼저 나열한 뒤 한국어를 쓰게 한다)
+    word: str = Field(description="요청받은 영어 단어를 철자 그대로")
+    senses_en: list[str] = Field(
+        default_factory=list,
+        description="이 단어의 서로 다른 뜻을 짧은 영어로 먼저 나열한다. 토익에서 쓰이는 뜻을 먼저, 최대 3개. "
+        "같은 뜻을 다른 말로 바꿔 여러 번 쓰지 않는다.",
+    )
+    meaning_ko: str = Field(
+        description="senses_en의 뜻마다 대표 한국어를 딱 하나씩, 같은 순서로 쉼표로 구분해 쓴다. "
+        "한 뜻에 동의어를 여러 개 붙이지 않는다."
+    )
+    pos: Literal["noun", "verb", "adjective", "adverb", "other"] = Field(
+        description="가장 대표적인 품사 하나"
+    )
+
+
+class MeaningBatch(BaseModel):
+    # 여러 단어의 한국어 뜻을 한 번에 담는 모델
+    items: list[WordMeaning] = Field(description="요청받은 단어마다 하나씩. 한 단어도 빠뜨리지 않는다.")
+
+
+def build_meaning_chain() -> Any:
+    # 여러 영어 단어를 받아 한국어 뜻과 품사를 한 번에 돌려주는 LCEL 체인을 만든다
+    llm = ChatOpenAI(model=MODEL, temperature=0)
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "너는 토익을 준비하는 한국인 학생을 위한 영어 단어장 편집자다. "
+                "주어진 영어 단어마다 아래 순서대로 정리해라.\n"
+                "각 줄은 '단어: 쉬운 영어 뜻' 형식이다. 영어 뜻은 참고용이고, (영어 뜻 없음)이면 네가 아는 뜻을 쓴다.\n\n"
+                "1) senses_en: 이 단어가 토익 지문(회사, 거래, 여행, 쇼핑, 일상 업무)과 일상에서 쓰이는 "
+                "'서로 다른 뜻'을 짧은 영어로 나열한다. 뜻이 하나뿐이면 1개, 여러 개면 중요한 순서로 최대 3개.\n"
+                "   - 명사와 동사처럼 품사가 달라 뜻이 달라지면 서로 다른 뜻으로 센다.\n"
+                "   - 같은 뜻을 다른 영어 표현으로 반복하지 않는다.\n"
+                "2) meaning_ko: senses_en의 뜻마다 대표 한국어를 딱 하나씩, 같은 순서로 쉼표로 구분해 쓴다.\n\n"
+                "예시)\n"
+                "- meeting → senses_en: [a gathering to discuss work] / meaning_ko: 회의\n"
+                "- order → senses_en: [a request to buy something, to request to buy, arrangement in sequence] "
+                "/ meaning_ko: 주문, 주문하다, 순서\n"
+                "- bill → senses_en: [a document showing money owed, paper money] / meaning_ko: 청구서, 지폐\n"
+                "- address → senses_en: [where someone lives, to deal with a problem] / meaning_ko: 주소, (문제를) 다루다\n"
+                "- madam → senses_en: [polite way to address a woman] / meaning_ko: (여성 호칭) ~님\n\n"
+                "나쁜 예) criticize: 비판하다, 혹평하다, 비난하다 ← 같은 뜻의 동의어 반복이라 틀림 → 비판하다\n"
+                "나쁜 예) interest: 관심 ← 토익에 자주 나오는 '이자'를 빠뜨려서 틀림 → 관심, 이자\n\n"
+                "3) pos: 가장 대표적인 품사 하나를 고른다. 전치사·접속사·관사 등은 other.\n"
+                "word에는 받은 단어를 철자 그대로 쓰고, 한 단어도 빠뜨리지 마라.",
+            ),
+            ("human", "{word_list}"),
+        ]
+    )
+    return prompt | llm.with_structured_output(MeaningBatch)
+
+
+def format_word_list(words: list[dict]) -> str:
+    # 단어 묶음을 AI에게 보낼 '단어: 영어 뜻' 줄들로 만든다 (영어 뜻이 없으면 없다고 표시)
+    return "\n".join(f"{item['word']}: {item['definition'] or '(영어 뜻 없음)'}" for item in words)
+
+
+def remove_duplicate_meanings(meaning_ko: str) -> str:
+    # 쉼표로 구분된 한국어 뜻에서 똑같은 뜻이 두 번 나오면 한 번만 남긴다
+    parts = [part.strip() for part in meaning_ko.split(",") if part.strip()]
+    return ", ".join(dict.fromkeys(parts))
+
+
+def generate_meanings(
+    words: list[dict], chain: Any = None, batch_size: int = 20, max_concurrency: int = 5
+) -> dict[str, dict]:
+    # 단어들을 묶음으로 나눠 병렬로 한국어 뜻을 받고, 요청한 철자 기준으로 모아 돌려준다
+    if chain is None:
+        chain = build_meaning_chain()
+    chunks = [words[i : i + batch_size] for i in range(0, len(words), batch_size)]
+    inputs = [{"word_list": format_word_list(chunk)} for chunk in chunks]
+    results = chain.batch(inputs, config={"max_concurrency": max_concurrency})
+    requested = {normalize_word(item["word"]): item["word"] for item in words}
+    meanings = {}
+    for result in results:
+        for item in result.items:
+            word = requested.get(normalize_word(item.word))
+            if word and item.meaning_ko.strip():
+                meanings[word] = {"meaning_ko": remove_duplicate_meanings(item.meaning_ko), "pos": item.pos}
+    return meanings
+
+
+def generate_all_meanings(
+    words: list[dict], chain: Any = None, max_rounds: int = 3, batch_size: int = 20
+) -> dict[str, dict]:
+    # 뜻을 못 받은 단어만 골라 다시 요청하기를 max_rounds번까지 반복해서, 최대한 모든 단어의 뜻을 받는다
+    if chain is None:
+        chain = build_meaning_chain()
+    meanings: dict[str, dict] = {}
+    remaining = list(words)
+    for _ in range(max_rounds):
+        if not remaining:
+            break
+        meanings.update(generate_meanings(remaining, chain=chain, batch_size=batch_size))
+        remaining = [item for item in remaining if item["word"] not in meanings]
+    return meanings

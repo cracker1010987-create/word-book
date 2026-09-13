@@ -1,0 +1,502 @@
+[
+  {
+    "word": "son",
+    "english_definition": "male child; friendly way of addressing a boy",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "아들",
+    "pos": "noun"
+  },
+  {
+    "word": "borrow",
+    "english_definition": "to receive something from someone and later return it",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "빌리다",
+    "pos": "verb"
+  },
+  {
+    "word": "bring",
+    "english_definition": "to take or go with someone to a place",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "가져오다",
+    "pos": "verb"
+  },
+  {
+    "word": "intense",
+    "english_definition": "very strong, great, or extreme in degree",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "강렬한",
+    "pos": "adjective"
+  },
+  {
+    "word": "journal",
+    "english_definition": "a written record of subjects or events",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "일기",
+    "pos": "noun"
+  },
+  {
+    "word": "primarily",
+    "english_definition": "in the most basic or important way",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주로",
+    "pos": "adverb"
+  },
+  {
+    "word": "other",
+    "english_definition": "something else; not the first one",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "다른",
+    "pos": "adjective"
+  },
+  {
+    "word": "indicate",
+    "english_definition": "to show something, direct attention to, or point out",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "나타내다",
+    "pos": "verb"
+  },
+  {
+    "word": "argument",
+    "english_definition": "a discussion in which you disagree with another's opinion",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "논쟁",
+    "pos": "noun"
+  },
+  {
+    "word": "flight",
+    "english_definition": "act of flying",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "비행",
+    "pos": "noun"
+  },
+  {
+    "word": "species",
+    "english_definition": "a group of related animals or plant",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "종",
+    "pos": "noun"
+  },
+  {
+    "word": "season",
+    "english_definition": "one of the four parts of the year determined mainly by the weather during that time",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "계절",
+    "pos": "noun"
+  },
+  {
+    "word": "growth",
+    "english_definition": "act of growing",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "성장",
+    "pos": "noun"
+  },
+  {
+    "word": "typically",
+    "english_definition": "in a normal or usual way",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "전형적으로",
+    "pos": "adverb"
+  },
+  {
+    "word": "compound",
+    "english_definition": "something that is made from two or more other things",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "화합물",
+    "pos": "noun"
+  },
+  {
+    "word": "brown",
+    "english_definition": "of the color of coffee, wood, or chocolate",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "갈색의",
+    "pos": "adjective"
+  },
+  {
+    "word": "load",
+    "english_definition": "large, often heavy, amount of something to be moved",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "짐",
+    "pos": "noun"
+  },
+  {
+    "word": "opinion",
+    "english_definition": "a person's thoughts on a topic",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "의견",
+    "pos": "noun"
+  },
+  {
+    "word": "communication",
+    "english_definition": "talking to people; giving information to people",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "소통",
+    "pos": "noun"
+  },
+  {
+    "word": "weight",
+    "english_definition": "how heavy something is",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "무게",
+    "pos": "noun"
+  },
+  {
+    "word": "bargain",
+    "english_definition": "a good deal, a good price",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "거래, 특가",
+    "pos": "noun"
+  },
+  {
+    "word": "login",
+    "english_definition": "to enter a computer website account",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "로그인, 접속",
+    "pos": "verb"
+  },
+  {
+    "word": "partially",
+    "english_definition": "In part; in some degree; not wholly",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "부분적으로",
+    "pos": "adverb"
+  },
+  {
+    "word": "deteriorate",
+    "english_definition": "to become worse in state",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "악화되다",
+    "pos": "verb"
+  },
+  {
+    "word": "additionally",
+    "english_definition": "furthermore, also",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "추가로",
+    "pos": "adverb"
+  },
+  {
+    "word": "workforce",
+    "english_definition": "all the people that a company employs",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "노동력, 직원",
+    "pos": "noun"
+  },
+  {
+    "word": "jeans",
+    "english_definition": "pants made from denim",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "청바지",
+    "pos": "noun"
+  },
+  {
+    "word": "anniversary",
+    "english_definition": "a date to remember",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "기념일",
+    "pos": "noun"
+  },
+  {
+    "word": "conveniently",
+    "english_definition": "in a manner that is easy",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "편리하게",
+    "pos": "adverb"
+  },
+  {
+    "word": "defective",
+    "english_definition": "when something is not working",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "결함이 있는",
+    "pos": "adjective"
+  },
+  {
+    "word": "stimulus",
+    "english_definition": "the reason or prompt that causes something to happen",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "자극, 유인",
+    "pos": "noun"
+  },
+  {
+    "word": "residence",
+    "english_definition": "the house or place you live",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "거주지, 주거",
+    "pos": "noun"
+  },
+  {
+    "word": "hesitant",
+    "english_definition": "hold back from acting because you are uncertain or undecided",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "주저하는",
+    "pos": "adjective"
+  },
+  {
+    "word": "obligate",
+    "english_definition": "to have to do",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "의무가 있다",
+    "pos": "verb"
+  },
+  {
+    "word": "surf",
+    "english_definition": "move from one website to another on the internet",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "서핑하다, 탐색하다",
+    "pos": "verb"
+  },
+  {
+    "word": "mask",
+    "english_definition": "something that covers your face",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "마스크, 가리개",
+    "pos": "noun"
+  },
+  {
+    "word": "renovation",
+    "english_definition": "the process of being restored to a previous or better condition",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "개조, 보수",
+    "pos": "noun"
+  },
+  {
+    "word": "homemade",
+    "english_definition": "not bought from a store; made at home",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "수제의, 집에서 만든",
+    "pos": "adjective"
+  },
+  {
+    "word": "paperback",
+    "english_definition": "a book that has a cover made of paper",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "페이퍼백, 종이책",
+    "pos": "noun"
+  },
+  {
+    "word": "videoconference",
+    "english_definition": "meeting carried out over the internet",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": false,
+    "meaning_ko": "화상 회의",
+    "pos": "noun"
+  },
+  {
+    "word": "ice cream",
+    "english_definition": "Frozen food made of cream, very sweet and good to eat",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "아이스크림",
+    "pos": "noun"
+  },
+  {
+    "word": "e-mail",
+    "english_definition": "a system for sending messages electronically, especially from one computer to another using the internet",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "이메일",
+    "pos": "noun"
+  },
+  {
+    "word": "e-book",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "전자책",
+    "pos": "noun"
+  },
+  {
+    "word": "present",
+    "english_definition": "gift",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "선물",
+    "pos": "noun"
+  },
+  {
+    "word": "mister",
+    "english_definition": "a form of address for a man",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "남성 호칭",
+    "pos": "other"
+  },
+  {
+    "word": "charge",
+    "english_definition": "to ask for money as a price for a service or goods",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "요금",
+    "pos": "verb"
+  },
+  {
+    "word": "fine",
+    "english_definition": "good, acceptable or satisfactory",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "좋은",
+    "pos": "adjective"
+  },
+  {
+    "word": "book",
+    "english_definition": "thing made of pages with writing on that you read",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "책",
+    "pos": "noun"
+  },
+  {
+    "word": "issue",
+    "english_definition": "important topic discussed, debated, or argued over",
+    "sources": [
+      "NGSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "문제",
+    "pos": "noun"
+  },
+  {
+    "word": "smartphone",
+    "english_definition": "",
+    "sources": [
+      "TSL"
+    ],
+    "fixed": true,
+    "meaning_ko": "스마트폰",
+    "pos": "noun"
+  }
+]

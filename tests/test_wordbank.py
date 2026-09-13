@@ -1,5 +1,5 @@
 # 원본 단어에 순위를 붙이고, NGSL과 TSL을 하나의 단어장으로 합치는 함수들을 확인하는 테스트
-from wordbank import attach_ranks, merge_word_lists, normalize_word
+from wordbank import attach_ranks, make_bank_entries, merge_word_lists, normalize_word
 
 
 def test_normalize_word_ignores_case_hyphen_and_accent() -> None:
@@ -61,3 +61,29 @@ def test_merge_puts_unranked_words_last() -> None:
     ]
     order = [entry["word"] for entry in merge_word_lists(ngsl, [])]
     assert order == ["the", "born"]
+
+
+MERGED = [
+    {"word": "client", "definition": "a customer", "sources": ["TSL"], "ngsl_rank": None, "tsl_rank": 3},
+    {"word": "the", "definition": "used before nouns", "sources": ["NGSL"], "ngsl_rank": 1, "tsl_rank": None},
+]
+
+
+def test_make_bank_entries_combines_meaning_with_source_info() -> None:
+    # 합친 단어 정보(영어 뜻·출처·순위)와 AI가 만든 한국어 뜻·품사를 한 항목으로 묶는다
+    meanings = {"client": {"meaning_ko": "고객", "pos": "noun"}, "the": {"meaning_ko": "그", "pos": "other"}}
+    assert make_bank_entries(MERGED, meanings)[0] == {
+        "word": "client",
+        "meaning_ko": "고객",
+        "pos": "noun",
+        "definition_en": "a customer",
+        "sources": ["TSL"],
+        "ngsl_rank": None,
+        "tsl_rank": 3,
+    }
+
+
+def test_make_bank_entries_keeps_order_and_leaves_out_words_without_meaning() -> None:
+    # 순서는 합친 목록 그대로 두고, 한국어 뜻을 끝내 못 받은 단어는 단어장에서 뺀다
+    entries = make_bank_entries(MERGED, {"the": {"meaning_ko": "그", "pos": "other"}})
+    assert [entry["word"] for entry in entries] == ["the"]
