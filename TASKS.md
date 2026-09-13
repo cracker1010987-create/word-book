@@ -137,15 +137,18 @@ prd.md를 기준으로 앱을 테스트 가능한 크기의 기능 조각으로 
 
 ### A. 단어장 구축
 
-### 21. ⬜ 원본 단어 목록 읽기 `read_source_words(xlsx_path)`
+### 21. ✅ 원본 단어 목록 읽기 `read_source_words(xlsx_path)`
 - **파일**: `scripts/build_word_bank.py`
 - **검사 방법**: pytest (테스트 안에서 작은 엑셀 파일을 만들어 단어·영어 뜻이 읽히는지 확인)
 - **순서**: 1번째. 선행 조각 없음. (`openpyxl` 설치 필요)
 
-### 22. ⬜ NGSL·TSL 합치기 `merge_word_lists(ngsl, tsl)`
-- **파일**: `wordbank.py`
-- **검사 방법**: pytest (겹치는 단어는 하나로, 출처와 순위 보존, 대소문자 차이 합치기)
+### 22. ✅ 순위 붙이기·NGSL·TSL 합치기 `read_source_ranks`, `attach_ranks`, `merge_word_lists`
+- **파일**: `scripts/build_word_bank.py`(통계 CSV 읽기), `wordbank.py`(순위 붙이기, 합치기)
+- **검사 방법**: pytest (철자 차이 e-mail/email·résumé/resume 합치기, 순위 없는 단어는 목록 맨 뒤,
+  순위 파일에만 있는 단어도 뜻 없이 포함, 두 목록을 각 목록 안의 상대 순위로 섞기)
 - **순서**: 1번째. 선행 조각 없음.
+- **실제 결과**: NGSL 2,809 + TSL 1,251 → 합친 단어장 4,059개 (겹침: criteria). 순위 없음: born.
+  뜻 없음(AI가 채울 것): e-book, cafe, entree, smartphone, by-law. 첫 50개 중 TSL 단어 15개.
 
 ### 23. ⬜ 한국어 뜻 일괄 생성 `generate_meanings(words, chain)`
 - **파일**: `ai.py`
