@@ -80,7 +80,8 @@ def print_result(quiz: Quiz, is_correct: bool) -> None:
 
 # 단어 하나를 골라 퀴즈를 내고, 답을 받아 채점한 뒤 결과를 반영하고 알려준다
 def run_quiz(
-    path: str, chain: Any, grammar_chain: Any, input_func: Callable[[str], str], today: str
+    path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
+    input_func: Callable[[str], str], today: str,
 ) -> None:
     words = load_words(path)
     if not words:
@@ -88,7 +89,10 @@ def run_quiz(
         return
     word = pick_word_to_quiz(words)
     print("문제를 만드는 중입니다...\n")
-    quiz = make_quiz_verified(word, words[word]["meaning"], chain=chain, grammar_chain=grammar_chain)
+    quiz = make_quiz_verified(
+        word, words[word]["meaning"], chain=chain, grammar_chain=grammar_chain,
+        distractor_chain=distractor_chain,
+    )
     print_question(quiz)
     user_answer = input_func("정답 입력 > ")
     is_correct = grade_answer(user_answer, quiz.answer)
@@ -127,7 +131,7 @@ def ask_menu_choice(input_func: Callable[[str], str], clear_func: Callable[[], N
 
 # 메뉴에서 고른 기능 하나를 실행한다
 def run_menu_action(
-    choice: str, path: str, chain: Any, grammar_chain: Any,
+    choice: str, path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
     input_func: Callable[[str], str], today: str,
 ) -> None:
     if choice == "1":
@@ -135,7 +139,7 @@ def run_menu_action(
         meaning = input_func("뜻 > ")
         run_add(word, meaning, path)
     elif choice == "2":
-        run_quiz(path, chain, grammar_chain, input_func, today)
+        run_quiz(path, chain, grammar_chain, distractor_chain, input_func, today)
     elif choice == "3":
         print_stats(path)
     elif choice == "4":
@@ -146,8 +150,8 @@ def run_menu_action(
 
 # 메뉴 → (화면 지우고) 기능 실행 → 엔터 대기 → 메뉴를 5번(종료)을 고를 때까지 반복한다
 def run_interactive(
-    path: str, chain: Any, grammar_chain: Any, input_func: Callable[[str], str],
-    today: str, clear_func: Callable[[], None],
+    path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
+    input_func: Callable[[str], str], today: str, clear_func: Callable[[], None],
 ) -> None:
     while True:
         choice = ask_menu_choice(input_func, clear_func)
@@ -155,7 +159,7 @@ def run_interactive(
             break
         clear_func()
         print_header(MENU.get(choice, "잘못된 입력"))
-        run_menu_action(choice, path, chain, grammar_chain, input_func, today)
+        run_menu_action(choice, path, chain, grammar_chain, distractor_chain, input_func, today)
         input_func("\n엔터를 누르면 메뉴로 돌아갑니다...")
 
 
@@ -165,6 +169,7 @@ def main(
     path: str = "words.json",
     chain: Any = None,
     grammar_chain: Any = None,
+    distractor_chain: Any = None,
     input_func: Callable[[str], str] = input,
     today: str | None = None,
     clear_func: Callable[[], None] = clear_screen,
@@ -173,13 +178,13 @@ def main(
     if args.command == "add":
         run_add(args.word, args.meaning, path)
     elif args.command == "quiz":
-        run_quiz(path, chain, grammar_chain, input_func, today)
+        run_quiz(path, chain, grammar_chain, distractor_chain, input_func, today)
     elif args.command == "stats":
         print_stats(path)
     elif args.command == "list":
         print_word_list(path)
     else:
-        run_interactive(path, chain, grammar_chain, input_func, today, clear_func)
+        run_interactive(path, chain, grammar_chain, distractor_chain, input_func, today, clear_func)
 
 
 if __name__ == "__main__":

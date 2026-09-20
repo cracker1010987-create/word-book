@@ -1,0 +1,128 @@
+[
+  {
+    "word": "promptly",
+    "meaning_ko": "즉시",
+    "was_failing": true,
+    "sentence": "The nurse ___ responded to the patient's emergency call, arriving at his room within thirty seconds.",
+    "options": [
+      "promptly",
+      "slowly",
+      "eventually",
+      "belatedly"
+    ],
+    "answer": "promptly",
+    "explanation": "“within thirty seconds”라는 구체적인 단서와 응급 호출에 바로 간 상황이 즉각적인 대응을 뜻하므로 promptly가 맞습니다. slowly는 느리게 대응했다는 뜻이고, eventually는 한참 뒤에야 대응했다는 뜻이며, belatedly는 너무 늦게 대응했다는 뜻이어서 이 상황과 맞지 않습니다."
+  },
+  {
+    "word": "shipment",
+    "meaning_ko": "배송품",
+    "was_failing": true,
+    "sentence": "The carrier assigned one tracking number to the ___, a consolidated load of 240 boxes headed to three different stores.",
+    "options": [
+      "shipment",
+      "order",
+      "delivery",
+      "return"
+    ],
+    "answer": "shipment",
+    "explanation": "“a consolidated load of 240 boxes headed to three different stores”라는 구체적인 단서가 여러 물건을 한꺼번에 보내는 배송품을 가리키므로 shipment가 맞습니다. order는 구매 요청이고, delivery는 물건을 전달하는 행위나 과정이며, return은 반품을 뜻하므로 이처럼 발송되는 여러 상자의 묶음을 가리키지 않습니다."
+  },
+  {
+    "word": "tenant",
+    "meaning_ko": "세입자",
+    "was_failing": true,
+    "sentence": "The ___ paid the property owner $1,200 each month to live in the apartment, while the owner remained responsible for repairing the broken heater.",
+    "options": [
+      "tenant",
+      "landlord",
+      "caretaker",
+      "realtor"
+    ],
+    "answer": "tenant",
+    "explanation": "“paid the property owner $1,200 each month to live in the apartment”라는 단서와 “owner remained responsible for repairing the broken heater”라는 상황은 집을 빌려 거주하는 사람을 가리키므로 tenant가 맞다. landlord는 보통 집주인으로 임대료를 받는 쪽이고, caretaker는 건물을 관리하는 사람이며, realtor는 매매나 임대를 중개하는 사람이어서 이 문맥의 거주자 역할과 맞지 않는다."
+  },
+  {
+    "word": "reimburse",
+    "meaning_ko": "상환하다",
+    "was_failing": true,
+    "sentence": "After checking the receipts, the company agreed to ___ employees for approved travel expenses, depositing the exact amounts into their bank accounts within five business days.",
+    "options": [
+      "reimburse",
+      "charge",
+      "invoice",
+      "overcharge"
+    ],
+    "answer": "reimburse",
+    "explanation": "“approved travel expenses”와 “depositing the exact amounts into their bank accounts”는 직원이 먼저 지출한 돈을 회사가 되돌려 주는 상황이므로 reimburse가 맞다. charge와 invoice는 직원에게 돈을 청구하는 뜻이고, overcharge는 실제보다 많이 청구하는 뜻이어서 회사가 정확한 금액을 입금한다는 단서와 맞지 않는다."
+  },
+  {
+    "word": "negotiate",
+    "meaning_ko": "협상하다",
+    "was_failing": false,
+    "sentence": "The two companies ___ over the contract terms, sending written counteroffers and revising the delivery date until both sides signed the final agreement.",
+    "options": [
+      "negotiate",
+      "argue",
+      "debate",
+      "deliberate"
+    ],
+    "answer": "negotiate",
+    "explanation": "“sending written counteroffers”와 “revising the delivery date until both sides signed”는 조건을 주고받으며 합의에 이르는 상황이므로 negotiate가 맞습니다. argue는 다투는 것, debate는 의견을 토론하는 것, deliberate는 결정을 신중히 검토하는 것이어서 이러한 공식적인 조건 조정 과정을 정확히 나타내지 못합니다."
+  },
+  {
+    "word": "inventory",
+    "meaning_ko": "재고 목록, 재고",
+    "was_failing": false,
+    "sentence": "Before the holiday rush, the warehouse manager updated the ___ after counting every box on each shelf and recording the exact number of units still available.",
+    "options": [
+      "inventory",
+      "catalog",
+      "ledger",
+      "database"
+    ],
+    "answer": "inventory",
+    "explanation": "“counting every box,” “recording the exact number of units,” 그리고 “still available”라는 단서가 창고에 남아 있는 물품의 목록을 뜻하므로 inventory가 맞습니다. catalog는 상품 안내 목록, ledger는 주로 거래 기록, database는 여러 종류의 정보를 저장하는 시스템을 가리켜 이 문맥의 구체적인 재고 목록을 뜻하지 않습니다."
+  },
+  {
+    "word": "applicant",
+    "meaning_ko": "지원자",
+    "was_failing": false,
+    "sentence": "The online form asked each ___ to upload a résumé and cover letter before applying for the advertised position.",
+    "options": [
+      "applicant",
+      "employee",
+      "volunteer",
+      "customer"
+    ],
+    "answer": "applicant",
+    "explanation": "“Before applying for the advertised position”이라는 단서와 이력서·자기소개서를 업로드하라는 행동은 일자리에 지원하는 사람을 가리키므로 applicant가 맞습니다. employee는 이미 회사에 다니는 사람, volunteer는 무급 봉사자, customer는 상품이나 서비스를 이용하는 사람이어서 이 문맥의 지원자를 뜻하지 않습니다."
+  },
+  {
+    "word": "durable",
+    "meaning_ko": "내구성이 있는",
+    "was_failing": false,
+    "sentence": "The hiking boots were ___ enough to remain intact after three years of daily use, including long walks over sharp rocks.",
+    "options": [
+      "durable",
+      "waterproof",
+      "lightweight",
+      "flexible"
+    ],
+    "answer": "durable",
+    "explanation": "“remain intact after three years of daily use”와 “long walks over sharp rocks”는 오랜 사용과 거친 마찰에도 망가지지 않았다는 구체적인 단서이므로 durable이 맞습니다. waterproof는 물이 스며들지 않는 특성, lightweight는 가벼운 특성, flexible은 잘 휘는 특성을 뜻하므로 이 문장에서 말하는 장기간의 마모에도 견디는 결과를 나타내지 못합니다."
+  },
+  {
+    "word": "postpone",
+    "meaning_ko": "연기하다",
+    "was_failing": false,
+    "sentence": "With two members absent and key documents still missing, the committee agreed to ___ the vote, allowing everyone to review the evidence first.",
+    "options": [
+      "postpone",
+      "conduct",
+      "announce",
+      "tally"
+    ],
+    "answer": "postpone",
+    "explanation": "“two members absent”와 “key documents still missing” 때문에 즉시 투표를 진행할 수 없고, “allowing everyone to review the evidence first”라는 단서가 투표를 나중으로 미루는 상황을 분명히 보여 줍니다. 따라서 정답은 postpone입니다. conduct는 투표를 실시한다는 뜻이고, announce는 결과를 발표한다는 뜻이며, tally는 표를 집계한다는 뜻이므로 이 상황에서 먼저 할 행동이 아닙니다."
+  }
+]

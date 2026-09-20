@@ -1,0 +1,212 @@
+[
+  {
+    "word": "invoice",
+    "meaning_ko": "송장, 청구서",
+    "was_failing": true,
+    "sentence": "Before paying for the completed work, the client examined the ___ carefully, checking that it listed each service performed, the price of each, and the total amount due.",
+    "options": [
+      "invoice",
+      "receipt",
+      "quotation",
+      "contract"
+    ],
+    "answer": "invoice",
+    "explanation": "“Before paying for the completed work”와 “each service performed,” “the total amount due”라는 단서가 이미 제공된 서비스의 비용을 청구하는 문서를 가리키므로 invoice가 맞습니다. receipt는 보통 결제 후 받는 영수증이고, quotation은 작업 전에 제시하는 견적서이며, contract는 서비스 조건을 정하는 계약서라서 이 문맥에 맞지 않습니다."
+  },
+  {
+    "word": "warranty",
+    "meaning_ko": "보증",
+    "was_failing": true,
+    "sentence": "When the coffee maker stopped heating after only ten days, the store replaced it at no cost under its ___ coverage.",
+    "options": [
+      "warranty",
+      "insurance",
+      "liability",
+      "maintenance"
+    ],
+    "answer": "warranty",
+    "explanation": "“Stopped heating after only ten days”라는 제품의 초기 고장과 “replaced it at no cost”라는 무료 교체가 제품 보증의 구체적인 단서이므로 warranty가 맞습니다. insurance는 사고나 손실에 대한 보장, liability는 법적 책임에 대한 보장, maintenance는 정기적인 관리·수리에 관한 말이라 이 상황의 무료 제품 교체를 직접 설명하지 못합니다."
+  },
+  {
+    "word": "reservation",
+    "meaning_ko": "예약, 의구심",
+    "was_failing": true,
+    "sentence": "After discovering three hidden fees in the contract, she expressed ___ about signing it and asked to read every clause again.",
+    "options": [
+      "reservation",
+      "enthusiasm",
+      "curiosity",
+      "confidence"
+    ],
+    "answer": "reservation",
+    "explanation": "“세 가지 숨겨진 수수료를 발견한 뒤” 계약서의 “모든 조항을 다시 읽어 달라고 했다”는 내용은 계약에 대한 의구심이나 망설임을 나타내므로 reservation이 맞습니다. enthusiasm은 열의, curiosity는 호기심, confidence는 확신을 뜻해 이 상황의 신중하고 부정적인 태도와 맞지 않습니다."
+  },
+  {
+    "word": "promptly",
+    "meaning_ko": "즉시",
+    "was_failing": true,
+    "sentence": "When the patient's monitor suddenly flatlined, the nurse responded ___, pressing the emergency button and calling the doctor within seconds.",
+    "options": [
+      "promptly",
+      "calmly",
+      "nervously",
+      "professionally"
+    ],
+    "answer": "promptly",
+    "explanation": "“within seconds”와 즉시 비상 버튼을 누르고 의사를 부른 행동이 지체 없이 대응했다는 뜻을 직접 보여 주므로 promptly가 맞다. calmly는 침착한 태도, nervously는 불안한 태도, professionally는 전문적인 방식만 나타내며 신속하게 행동했다는 시간 단서를 정확히 나타내지 않는다."
+  },
+  {
+    "word": "assemble",
+    "meaning_ko": "모으다, 조립하다",
+    "was_failing": true,
+    "sentence": "Before placing any books on it, ___ the bookshelf; its six loose panels must be joined with screws, and the backboard must be secured at the rear.",
+    "options": [
+      "assemble",
+      "dismantle",
+      "refinish",
+      "inspect"
+    ],
+    "answer": "assemble",
+    "explanation": "“six loose panels must be joined with screws”와 “the backboard must be secured”는 여러 부품을 하나의 책장으로 조립해야 한다는 구체적인 단서이므로 assemble이 맞습니다. dismantle은 책장을 분해하는 것이고, refinish는 표면을 새로 마감하는 것이며, inspect는 상태를 점검하는 것이어서 부품을 결합한다는 상황과 맞지 않습니다."
+  },
+  {
+    "word": "refund",
+    "meaning_ko": "환불금",
+    "was_failing": true,
+    "sentence": "Because the headphones arrived broken and the store returned the exact purchase price to her card, she checked that the ___ appeared in her account.",
+    "options": [
+      "refund",
+      "charge",
+      "payment",
+      "transfer"
+    ],
+    "answer": "refund",
+    "explanation": "문장 속 “the store returned the exact purchase price to her card”는 상점이 구매 금액을 다시 돌려준 상황을 구체적으로 나타내므로 refund가 맞습니다. charge는 카드에 청구된 금액, payment는 지불액, transfer는 계좌 이체를 뜻하므로 이 문맥에서 상점이 돌려준 돈을 가리키지 않습니다."
+  },
+  {
+    "word": "itinerary",
+    "meaning_ko": "여행 일정",
+    "was_failing": true,
+    "sentence": "Before leaving, Maya printed the ___ that listed her train departures, hotel check-ins, and museum visits in chronological order.",
+    "options": [
+      "itinerary",
+      "brochure",
+      "checklist",
+      "guidebook"
+    ],
+    "answer": "itinerary",
+    "explanation": "“train departures, hotel check-ins, and museum visits in chronological order”처럼 여행 중 할 일을 시간순으로 정리한 문서이므로 itinerary가 맞습니다. brochure는 여행지나 상품을 소개하는 자료이고, checklist는 해야 할 일을 확인하는 목록이며, guidebook은 여행 정보를 제공하는 책이어서 이 문맥의 종합적인 여행 일정표를 뜻하지 않습니다."
+  },
+  {
+    "word": "deadline",
+    "meaning_ko": "마감 기한",
+    "was_failing": true,
+    "sentence": "Keep the ___ in mind when preparing your application: the portal closes at 5 p.m. Friday and rejects all later uploads.",
+    "options": [
+      "deadline",
+      "instructions",
+      "procedure",
+      "checklist"
+    ],
+    "answer": "deadline",
+    "explanation": "“5 p.m. Friday”라는 구체적인 시간과 “그 이후 업로드를 거부한다”는 단서가 제출할 수 있는 마지막 시점을 가리키므로 deadline이 맞습니다. instructions는 따라야 할 지침, procedure는 진행 절차, checklist는 확인 목록이므로 이 문장의 특정 시각과 맞지 않습니다."
+  },
+  {
+    "word": "supervisor",
+    "meaning_ko": "감독자",
+    "was_failing": true,
+    "sentence": "After I requested an early departure, the ___ approved it, assigned a replacement for my shift, and recorded the decision in the staff log.",
+    "options": [
+      "supervisor",
+      "receptionist",
+      "technician",
+      "consultant"
+    ],
+    "answer": "supervisor",
+    "explanation": "“approved it,” “assigned a replacement for my shift,” “recorded the decision in the staff log”처럼 직원의 근무를 관리하고 결정을 내리는 역할이므로 supervisor가 맞습니다. receptionist, technician, consultant도 직장 내 역할이지만 일반적으로 직원의 교대 근무를 배정하고 승인 내용을 기록하는 책임자는 아닙니다."
+  },
+  {
+    "word": "defective",
+    "meaning_ko": "결함이 있는",
+    "was_failing": true,
+    "sentence": "The newly purchased charger was ___; it became dangerously hot and stopped charging after only five minutes, even when tested with different outlets.",
+    "options": [
+      "defective",
+      "counterfeit",
+      "discontinued",
+      "unauthorized"
+    ],
+    "answer": "defective",
+    "explanation": "“위험할 정도로 뜨거워지고” “5분 만에 충전을 멈췄다”는 구체적인 고장 증상이 제품 자체에 문제가 있음을 보여 주므로 defective가 맞으며, counterfeit는 가짜라는 뜻일 뿐 반드시 고장 난 것은 아니고 discontinued는 판매가 중단된 상태, unauthorized는 공식 승인을 받지 못한 상태를 뜻하므로 이 문맥의 고장 증상을 직접 설명하지 못한다."
+  },
+  {
+    "word": "appraisal",
+    "meaning_ko": "평가",
+    "was_failing": false,
+    "sentence": "Before setting the sale price, the dealer ordered an ___ of the antique vase; the specialist compared recent auction prices and estimated its value at $8,000.",
+    "options": [
+      "appraisal",
+      "inspection",
+      "authentication",
+      "restoration"
+    ],
+    "answer": "appraisal",
+    "explanation": "“비교적 최근 경매 가격을 살펴보고 그 가치를 8,000달러로 추정했다”는 구체적인 단서가 물건의 금전적 가치를 평가하는 appraisal을 가리킨다. inspection은 상태를 점검하는 것이고, authentication은 진품 여부를 확인하는 것이며, restoration은 물건을 복원하는 것이므로 이 문맥에 맞지 않는다."
+  },
+  {
+    "word": "shipment",
+    "meaning_ko": "배송품",
+    "was_failing": false,
+    "sentence": "The ___ was held at customs after officers found that its export documents listed 200 kilograms of coffee beans, so the buyer received a notice that the delivery would be delayed.",
+    "options": [
+      "shipment",
+      "order",
+      "return",
+      "replacement"
+    ],
+    "answer": "shipment",
+    "explanation": "“held at customs”와 “export documents,” 그리고 “delivery would be delayed”라는 단서는 국경을 넘어 운송 중인 배송품을 가리키므로 shipment가 맞습니다. order는 구매 요청, return은 반송되는 물품, replacement는 교체품을 뜻하므로 세관에 운송 중인 물품 자체를 가리키는 이 문맥에는 맞지 않습니다."
+  },
+  {
+    "word": "tenant",
+    "meaning_ko": "세입자",
+    "was_failing": false,
+    "sentence": "After signing a year-long lease and paying monthly rent, the ___ reported a leaking faucet to the landlord.",
+    "options": [
+      "tenant",
+      "landlord",
+      "homeowner",
+      "caretaker"
+    ],
+    "answer": "tenant",
+    "explanation": "“signed a year-long lease”와 “paying monthly rent”라는 단서로 보아 집을 빌려 사는 사람인 tenant가 맞습니다. landlord는 집주인, homeowner는 집을 소유한 사람, caretaker는 건물이나 시설을 관리하는 사람이므로 이 상황의 주체가 될 수 없습니다."
+  },
+  {
+    "word": "reimburse",
+    "meaning_ko": "상환하다",
+    "was_failing": false,
+    "sentence": "After Lena paid the conference fee herself and submitted the official receipt, her employer agreed to ___ her for the exact $480 she had spent.",
+    "options": [
+      "reimburse",
+      "charge",
+      "penalize",
+      "praise"
+    ],
+    "answer": "reimburse",
+    "explanation": "“paid the conference fee herself,” “submitted the official receipt,” 그리고 “the exact $480 she had spent”라는 단서가 회사가 먼저 낸 비용을 그대로 돌려주는 상황을 보여 주므로 reimburse가 맞습니다. charge는 돈을 청구한다는 뜻이고, penalize는 벌을 준다는 뜻이며, praise는 칭찬한다는 뜻이라 이 상황의 비용 반환을 나타내지 않습니다. 또한 네 단어 모두 “___ her for” 뒤에 문법적으로 올 수 있습니다."
+  },
+  {
+    "word": "vendor",
+    "meaning_ko": "판매자",
+    "was_failing": false,
+    "sentence": "At the school fair, the ___ sold lemonade directly to visitors, taking cash and handing each buyer a cup.",
+    "options": [
+      "vendor",
+      "wholesaler",
+      "manufacturer",
+      "distributor"
+    ],
+    "answer": "vendor",
+    "explanation": "“At the school fair”에서 방문객에게 레모네이드를 직접 팔고 돈을 받는 역할이므로 vendor가 맞습니다. wholesaler는 보통 대량으로 다른 판매자에게 공급하고, manufacturer는 물건을 만들며, distributor는 상품을 유통하므로 이 장면에서 직접 음료를 파는 사람을 가리키지 않습니다."
+  }
+]

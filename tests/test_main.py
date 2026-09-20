@@ -5,7 +5,7 @@
 import importlib.util
 from pathlib import Path
 
-from ai import GrammarCheck, Quiz
+from ai import DistractorCheck, GrammarCheck, Quiz
 from storage import load_words, save_words
 
 _main_path = Path(__file__).resolve().parent.parent / "__main__.py"
@@ -24,6 +24,13 @@ class FakeChain:
             answer="apple",
             explanation="아침 식사로 먹을 수 있는 과일은 apple(사과)입니다.",
         )
+
+
+class FakeDistractorChain:
+    # 실제 LLM을 부르지 않고 오답 검사를 항상 통과시키는 가짜 체인
+    def invoke(self, inputs: dict) -> DistractorCheck:
+        count = len(inputs["options"])
+        return DistractorCheck(also_correct=[False] * count, too_unrelated=[False] * count)
 
 
 class FakeGrammarChain:
@@ -67,6 +74,7 @@ def test_quiz_command_records_correct_answer(tmp_path: Path) -> None:
         path=str(path),
         chain=FakeChain(),
         grammar_chain=FakeGrammarChain(),
+        distractor_chain=FakeDistractorChain(),
         input_func=lambda prompt: "apple",
         today="2026-01-01",
     )
@@ -82,6 +90,7 @@ def test_quiz_command_records_wrong_answer(tmp_path: Path) -> None:
         path=str(path),
         chain=FakeChain(),
         grammar_chain=FakeGrammarChain(),
+        distractor_chain=FakeDistractorChain(),
         input_func=lambda prompt: "banana",
         today="2026-01-01",
     )
@@ -142,6 +151,7 @@ def test_interactive_menu_quiz_then_quit(tmp_path: Path) -> None:
         path=str(path),
         chain=FakeChain(),
         grammar_chain=FakeGrammarChain(),
+        distractor_chain=FakeDistractorChain(),
         input_func=lambda prompt: next(answers),
         today="2026-01-01",
         clear_func=fake_clear,
@@ -182,6 +192,7 @@ def test_quiz_after_list_starts_on_cleared_screen(tmp_path, capsys) -> None:
         path=str(path),
         chain=FakeChain(),
         grammar_chain=FakeGrammarChain(),
+        distractor_chain=FakeDistractorChain(),
         input_func=lambda prompt: next(answers),
         today="2026-01-01",
         clear_func=fake_clear,
@@ -203,6 +214,7 @@ def test_interactive_quiz_shows_explanation_with_label(tmp_path, capsys) -> None
         path=str(path),
         chain=FakeChain(),
         grammar_chain=FakeGrammarChain(),
+        distractor_chain=FakeDistractorChain(),
         input_func=lambda prompt: next(answers),
         today="2026-01-01",
         clear_func=fake_clear,

@@ -1,11 +1,13 @@
 # build_chain, make_quiz, make_quiz_verified 함수를 확인하는 테스트
 import json
 from ai import (
+    DistractorCheck,
     GrammarCheck,
     MeaningBatch,
     Quiz,
     WordMeaning,
     build_chain,
+    check_distractors,
     check_grammar,
     generate_all_meanings,
     generate_meanings,
@@ -49,6 +51,13 @@ class SequentialFakeGrammarChain:
         result = self.results[self.calls]
         self.calls += 1
         return result
+
+
+class AlwaysGoodDistractorChain:
+    # 오답 검사를 항상 통과시키는 가짜 체인 (다른 것을 확인하는 테스트에서 쓴다)
+    def invoke(self, inputs: dict) -> "DistractorCheck":
+        count = len(inputs["options"])
+        return DistractorCheck(also_correct=[False] * count, too_unrelated=[False] * count)
 
 
 BAD_QUIZ = Quiz(
@@ -98,7 +107,10 @@ def test_make_quiz_verified_retries_when_answer_missing_from_options() -> None:
     # 정답이 보기에 없는 퀴즈가 나오면 문법 검사도 안 하고 바로 다시 만든다
     chain = SequentialFakeChain([MISSING_ANSWER_QUIZ, GOOD_QUIZ])
     grammar_chain = SequentialFakeGrammarChain([GrammarCheck(fits_by_option=[True] * 4)])
-    quiz = make_quiz_verified("elaborate", "정교한", chain=chain, grammar_chain=grammar_chain)
+    quiz = make_quiz_verified(
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain,
+        distractor_chain=AlwaysGoodDistractorChain(),
+    )
     assert quiz is GOOD_QUIZ
     assert chain.calls == 2
     assert grammar_chain.calls == 1
@@ -167,7 +179,10 @@ def test_make_quiz_verified_returns_first_try_when_grammar_ok() -> None:
     # 문법 검사를 처음부터 통과하면 재시도 없이 그 퀴즈를 그대로 돌려준다
     chain = SequentialFakeChain([GOOD_QUIZ])
     grammar_chain = SequentialFakeGrammarChain([ALL_FIT])
-    quiz = make_quiz_verified("elaborate", "정교한", chain=chain, grammar_chain=grammar_chain)
+    quiz = make_quiz_verified(
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain,
+        distractor_chain=AlwaysGoodDistractorChain(),
+    )
     assert quiz is GOOD_QUIZ
     assert chain.calls == 1
 
@@ -177,7 +192,8 @@ def test_make_quiz_verified_retries_when_grammar_check_fails() -> None:
     chain = SequentialFakeChain([BAD_QUIZ, GOOD_QUIZ])
     grammar_chain = SequentialFakeGrammarChain([ONLY_ANSWER_FITS, ALL_FIT])
     quiz = make_quiz_verified(
-        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, max_attempts=3
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, max_attempts=3,
+        distractor_chain=AlwaysGoodDistractorChain(),
     )
     assert quiz is GOOD_QUIZ
     assert chain.calls == 2
@@ -188,7 +204,8 @@ def test_make_quiz_verified_gives_up_after_max_attempts() -> None:
     chain = SequentialFakeChain([BAD_QUIZ, BAD_QUIZ, BAD_QUIZ])
     grammar_chain = SequentialFakeGrammarChain([ONLY_ANSWER_FITS] * 3)
     quiz = make_quiz_verified(
-        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, max_attempts=3
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, max_attempts=3,
+        distractor_chain=AlwaysGoodDistractorChain(),
     )
     assert quiz is BAD_QUIZ
     assert chain.calls == 3
@@ -332,7 +349,7 @@ def test_pregenerate_makes_a_quiz_for_each_word() -> None:
     # 준 단어마다 예문 퀴즈를 하나씩 만들어 단어별로 모아 돌려준다
     chain = WordFakeChain({"invoice": quiz_for("invoice"), "warranty": quiz_for("warranty")})
     quizzes = pregenerate_sentence_quizzes(
-        ["invoice", "warranty"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+        ["invoice", "warranty"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain()
     )
     assert sorted(quizzes) == ["invoice", "warranty"]
     assert quizzes["invoice"]["answer"] == "invoice"
@@ -342,7 +359,7 @@ def test_pregenerate_sends_the_korean_meaning_from_the_bank() -> None:
     # 퀴즈를 만들 때 단어장에 있는 한국어 뜻을 같이 넘긴다
     chain = WordFakeChain({"invoice": quiz_for("invoice")})
     pregenerate_sentence_quizzes(
-        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain()
     )
     assert chain.meanings_asked == ["송장, 청구서"]
 
@@ -351,7 +368,7 @@ def test_pregenerate_skips_words_that_are_not_in_the_bank() -> None:
     # 단어장에 없는 단어는 건너뛴다 (에러 없이)
     chain = WordFakeChain({"invoice": quiz_for("invoice")})
     quizzes = pregenerate_sentence_quizzes(
-        ["invoice", "nosuchword"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+        ["invoice", "nosuchword"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain()
     )
     assert sorted(quizzes) == ["invoice"]
 
@@ -360,7 +377,102 @@ def test_pregenerate_returns_plain_data_that_can_be_saved_to_json() -> None:
     # 결과는 progress.json에 그대로 저장할 수 있는 단순한 자료여야 한다
     chain = WordFakeChain({"invoice": quiz_for("invoice")})
     quizzes = pregenerate_sentence_quizzes(
-        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain()
     )
     assert json.loads(json.dumps(quizzes, ensure_ascii=False)) == quizzes
     assert sorted(quizzes["invoice"]) == ["answer", "explanation", "options", "sentence"]
+
+
+def test_is_valid_quiz_rejects_option_that_already_appears_in_the_sentence() -> None:
+    # 예문에 이미 나온 단어를 오답으로 쓰면 안 된다 (뜻을 몰라도 지울 수 있어서)
+    quiz = Quiz(
+        sentence="The renter reported a leak to the landlord, and the ___ signed the lease.",
+        options=["tenant", "landlord", "inspector", "neighbor"],
+        answer="tenant",
+        explanation="해설",
+    )
+    assert is_valid_quiz(quiz, "tenant") is False
+
+
+class FakeDistractorChain:
+    # 오답 검사를 흉내내는 가짜 체인 (options 순서대로 판정 결과를 돌려준다)
+    def __init__(self, results: list[DistractorCheck]) -> None:
+        self.results = results
+        self.calls = 0
+
+    def invoke(self, inputs: dict) -> DistractorCheck:
+        result = self.results[self.calls]
+        self.calls += 1
+        return result
+
+
+# GOOD_QUIZ의 options 순서: describe, summarize, simplify, elaborate (정답은 마지막)
+def distractor_check(also_correct: list[bool], too_unrelated: list[bool]) -> DistractorCheck:
+    # 테스트용 오답 검사 결과를 짧게 만든다
+    return DistractorCheck(also_correct=also_correct, too_unrelated=too_unrelated)
+
+
+def test_distractors_pass_when_no_option_also_works_and_none_is_unrelated() -> None:
+    # 오답을 넣었을 때 참이 되지도 않고, 뜬금없지도 않으면 통과
+    chain = FakeDistractorChain([distractor_check([False] * 4, [False] * 4)])
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is True
+
+
+def test_distractors_fail_when_one_option_would_also_be_correct() -> None:
+    # 오답 중 하나라도 넣어서 말이 되면 정답이 둘이 되므로 실패
+    chain = FakeDistractorChain([distractor_check([True, False, False, False], [False] * 4)])
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is False
+
+
+def test_distractors_fail_when_one_option_is_too_unrelated() -> None:
+    # 뜻을 몰라도 지워질 만큼 동떨어진 오답이 있으면 실패 (소거법으로 풀리는 문제)
+    chain = FakeDistractorChain([distractor_check([False] * 4, [False, True, False, False])])
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is False
+
+
+def test_distractor_check_ignores_the_answer_itself() -> None:
+    # 정답 자리에 '넣으면 맞는 말이 된다'고 표시돼도 그건 당연하므로 무시한다
+    chain = FakeDistractorChain([distractor_check([False, False, False, True], [False] * 4)])
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is True
+
+
+def test_make_quiz_verified_retries_when_distractors_are_bad() -> None:
+    # 오답 검사에 걸리면 퀴즈를 다시 만든다
+    chain = SequentialFakeChain([GOOD_QUIZ, GOOD_QUIZ])
+    grammar_chain = SequentialFakeGrammarChain([ALL_FIT, ALL_FIT])
+    distractor_chain = FakeDistractorChain(
+        [distractor_check([True, False, False, False], [False] * 4), distractor_check([False] * 4, [False] * 4)]
+    )
+    quiz = make_quiz_verified(
+        "elaborate", "정교한", chain=chain, grammar_chain=grammar_chain, distractor_chain=distractor_chain
+    )
+    assert quiz is GOOD_QUIZ
+    assert chain.calls == 2
+    assert distractor_chain.calls == 2
+
+
+def test_distractors_fail_when_they_all_mean_the_same_thing() -> None:
+    # 오답끼리 같은 뜻으로 뭉쳐 있으면(charge/bill/invoice) 정답만 튀어서 소거법으로 풀린다
+    chain = FakeDistractorChain(
+        [DistractorCheck(also_correct=[False] * 4, too_unrelated=[False] * 4, distractors_are_synonyms=True)]
+    )
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is False
+
+
+def test_distractors_fail_when_only_the_answer_is_a_hard_word() -> None:
+    # 오답만 쉬운 기본 단어여서 어려운 정답이 튀어 보이면 안 된다 (punctual vs early/late/absent)
+    chain = FakeDistractorChain(
+        [DistractorCheck(also_correct=[False] * 4, too_unrelated=[False] * 4, answer_stands_out=True)]
+    )
+    assert check_distractors(GOOD_QUIZ, distractor_chain=chain) is False
+
+
+def test_is_valid_quiz_rejects_sentence_sharing_the_answer_word_root() -> None:
+    # 예문에 정답과 어근이 같은 단어(application ↔ applicant)가 있으면 철자만 보고 찍을 수 있다
+    quiz = Quiz(
+        sentence="The recruiter read the online application before calling the ___ for an interview.",
+        options=["applicant", "supplier", "inspector", "volunteer"],
+        answer="applicant",
+        explanation="해설",
+    )
+    assert is_valid_quiz(quiz, "applicant") is False

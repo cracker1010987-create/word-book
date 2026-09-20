@@ -1,0 +1,142 @@
+[
+  {
+    "word": "promptly",
+    "meaning_ko": "즉시",
+    "was_failing": true,
+    "sentence": "When the control panel displayed a dangerous temperature, the engineer ___ reported the fault less than a minute later, enabling technicians to shut down the reactor before it overheated.",
+    "options": [
+      "promptly",
+      "belatedly",
+      "intermittently",
+      "prematurely"
+    ],
+    "answer": "promptly",
+    "explanation": "“less than a minute later”와 “before it overheated”라는 단서에서 엔지니어가 경고를 받은 직후 신속하게 보고했다는 뜻이므로 promptly가 맞다. belatedly는 늦게, intermittently는 간헐적으로, prematurely는 너무 일찍이라는 뜻이어서 이 긴급한 상황과 맞지 않는다."
+  },
+  {
+    "word": "shipment",
+    "meaning_ko": "배송품",
+    "was_failing": true,
+    "sentence": "The carrier assigned one tracking number to the ___ of 200 boxes for a customer, which was divided among three trucks.",
+    "options": [
+      "shipment",
+      "order",
+      "return",
+      "inventory"
+    ],
+    "answer": "shipment",
+    "explanation": "“carrier,” “one tracking number,” 그리고 “divided among three trucks”라는 단서는 고객에게 실제로 운송되는 물량을 가리키므로 shipment가 맞습니다. order는 구매 요청, return은 반송 물품, inventory는 보관 중인 재고를 뜻하므로 이 운송 상황과 맞지 않습니다."
+  },
+  {
+    "word": "reimburse",
+    "meaning_ko": "상환하다",
+    "was_failing": true,
+    "sentence": "After Maya submitted receipts showing that she had personally paid $240 for an emergency hotel room during a business trip, the company agreed to ___ her for the full amount.",
+    "options": [
+      "reimburse",
+      "charge",
+      "bill",
+      "invoice"
+    ],
+    "answer": "reimburse",
+    "explanation": "“personally paid $240”와 “for the full amount”는 Maya가 먼저 부담한 비용을 회사가 되돌려 주는 상황이므로 reimburse가 맞습니다. 반면 charge, bill, invoice는 “her for the full amount”와 문법적으로 결합하지만, 회사가 Maya에게 그 금액을 다시 청구한다는 뜻이 되어 문맥과 반대입니다."
+  },
+  {
+    "word": "negotiate",
+    "meaning_ko": "협상하다",
+    "was_failing": true,
+    "sentence": "After three days of failed proposals, the diplomats ___ with the rebels over a ceasefire, repeatedly exchanging revised terms until both sides accepted them.",
+    "options": [
+      "negotiate",
+      "argue",
+      "consult",
+      "cooperate"
+    ],
+    "answer": "negotiate",
+    "explanation": "“repeatedly exchanging revised terms until both sides accepted them”은 양측이 조건을 주고받으며 합의에 이르는 상황이므로 negotiate가 가장 적절합니다. argue는 의견 충돌을 뜻하지만 합의된 조건을 만들어 내는 행동을 직접 나타내지 않고, consult는 조언을 구하는 의미이며, cooperate는 이미 협력하는 상태를 뜻해 이처럼 서로 조건을 수정하는 과정과 맞지 않습니다."
+  },
+  {
+    "word": "inventory",
+    "meaning_ko": "재고 목록, 재고",
+    "was_failing": true,
+    "sentence": "After scanning every shelf, the warehouse clerk compared the ___ with the physical count to find which stored products had not been recorded.",
+    "options": [
+      "inventory",
+      "invoice",
+      "manifest",
+      "catalog"
+    ],
+    "answer": "inventory",
+    "explanation": "“scanning every shelf,” “physical count,” 그리고 “stored products had not been recorded”라는 단서가 창고에 현재 보관된 물품의 목록을 가리키므로 inventory가 맞습니다. invoice는 청구서, manifest는 특정 운송물의 명세서, catalog는 판매 가능한 상품 안내서라서 창고의 실제 보관 수량과 대조하는 문맥에는 맞지 않습니다."
+  },
+  {
+    "word": "applicant",
+    "meaning_ko": "지원자",
+    "was_failing": true,
+    "sentence": "The recruiter placed each new ___ in a folder after the person submitted an online application, but before reading the résumé or scheduling an interview.",
+    "options": [
+      "applicant",
+      "interviewee",
+      "employee",
+      "hire"
+    ],
+    "answer": "applicant",
+    "explanation": "“submitted an online application”을 한 뒤 아직 “reading the résumé or scheduling an interview”도 하지 않은 사람은 지원 절차 중인 applicant이다. interviewee는 이미 면접 대상이 된 사람이고, employee와 hire는 채용이 끝난 뒤의 신분이므로 이 시점에 맞지 않는다."
+  },
+  {
+    "word": "warehouse",
+    "meaning_ko": "창고",
+    "was_failing": false,
+    "sentence": "The delivery truck unloaded hundreds of unopened packages into a ___, where they would remain on tall shelves until customers placed orders.",
+    "options": [
+      "warehouse",
+      "showroom",
+      "storefront",
+      "workshop"
+    ],
+    "answer": "warehouse",
+    "explanation": "“hundreds of unopened packages”가 “tall shelves”에 보관되고 고객이 주문할 때까지 기다린다는 단서가 물건을 저장하는 장소를 가리키므로 warehouse가 맞습니다. showroom은 상품을 전시하는 곳이고, storefront는 가게의 앞부분이나 판매 공간이며, workshop은 물건을 만들거나 수리하는 곳이므로 이 문맥에 맞지 않습니다."
+  },
+  {
+    "word": "subscription",
+    "meaning_ko": "구독, 구독료",
+    "was_failing": false,
+    "sentence": "The publisher charged my card for a monthly ___ that delivered the magazine’s newest issue to my mailbox, even though I had canceled it before the next billing date.",
+    "options": [
+      "subscription",
+      "membership",
+      "installment",
+      "contribution"
+    ],
+    "answer": "subscription",
+    "explanation": "“Delivered the magazine’s newest issue to my mailbox”와 “the next billing date”는 정기적으로 잡지를 받아 보는 계약을 가리키므로 subscription이 맞습니다. membership은 회원 자격, installment는 분할 납부액, contribution은 기부금이나 출연금이므로 잡지의 다음 호를 정기 배송하는 의미가 되지 않습니다."
+  },
+  {
+    "word": "punctual",
+    "meaning_ko": "시간을 지키는",
+    "was_failing": false,
+    "sentence": "He was ___ for every meeting, arriving exactly when it began and never making anyone wait.",
+    "options": [
+      "punctual",
+      "early",
+      "late",
+      "absent"
+    ],
+    "answer": "punctual",
+    "explanation": "“arriving exactly when it began”과 “never making anyone wait”라는 단서가 약속 시간에 맞춰 도착했다는 뜻을 가리키므로 정답은 punctual이다. early는 시작 전 도착, late는 시작 후 도착, absent는 아예 참석하지 않는 경우이므로 이 문맥에 맞지 않는다."
+  },
+  {
+    "word": "retailer",
+    "meaning_ko": "소매업자",
+    "was_failing": false,
+    "sentence": "The ___ bought finished products from several brands and sold them one at a time directly to shoppers in its own store.",
+    "options": [
+      "retailer",
+      "wholesaler",
+      "manufacturer",
+      "distributor"
+    ],
+    "answer": "retailer",
+    "explanation": "“bought finished products from several brands”와 “sold them one at a time directly to shoppers in its own store”라는 단서가 소비자에게 낱개로 판매하는 소매업자를 가리킨다. wholesaler는 보통 대량으로 다른 사업자에게 판매하고, manufacturer는 제품을 만들며, distributor는 제조사의 제품을 유통망에 공급하므로 이 문맥에 맞지 않는다."
+  }
+]

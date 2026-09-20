@@ -70,7 +70,20 @@ def build_chain() -> Any:
                 "time and resources.\"\n"
                 "좋은 예 (구체적 행동이 정답만 가리킴): \"Even though she barely knew him, she "
                 "___ gave up her weekend to help him move, asking for nothing in return.\"\n"
-                "7. explanation은 한국어로 쓰되, 사전적 정의나 반의어 나열이 아니라 sentence 안의 "
+                "7. 오답 3개 고르는 법: 정답과 같은 범주(같은 품사, 비슷한 상황에서 쓰는 말)에서 고르되, "
+                "그 문맥에서 정답과 바꿔 써도 말이 되는 '동의어'는 절대 넣지 마라. 정답이 둘이 되어버린다.\n"
+                "  나쁜 예) 정답 warranty인데 오답에 guarantee / 정답 itinerary인데 오답에 schedule "
+                "→ 둘 다 맞는 말이라 답을 하나로 고를 수 없다.\n"
+                "  나쁜 예) 정답 defective(불량의)인데 오답이 portable, compact, rechargeable "
+                "→ '문제 있다'는 뜻이 정답 하나뿐이라 뜻을 몰라도 소거법으로 풀린다.\n"
+                "  좋은 예) 정답 defective, 오답 discontinued, counterfeit, unauthorized "
+                "→ 같은 '문제 있는 상품' 범주이지만 문맥(과열되어 꺼짐)은 defective만 가리킨다.\n"
+                "  오답은 정답과 같은 '의미 축' 위에 있어야 한다. 정답이 돈을 돌려주는 동사라면 오답도 "
+                "돈이 오가는 동사(청구하다, 미리 주다 등)로, 정답이 속도를 뜻하는 부사라면 오답도 "
+                "속도를 뜻하는 부사(늦게, 점점)로 골라라. 태도나 감정처럼 축이 다른 단어를 넣으면 "
+                "뜻을 몰라도 소거법으로 풀린다.\n"
+                "  예문에 이미 나온 단어는 오답으로 쓰지 마라. 바로 지워지기 때문이다.\n"
+                "8. explanation은 한국어로 쓰되, 사전적 정의나 반의어 나열이 아니라 sentence 안의 "
                 "구체적인 단서(문구)를 직접 인용하며 왜 정답이 맞고 나머지가 왜 안 맞는지 설명한다.\n\n"
                 "출력하기 전에 스스로 다시 확인해라: "
                 "(a) 목표 단어가 options 안에 그대로 있는가 (4번 규칙) "
@@ -78,6 +91,9 @@ def build_chain() -> Any:
                 "(c) ___ 바로 뒤 표현이 나머지 3개 보기와도 문법적으로 자연스러운가 (5번 규칙) "
                 "(d) sentence에 정답의 의미만을 가리키는 구체적 단서가 있는가, 아니면 보기 4개가 "
                 "다 들어맞는 밋밋한 문장인가 (6번 규칙) "
+                "(e) 오답 3개를 빈칸에 하나씩 넣어 문장을 끝까지 읽어봐라. 그 문장이 사실로 말이 되면 "
+                "그 오답은 버리고 다른 것으로 바꿔라. 반대로 뜻을 몰라도 소거법으로 풀릴 만큼 엉뚱한 "
+                "오답이 있어도 바꿔라. 오답은 '문맥에서만' 틀려야 한다 (7번 규칙) "
                 "— 하나라도 아니라면 문장을 처음부터 다시 써라.",
             ),
             ("human", "목표 영어 단어: {word}\n한국어 뜻(참고용, 문제에 그대로 쓰지 말 것): {meaning}"),
@@ -132,8 +148,88 @@ def check_grammar(quiz: Quiz, grammar_chain: Any = None) -> bool:
     return all(result.fits_by_option)
 
 
+# 그 단어가 예문 안에 이미 나오는지 본다 (보기에 있으면 뜻을 몰라도 지울 수 있어서 문제가 된다)
+def appears_in_sentence(word: str, sentence: str) -> bool:
+    return re.search(rf"\b{re.escape(word.strip().lower())}\b", sentence.lower()) is not None
+
+
+# 예문에 정답과 어근이 같은 단어가 있는지 본다 (application ↔ applicant처럼 철자만 보고 찍을 수 있다)
+def shares_root_with_sentence(word: str, sentence: str) -> bool:
+    target = word.strip().lower()
+    if len(target) < 6:
+        return False
+    return any(other.lower().startswith(target[:5]) for other in re.findall(r"[A-Za-z]+", sentence))
+
+
+class DistractorCheck(BaseModel):
+    # 오답 보기가 제 역할을 하는지(정답이 둘이 되지 않는지, 너무 뜬금없지 않은지) 판정하는 모델
+    also_correct: list[bool] = Field(
+        description="options와 같은 순서. 그 보기를 ___ 자리에 넣어 문장을 끝까지 읽었을 때 "
+        "사실로 말이 되면 True, 문맥상 틀린 말이 되면 False."
+    )
+    too_unrelated: list[bool] = Field(
+        description="options와 같은 순서. 그 보기가 문맥과 너무 동떨어져서, 단어 뜻을 몰라도 "
+        "바로 지울 수 있으면 True. 그럴듯해서 헷갈릴 만하면 False."
+    )
+    distractors_are_synonyms: bool = Field(
+        default=False,
+        description="정답을 뺀 오답 3개가 서로 거의 같은 뜻이거나 한 방향으로 뭉쳐 있으면 True "
+        "(예: 정답 reimburse에 오답이 charge, bill, invoice → 셋 다 '청구하다'라 정답만 튄다).",
+    )
+    answer_stands_out: bool = Field(
+        default=False,
+        description="정답만 유독 어렵거나 격식 있는 단어이고 오답은 다 쉬운 기본 단어여서, "
+        "뜻을 몰라도 '튀는 하나'를 고르면 맞힐 수 있으면 True.",
+    )
+
+
+def build_distractor_check_chain() -> Any:
+    # 오답 3개가 제 역할을 하는지 검사하는 체인을 만든다
+    llm = ChatOpenAI(model=MODEL, temperature=0)
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "너는 영어 시험 문제를 검토하는 출제 위원이다. 4지선다 빈칸 문제를 받아서 "
+                "보기 하나하나를 빈칸에 넣어보고 두 가지를 판정해라.\n"
+                "1) also_correct: 그 보기를 넣어 문장을 끝까지 읽었을 때 사실로 말이 되는가? "
+                "말이 되면 True (정답이 둘이 되는 문제라서 걸러내야 한다).\n"
+                "2) too_unrelated: 그 보기가 문맥과 너무 동떨어져서, 단어 뜻을 몰라도 바로 "
+                "지울 수 있는가? 그렇다면 True (소거법으로 풀리는 문제라서 걸러내야 한다).\n"
+                "3) distractors_are_synonyms: 정답을 뺀 오답 3개가 서로 거의 같은 뜻이거나 한 방향으로 "
+                "뭉쳐 있는가? 그렇다면 True (정답만 튀어서 소거법으로 풀린다).\n"
+                "4) answer_stands_out: 정답만 유독 어려운 단어이고 오답은 다 쉬운 기본 단어인가? "
+                "그렇다면 True.\n"
+                "좋은 오답은 '그럴듯해 보이지만 문맥을 읽으면 틀린' 것이다. "
+                "둘 다 False가 좋은 오답이다. 정답 보기도 순서대로 판정하되, 정답은 "
+                "also_correct가 True인 게 당연하다. 관대하게 봐주지 마라.",
+            ),
+            ("human", "문장: {sentence}\n보기 (이 순서 그대로 판정): {options}\n정답: {answer}"),
+        ]
+    )
+    return prompt | llm.with_structured_output(DistractorCheck)
+
+
+def check_distractors(quiz: Quiz, distractor_chain: Any = None) -> bool:
+    # 오답 3개가 모두 제 역할을 하는지 확인한다 (정답 보기는 판정에서 뺀다)
+    if distractor_chain is None:
+        distractor_chain = build_distractor_check_chain()
+    result = distractor_chain.invoke(
+        {"sentence": quiz.sentence, "options": quiz.options, "answer": quiz.answer}
+    )
+    if result.distractors_are_synonyms or result.answer_stands_out:
+        return False
+    for index, option in enumerate(quiz.options):
+        if option == quiz.answer:
+            continue
+        if result.also_correct[index] or result.too_unrelated[index]:
+            return False
+    return True
+
+
 def is_valid_quiz(quiz: Quiz, word: str) -> bool:
-    # 퀴즈가 풀 수 있는 모양인지 코드로 확인한다 (정답=목표 단어, 정답이 보기에 있음, 빈칸 있음, 정답 노출 없음)
+    # 퀴즈가 풀 수 있는 모양인지 코드로 확인한다 (정답=목표 단어, 정답이 보기에 있음, 빈칸 있음,
+    # 정답 노출 없음, 보기 단어가 예문에 이미 나오지 않음)
     target = word.strip().lower()
     options = [option.strip().lower() for option in quiz.options]
     return (
@@ -141,7 +237,8 @@ def is_valid_quiz(quiz: Quiz, word: str) -> bool:
         and target in options
         and len(options) == 4
         and "___" in quiz.sentence
-        and re.search(rf"\b{re.escape(target)}\b", quiz.sentence.lower()) is None
+        and not any(appears_in_sentence(option, quiz.sentence) for option in options)
+        and not shares_root_with_sentence(target, quiz.sentence)
     )
 
 
@@ -158,9 +255,10 @@ def make_quiz_verified(
     meaning: str,
     chain: Any = None,
     grammar_chain: Any = None,
+    distractor_chain: Any = None,
     max_attempts: int = 3,
 ) -> Quiz:
-    # 퀴즈 모양 확인과 문법 검사를 둘 다 통과할 때까지(최대 max_attempts번) 다시 만든다
+    # 모양 확인 → 문법 검사 → 오답 검사를 모두 통과할 때까지(최대 max_attempts번) 다시 만든다
     quiz = None
     valid_fallback = None
     for _ in range(max_attempts):
@@ -168,7 +266,9 @@ def make_quiz_verified(
         if not is_valid_quiz(quiz, word):
             continue
         valid_fallback = quiz
-        if check_grammar(quiz, grammar_chain=grammar_chain):
+        if not check_grammar(quiz, grammar_chain=grammar_chain):
+            continue
+        if check_distractors(quiz, distractor_chain=distractor_chain):
             return quiz
     return valid_fallback or put_answer_in_options(quiz, word)
 
@@ -279,6 +379,7 @@ def pregenerate_sentence_quizzes(
     bank: list[dict],
     chain: Any = None,
     grammar_chain: Any = None,
+    distractor_chain: Any = None,
     max_workers: int = 5,
 ) -> dict[str, dict]:
     # 세트 단어들의 예문 퀴즈를 동시에 여러 개씩 미리 만들어, 저장할 수 있는 형태로 모아 돌려준다
@@ -286,11 +387,16 @@ def pregenerate_sentence_quizzes(
         chain = build_chain()
     if grammar_chain is None:
         grammar_chain = build_grammar_check_chain()
+    if distractor_chain is None:
+        distractor_chain = build_distractor_check_chain()
     meanings = {entry["word"]: entry["meaning_ko"] for entry in bank}
     targets = [word for word in words if word in meanings]
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         made = pool.map(
-            lambda word: make_quiz_verified(word, meanings[word], chain=chain, grammar_chain=grammar_chain),
+            lambda word: make_quiz_verified(
+                word, meanings[word], chain=chain, grammar_chain=grammar_chain,
+                distractor_chain=distractor_chain,
+            ),
             targets,
         )
         return {word: quiz.model_dump() for word, quiz in zip(targets, made)}

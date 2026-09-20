@@ -1,0 +1,128 @@
+[
+  {
+    "word": "shipment",
+    "meaning_ko": "배송품",
+    "was_failing": true,
+    "sentence": "The ___ from Seoul to Berlin included six crates of medical supplies, a tracking number, and a customs declaration; customs held it for two days before releasing it.",
+    "options": [
+      "shipment",
+      "container",
+      "order",
+      "pallet"
+    ],
+    "answer": "shipment",
+    "explanation": "“Six crates of medical supplies,” “a tracking number,” “a customs declaration,” 그리고 “customs held it”이라는 단서들은 운송되는 전체 배송품을 가리키므로 shipment가 맞습니다. container와 pallet은 물건을 담는 물리적 용기이고, order는 구매 요청이므로 세관이 이틀 동안 보관했다가 풀어 주는 대상이 될 수 없습니다."
+  },
+  {
+    "word": "reimburse",
+    "meaning_ko": "상환하다",
+    "was_failing": true,
+    "sentence": "After the airline canceled her flight, it agreed to ___ the passenger for the full cost of her emergency hotel stay.",
+    "options": [
+      "reimburse",
+      "charge",
+      "bill",
+      "invoice"
+    ],
+    "answer": "reimburse",
+    "explanation": "“agreed to ___ the passenger for the full cost”와 “flight를 취소한 뒤 발생한 emergency hotel stay 비용”이라는 구체적인 상황은 항공사가 승객이 대신 지불한 비용을 돌려주는 경우이므로 reimburse가 맞습니다. charge, bill, invoice도 문법적으로는 “승객에게 비용을 청구하다”라는 뜻으로 쓸 수 있지만, 항공사가 비용을 부담하는 상황이 아니라 승객에게 돈을 요구하는 의미라서 문맥에 맞지 않습니다."
+  },
+  {
+    "word": "negotiate",
+    "meaning_ko": "협상하다",
+    "was_failing": true,
+    "sentence": "After the workers rejected the proposed pay cut, the union and management agreed to ___ with each other, exchanging written counteroffers until they settled on new wages and hours.",
+    "options": [
+      "negotiate",
+      "compete",
+      "cooperate",
+      "consult"
+    ],
+    "answer": "negotiate",
+    "explanation": "“rejecting the proposed pay cut,” “exchanging written counteroffers,” 그리고 “settled on new wages and hours”는 양측이 조건을 주고받으며 합의점을 찾는 상황이므로 negotiate가 맞다. compete는 서로 경쟁하는 것이고, cooperate는 함께 협력하는 것이며, consult는 의견을 묻거나 자문하는 것이어서 이처럼 조건을 조정해 합의하는 행동을 정확히 나타내지 않는다."
+  },
+  {
+    "word": "applicant",
+    "meaning_ko": "지원자",
+    "was_failing": true,
+    "sentence": "To request consideration for the scholarship, each ___ had to upload a transcript, two recommendation letters, and a personal statement before the deadline.",
+    "options": [
+      "applicant",
+      "recipient",
+      "reviewer",
+      "sponsor"
+    ],
+    "answer": "applicant",
+    "explanation": "“To request consideration”과 “had to upload a transcript, two recommendation letters, and a personal statement”는 장학금을 받기 위해 서류를 제출하는 사람을 가리키므로 applicant가 맞습니다. recipient는 이미 장학금을 받은 사람, reviewer는 서류를 심사하는 사람, sponsor는 재정적으로 지원하는 사람이므로 이 절차에서 서류를 제출하는 주체가 아닙니다."
+  },
+  {
+    "word": "punctual",
+    "meaning_ko": "시간을 지키는",
+    "was_failing": true,
+    "sentence": "Even during heavy snow, she was ___ whenever she arrived exactly at the agreed time for an appointment, so no one had to wait for her.",
+    "options": [
+      "punctual",
+      "early",
+      "late",
+      "tardy"
+    ],
+    "answer": "punctual",
+    "explanation": "“arrived exactly at the agreed time”과 “no one had to wait for her”는 약속 시간에 맞춰 도착했다는 뜻이므로 punctual이 맞다. early는 일찍, late와 tardy는 늦게 도착했다는 뜻이라 이 구체적인 상황과 맞지 않는다."
+  },
+  {
+    "word": "merchandise",
+    "meaning_ko": "상품",
+    "was_failing": false,
+    "sentence": "The stadium shop placed ___ on the shelves, including team-logo T-shirts, mugs, and caps, for fans to buy.",
+    "options": [
+      "merchandise",
+      "groceries",
+      "hardware",
+      "toiletries"
+    ],
+    "answer": "merchandise",
+    "explanation": "“team-logo T-shirts, mugs, and caps”처럼 팬들이 사는 기념품을 가리키므로 merchandise가 맞습니다. groceries는 식료품, hardware는 공구·철물, toiletries는 세면용품을 뜻해 이 구체적인 물품 목록과 맞지 않습니다."
+  },
+  {
+    "word": "authorize",
+    "meaning_ko": "허가하다, 권한을 부여하다",
+    "was_failing": false,
+    "sentence": "After reviewing her ID and adding her name to the access list, the manager ___ her to enter the laboratory.",
+    "options": [
+      "authorize",
+      "forbid",
+      "compel",
+      "advise"
+    ],
+    "answer": "authorize",
+    "explanation": "“adding her name to the access list”는 관리자가 공식적으로 입장을 허가했다는 구체적인 단서이므로 authorize가 맞다. forbid는 입장을 막는 뜻이고, compel은 강제로 시키는 뜻이며, advise는 단순히 조언하는 뜻이라 이 상황의 공식적인 입장 권한 부여를 나타내지 못한다."
+  },
+  {
+    "word": "spacious",
+    "meaning_ko": "넓은",
+    "was_failing": false,
+    "sentence": "The newly renovated hall was ___ enough to seat thirty guests at separate tables, leaving a clear walkway between every row.",
+    "options": [
+      "spacious",
+      "cramped",
+      "narrow",
+      "compact"
+    ],
+    "answer": "spacious",
+    "explanation": "“thirty guests at separate tables”와 “leaving a clear walkway between every row”라는 단서가 공간이 넓다는 뜻을 분명히 보여 주므로 spacious가 맞습니다. cramped, narrow, compact도 공간의 크기와 관련된 형용사이고 “___ enough to seat” 뒤에 문법적으로 올 수 있지만, 많은 손님을 따로 앉히고 넓은 통로까지 남겼다는 상황과는 맞지 않습니다."
+  },
+  {
+    "word": "consecutive",
+    "meaning_ko": "연속적인",
+    "was_failing": false,
+    "sentence": "The athlete trained for three ___ days, without taking a single day off, before the final.",
+    "options": [
+      "consecutive",
+      "scattered",
+      "alternate",
+      "isolated"
+    ],
+    "answer": "consecutive",
+    "explanation": "“without taking a single day off”라는 단서가 훈련이 하루도 끊기지 않고 이어졌음을 보여 주므로 consecutive가 맞다. scattered는 여기저기 흩어진 날들, alternate는 번갈아 하는 날들, isolated는 서로 떨어진 날들을 뜻해 이 상황과 맞지 않는다."
+  }
+]

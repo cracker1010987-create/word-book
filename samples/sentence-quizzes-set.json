@@ -1,0 +1,132 @@
+[
+  {
+    "word": "invoice",
+    "meaning_ko": "송장, 청구서",
+    "sentence": "After repairing the office computers, the technician emailed the ___ for the parts and labor, listing each item, its price, and the total amount due by Friday.",
+    "options": [
+      "invoice",
+      "receipt",
+      "statement",
+      "estimate"
+    ],
+    "answer": "invoice",
+    "explanation": "“각 항목과 가격을 나열하고 금요일까지 지불해야 할 총액을 적었다”는 구체적인 단서 때문에 정답은 invoice이다. receipt는 이미 지불한 내역을 증명하는 문서이고, statement는 거래 내역서이며, estimate는 작업 전 예상 비용이므로 이 문맥의 ‘지불 기한이 있는 상세 청구 문서’와 맞지 않는다."
+  },
+  {
+    "word": "warranty",
+    "meaning_ko": "보증",
+    "sentence": "After the phone stopped charging because of a factory defect, the store repaired it for free under the ___.",
+    "options": [
+      "warranty",
+      "guarantee",
+      "insurance",
+      "protection"
+    ],
+    "answer": "warranty",
+    "explanation": "“factory defect” 때문에 고장이 났고 “repaired it for free”라고 했으므로, 제품의 결함을 일정 기간 동안 수리해 주는 warranty가 정답입니다. guarantee는 약속이나 품질 보장을 뜻해 이 구체적인 제품 수리 조건과는 덜 정확하고, insurance와 protection은 일반적인 보험이나 보호를 뜻해 제조 결함에 대한 무료 수리라는 단서와 맞지 않습니다."
+  },
+  {
+    "word": "reservation",
+    "meaning_ko": "예약, 의구심",
+    "sentence": "She made a ___ for six at 7 p.m., and the restaurant confirmed the table by email with a booking code.",
+    "options": [
+      "reservation",
+      "request",
+      "payment",
+      "arrangement"
+    ],
+    "answer": "reservation",
+    "explanation": "“for six at 7 p.m.”, “confirmed the table”, “by email”, “booking code”라는 구체적인 단서들은 식당 자리를 미리 잡았다는 뜻을 가리키므로 reservation이 맞습니다. request는 요청, payment는 지불, arrangement는 일반적인 준비나 약속을 뜻해 이 문맥의 식당 자리 확보를 정확히 나타내지 않습니다."
+  },
+  {
+    "word": "promptly",
+    "meaning_ko": "즉시",
+    "sentence": "When the fire alarm sounded, she ___ evacuated the building, leaving her laptop behind and reaching the assembly point within two minutes.",
+    "options": [
+      "promptly",
+      "reluctantly",
+      "quietly",
+      "carefully"
+    ],
+    "answer": "promptly",
+    "explanation": "“leaving her laptop behind”와 “reaching the assembly point within two minutes”는 지체하지 않고 대피했다는 구체적인 단서이므로 promptly가 맞습니다. reluctantly는 마지못해 했다는 뜻이고, quietly는 조용히 했다는 뜻이며, carefully는 신중하게 했다는 뜻이라 이 문장의 핵심인 신속한 대피를 나타내지 못합니다."
+  },
+  {
+    "word": "assemble",
+    "meaning_ko": "모으다, 조립하다",
+    "sentence": "The volunteers ___ the donated parts in the workshop, joining each panel and tightening every screw to create a working bicycle.",
+    "options": [
+      "assemble",
+      "arrange",
+      "store",
+      "label"
+    ],
+    "answer": "assemble",
+    "explanation": "“joining each panel”과 “tightening every screw”을 하여 “a working bicycle”을 만든다는 구체적인 행동이 부품을 조립한다는 뜻을 가리키므로 assemble이 정답입니다. arrange는 부품을 정리하는 것, store는 보관하는 것, label은 라벨을 붙이는 것이어서 자전거를 완성하는 과정과 맞지 않습니다."
+  },
+  {
+    "word": "refund",
+    "meaning_ko": "환불금",
+    "sentence": "After I returned the unopened headphones, the store processed my ___ within three days and sent the full purchase price back to my credit card.",
+    "options": [
+      "refund",
+      "replacement",
+      "exchange",
+      "complaint"
+    ],
+    "answer": "refund",
+    "explanation": "“returned the unopened headphones”와 “sent the full purchase price back to my credit card”라는 구체적인 단서가 돈을 돌려받는 상황을 가리키므로 refund가 맞습니다. replacement와 exchange는 물건을 새것이나 다른 것으로 바꾸는 것이고, complaint는 불만을 제기하는 것이어서 구매 대금을 카드로 돌려받는 결과와 맞지 않습니다."
+  },
+  {
+    "word": "itinerary",
+    "meaning_ko": "여행 일정",
+    "sentence": "Before leaving, Maya printed her ___ for the week-long trip, a day-by-day document listing every destination, train departure, and hotel address.",
+    "options": [
+      "itinerary",
+      "schedule",
+      "guide",
+      "checklist"
+    ],
+    "answer": "itinerary",
+    "explanation": "“a day-by-day document listing every destination, train departure, and hotel address”라는 구체적인 단서가 여행의 전체 일정을 정리한 itinerary를 가리킵니다. schedule은 보통 시간표에, guide는 여행 정보 안내서에, checklist는 해야 할 일이나 준비물 목록에 더 적합하므로 이 문맥의 정답이 아닙니다."
+  },
+  {
+    "word": "deadline",
+    "meaning_ko": "마감 기한",
+    "sentence": "They rushed to finish the report because they had to meet the ___ by 5 p.m. Friday.",
+    "options": [
+      "deadline",
+      "requirement",
+      "quota",
+      "goal"
+    ],
+    "answer": "deadline",
+    "explanation": "“by 5 p.m. Friday”처럼 정해진 최종 시각까지 보고서를 끝내야 한다는 단서가 있으므로 정답은 deadline이다. requirement는 충족해야 할 조건, quota는 정해진 할당량, goal은 이루고 싶은 목표를 뜻하므로 이 문맥의 ‘최종 제출 시한’을 정확히 나타내지 못한다."
+  },
+  {
+    "word": "supervisor",
+    "meaning_ko": "감독자",
+    "sentence": "The ___ on duty checked each trainee's work, corrected mistakes, and signed off on their daily performance.",
+    "options": [
+      "supervisor",
+      "manager",
+      "coordinator",
+      "inspector"
+    ],
+    "answer": "supervisor",
+    "explanation": "문장 속 “checked each trainee's work,” “corrected mistakes,”와 “signed off on their daily performance”는 훈련생의 업무를 직접 살피고 지도하며 평가를 승인하는 역할을 구체적으로 보여 주므로 supervisor가 맞습니다. manager는 조직을 운영하는 사람, coordinator는 일정이나 활동을 조정하는 사람, inspector는 주로 규정 준수 여부를 검사하는 사람이라 이 문맥의 직접적인 훈련생 관리 역할과는 맞지 않습니다."
+  },
+  {
+    "word": "defective",
+    "meaning_ko": "결함이 있는",
+    "sentence": "The company recalled the ___ chargers after several units overheated and shut off during normal use.",
+    "options": [
+      "defective",
+      "portable",
+      "compact",
+      "rechargeable"
+    ],
+    "answer": "defective",
+    "explanation": "“Several units overheated and shut off during normal use”라는 구체적인 문제 때문에 충전기에 결함이 있다는 뜻의 defective가 맞습니다. portable과 compact는 휴대성이나 크기를, rechargeable은 충전 가능 여부를 나타내므로 이러한 오작동을 설명하지 못합니다."
+  }
+]
