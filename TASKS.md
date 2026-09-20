@@ -211,17 +211,17 @@ prd.md를 기준으로 앱을 테스트 가능한 크기의 기능 조각으로 
 
 ### C. 퀴즈와 오늘의 학습
 
-### 32. ⬜ 뜻 고르기 4지선다 `make_meaning_choice_quiz(word, bank, rng)`
+### 32. ✅ 뜻 고르기 4지선다 `make_meaning_choice_quiz(word, bank, rng)`
 - **파일**: `choice_quiz.py`
 - **검사 방법**: pytest (AI 없음, 정답 1개 + 다른 단어의 뜻 3개, 보기 중복 없음, rng 고정 시 결과 고정)
 - **순서**: 2번째. 선행 조각: 25.
 
-### 33. ⬜ 오늘의 학습 목록 `build_today_session(progress, bank, today)`
+### 33. ✅ 오늘의 학습 목록 `build_today_session(progress, bank, today)`
 - **파일**: `session.py`
 - **검사 방법**: pytest (세트 1일차=뜻 고르기, 2~3일차=영어 쓰기+예문, 복습=예문, 복습 30개 상한)
 - **순서**: 4번째. 선행 조각: 28, 30, 32.
 
-### 34. ⬜ 예문 퀴즈 일괄 미리 생성 `pregenerate_sentence_quizzes(words, bank, chain, grammar_chain)`
+### 34. ✅ 예문 퀴즈 일괄 미리 생성 `pregenerate_sentence_quizzes(words, bank, chain, grammar_chain)`
 - **파일**: `ai.py`
 - **검사 방법**: pytest (가짜 체인 주입, 단어마다 기존 `make_quiz_verified` 검증 통과한 퀴즈를 모아 돌려줌)
 - **순서**: 1번째. 선행 조각 없음.

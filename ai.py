@@ -1,5 +1,6 @@
 # 단어와 뜻을 받아 AI가 객관식 퀴즈 문제를 만들어주는 함수들
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Literal
 
 from dotenv import load_dotenv
@@ -271,3 +272,25 @@ def generate_all_meanings(
         meanings.update(generate_meanings(remaining, chain=chain, batch_size=batch_size))
         remaining = [item for item in remaining if item["word"] not in meanings]
     return meanings
+
+
+def pregenerate_sentence_quizzes(
+    words: list[str],
+    bank: list[dict],
+    chain: Any = None,
+    grammar_chain: Any = None,
+    max_workers: int = 5,
+) -> dict[str, dict]:
+    # 세트 단어들의 예문 퀴즈를 동시에 여러 개씩 미리 만들어, 저장할 수 있는 형태로 모아 돌려준다
+    if chain is None:
+        chain = build_chain()
+    if grammar_chain is None:
+        grammar_chain = build_grammar_check_chain()
+    meanings = {entry["word"]: entry["meaning_ko"] for entry in bank}
+    targets = [word for word in words if word in meanings]
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        made = pool.map(
+            lambda word: make_quiz_verified(word, meanings[word], chain=chain, grammar_chain=grammar_chain),
+            targets,
+        )
+        return {word: quiz.model_dump() for word, quiz in zip(targets, made)}

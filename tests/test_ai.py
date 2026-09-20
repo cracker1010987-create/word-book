@@ -1,4 +1,5 @@
 # build_chain, make_quiz, make_quiz_verified 함수를 확인하는 테스트
+import json
 from ai import (
     GrammarCheck,
     MeaningBatch,
@@ -11,6 +12,7 @@ from ai import (
     is_valid_quiz,
     make_quiz,
     make_quiz_verified,
+    pregenerate_sentence_quizzes,
 )
 
 
@@ -289,3 +291,76 @@ def test_generate_all_meanings_gives_up_after_max_rounds() -> None:
     result = generate_all_meanings([{"word": "add", "definition": "d"}], chain=chain, max_rounds=3)
     assert result == {}
     assert len(chain.inputs_by_call) == 3
+
+
+class WordFakeChain:
+    # 요청한 단어에 맞는 Quiz를 돌려주는 가짜 체인 (여러 단어를 동시에 처리할 때 씀)
+    def __init__(self, quizzes: dict) -> None:
+        self.quizzes = quizzes
+        self.words_asked: list[str] = []
+        self.meanings_asked: list[str] = []
+
+    def invoke(self, inputs: dict) -> Quiz:
+        self.words_asked.append(inputs["word"])
+        self.meanings_asked.append(inputs["meaning"])
+        return self.quizzes[inputs["word"]]
+
+
+class AlwaysFitGrammarChain:
+    # 문법 검사를 항상 통과시키는 가짜 체인
+    def invoke(self, inputs: dict) -> GrammarCheck:
+        return GrammarCheck(fits_by_option=[True] * len(inputs["options"]))
+
+
+def quiz_for(word: str) -> Quiz:
+    # 테스트용 예문 퀴즈를 짧게 만든다 (예문에 정답 단어를 쓰면 안 되므로 빈칸만 둔다)
+    return Quiz(
+        sentence="Please sign the ___ before Friday.",
+        options=[word, "aaa", "bbb", "ccc"],
+        answer=word,
+        explanation="해설",
+    )
+
+
+QUIZ_BANK = [
+    {"word": "invoice", "meaning_ko": "송장, 청구서", "pos": "noun"},
+    {"word": "warranty", "meaning_ko": "보증", "pos": "noun"},
+]
+
+
+def test_pregenerate_makes_a_quiz_for_each_word() -> None:
+    # 준 단어마다 예문 퀴즈를 하나씩 만들어 단어별로 모아 돌려준다
+    chain = WordFakeChain({"invoice": quiz_for("invoice"), "warranty": quiz_for("warranty")})
+    quizzes = pregenerate_sentence_quizzes(
+        ["invoice", "warranty"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+    )
+    assert sorted(quizzes) == ["invoice", "warranty"]
+    assert quizzes["invoice"]["answer"] == "invoice"
+
+
+def test_pregenerate_sends_the_korean_meaning_from_the_bank() -> None:
+    # 퀴즈를 만들 때 단어장에 있는 한국어 뜻을 같이 넘긴다
+    chain = WordFakeChain({"invoice": quiz_for("invoice")})
+    pregenerate_sentence_quizzes(
+        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+    )
+    assert chain.meanings_asked == ["송장, 청구서"]
+
+
+def test_pregenerate_skips_words_that_are_not_in_the_bank() -> None:
+    # 단어장에 없는 단어는 건너뛴다 (에러 없이)
+    chain = WordFakeChain({"invoice": quiz_for("invoice")})
+    quizzes = pregenerate_sentence_quizzes(
+        ["invoice", "nosuchword"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+    )
+    assert sorted(quizzes) == ["invoice"]
+
+
+def test_pregenerate_returns_plain_data_that_can_be_saved_to_json() -> None:
+    # 결과는 progress.json에 그대로 저장할 수 있는 단순한 자료여야 한다
+    chain = WordFakeChain({"invoice": quiz_for("invoice")})
+    quizzes = pregenerate_sentence_quizzes(
+        ["invoice"], QUIZ_BANK, chain=chain, grammar_chain=AlwaysFitGrammarChain()
+    )
+    assert json.loads(json.dumps(quizzes, ensure_ascii=False)) == quizzes
+    assert sorted(quizzes["invoice"]) == ["answer", "explanation", "options", "sentence"]
