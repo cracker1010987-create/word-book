@@ -1,5 +1,9 @@
 # 원본 단어에 순위를 붙이고, NGSL과 TSL을 하나의 단어장으로 합치는 함수들을 확인하는 테스트
-from wordbank import attach_ranks, make_bank_entries, merge_word_lists, normalize_word
+import json
+
+import pytest
+
+from wordbank import attach_ranks, load_word_bank, make_bank_entries, merge_word_lists, normalize_word
 
 
 def test_normalize_word_ignores_case_hyphen_and_accent() -> None:
@@ -87,3 +91,27 @@ def test_make_bank_entries_keeps_order_and_leaves_out_words_without_meaning() ->
     # 순서는 합친 목록 그대로 두고, 한국어 뜻을 끝내 못 받은 단어는 단어장에서 뺀다
     entries = make_bank_entries(MERGED, {"the": {"meaning_ko": "그", "pos": "other"}})
     assert [entry["word"] for entry in entries] == ["the"]
+
+
+def test_load_word_bank_reads_entries_in_order(tmp_path) -> None:
+    # 단어장 JSON 파일을 읽어 순서 그대로 항목 목록을 돌려준다
+    path = tmp_path / "word_bank.json"
+    entries = [
+        {"word": "the", "meaning_ko": "그", "pos": "other", "definition_en": "", "sources": ["NGSL"], "ngsl_rank": 1, "tsl_rank": None},
+        {"word": "client", "meaning_ko": "고객", "pos": "noun", "definition_en": "", "sources": ["TSL"], "ngsl_rank": None, "tsl_rank": 3},
+    ]
+    path.write_text(json.dumps(entries, ensure_ascii=False), encoding="utf-8")
+    assert load_word_bank(str(path)) == entries
+
+
+def test_load_word_bank_explains_how_to_build_when_missing(tmp_path) -> None:
+    # 단어장 파일이 없으면, 만드는 방법(스크립트 이름)을 알려주는 에러를 낸다
+    with pytest.raises(FileNotFoundError, match="build_word_bank"):
+        load_word_bank(str(tmp_path / "없는파일.json"))
+
+
+def test_real_word_bank_file_is_complete() -> None:
+    # 저장소에 들어있는 실제 단어장이 4,059개이고, 모든 항목에 한국어 뜻과 품사가 있다
+    bank = load_word_bank()
+    assert len(bank) == 4059
+    assert all(entry["meaning_ko"].strip() and entry["pos"] for entry in bank)

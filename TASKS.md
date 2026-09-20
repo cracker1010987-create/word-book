@@ -166,32 +166,38 @@ prd.md를 기준으로 앱을 테스트 가능한 크기의 기능 조각으로 
 - **남은 흠 (나중에 "뜻 고치기"나 프롬프트 보완으로)**: present에 "발표하다", charge에 "담당"이 없음.
   원본 영어 뜻이 명사면 형용사 쓰임을 놓침(preliminary). 드물게 틀린 뜻(clap "쨍하는 소리").
 
-### 25. ⬜ 단어장 불러오기 `load_word_bank(path)`
+### 25. ✅ 단어장 불러오기 `load_word_bank(path)`
 - **파일**: `wordbank.py`
 - **검사 방법**: pytest
 - **순서**: 1번째. 선행 조각 없음 (파일 형식만 24와 맞춘다).
 
 ### B. 학습 기록과 복습 규칙
 
-### 26. ⬜ 학습 기록 읽기/쓰기/초기값 `load_progress`, `save_progress`
+### 26. ✅ 학습 기록 읽기/쓰기/초기값 `load_progress`, `save_progress`
 - **파일**: `progress.py`
 - **검사 방법**: pytest (파일 없을 때 기본 설정: 세트 50, 3일, 복습 상한 30)
 - **순서**: 1번째. 선행 조각 없음.
 
-### 27. ⬜ 복습 단계 계산 `next_review_date(stage, today)`, `update_after_review(entry, is_correct, today)`
+### 27. ✅ 복습 단계 계산 `next_review_date(stage, today)`, `update_after_review(entry, is_correct, today)`
 - **파일**: `schedule.py`
 - **검사 방법**: pytest (1~5단계 간격 3·7·14·30·60일, 5단계 통과 시 졸업, 틀리면 이월 표시)
 - **순서**: 2번째. 선행 조각: 26.
 
-### 28. ⬜ 오늘 복습할 단어 `due_review_words(progress, today, limit=30)`
+### 28. ✅ 오늘 복습할 단어 `due_review_words(progress, today, limit=30)`
 - **파일**: `schedule.py`
 - **검사 방법**: pytest (복습일이 지난 단어만, 오래 밀린 순, 최대 30개, 졸업 단어 제외)
 - **순서**: 3번째. 선행 조각: 27.
 
-### 29. ⬜ 새 세트 만들기 `start_new_set(progress, bank, today)`
+### 29. ✅ 새 세트 만들기 `start_new_set(progress, bank, today)`
 - **파일**: `sets.py`
 - **검사 방법**: pytest (이월 단어·내 단어 먼저, 남은 자리를 단어장 순서대로 새 단어로 채워 50개)
 - **순서**: 2번째. 선행 조각: 25, 26.
+
+### 29-2. ⬜ 이미 아는 단어 걸러내기 `mark_known_words(progress, words, today)`
+- **파일**: `sets.py` (계산), `__main__.py` (물어보는 화면은 36번에서)
+- **검사 방법**: pytest (체크한 단어는 졸업 처리되어 세트·복습에 다시 안 나오고, 그만큼 새 단어로 채워짐)
+- **순서**: 3번째. 선행 조각: 29. (단어장 앞쪽이 the/a 같은 기초 단어라 첫 세트가 시시해지는 문제 →
+  세트를 시작할 때 목록을 보여주고 아는 단어를 체크하면 바로 졸업 처리한다)
 
 ### 30. ⬜ 공부한 날 기록·세트 종료 판정 `record_study_day`, `is_set_finished`
 - **파일**: `sets.py`

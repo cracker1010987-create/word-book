@@ -1,7 +1,22 @@
-# 원본 단어에 순위를 붙이고, NGSL과 TSL을 하나의 단어장으로 합치는 함수들
+# 원본 단어에 순위를 붙이고, NGSL과 TSL을 하나의 단어장으로 합치고, 완성된 단어장을 불러오는 함수들
+import json
 import unicodedata
+from pathlib import Path
 
 SOURCES = ("NGSL", "TSL")
+# 어느 폴더에서 실행하든 이 파일 옆의 data/word_bank.json을 찾도록 이 파일 위치를 기준으로 잡는다
+DEFAULT_BANK_PATH = Path(__file__).resolve().parent / "data" / "word_bank.json"
+
+
+# 완성된 단어장 파일을 읽어 순서 그대로 돌려준다. 파일이 없으면 만드는 방법을 알려준다
+def load_word_bank(path: str | None = None) -> list[dict]:
+    bank_path = Path(path) if path else DEFAULT_BANK_PATH
+    if not bank_path.exists():
+        raise FileNotFoundError(
+            f"단어장 파일({bank_path})이 없습니다. "
+            "먼저 '.venv\\Scripts\\python.exe scripts\\build_word_bank.py'로 만들어주세요."
+        )
+    return json.loads(bank_path.read_text(encoding="utf-8"))
 
 
 # 악센트를 뗀 철자로 바꾼다 (café → cafe)
