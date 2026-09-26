@@ -24,6 +24,20 @@ def add_my_word(progress: dict, word: str, meaning: str) -> dict:
     return migrate_words({word: {"meaning": meaning}}, progress)
 
 
+# 내 단어를 지운다. 목록·대기줄·학습 기록에서 빼되, 이미 이번 세트에 들어간 단어는 세트에 그대로 둔다
+def remove_my_word(progress: dict, word: str) -> dict:
+    current = progress["current_set"]
+    in_this_set = word in current["words"] if current else False
+    records = {w: r for w, r in progress["words"].items() if w != word or in_this_set}
+    return {
+        **progress,
+        "my_words": {w: m for w, m in progress.get("my_words", {}).items() if w != word},
+        "carry_over": [w for w in progress["carry_over"] if w != word],
+        "words": records,
+        "quiz_cache": {w: q for w, q in progress["quiz_cache"].items() if w != word or in_this_set},
+    }
+
+
 # 예전 words.json의 단어를 새 구조로 옮긴다. 내가 적어둔 뜻은 my_words에 보관하고,
 # 다음 세트에 먼저 나오도록 이월 목록에 넣는다 (이미 학습 중인 단어는 그대로 둔다)
 def migrate_words(old_words: dict, progress: dict) -> dict:
@@ -31,6 +45,8 @@ def migrate_words(old_words: dict, progress: dict) -> dict:
     my_words = {**progress.get("my_words", {})}
     carry_over = list(progress["carry_over"])
     for word, info in old_words.items():
+        if not word.strip():  # 예전 파일에 실수로 들어간 빈 단어는 건너뛴다
+            continue
         my_words[word] = info.get("meaning", "")
         if word in records:
             continue

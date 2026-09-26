@@ -11,7 +11,7 @@ from review import pick_word_to_quiz, record_result
 from storage import add_word, load_words, save_words
 from stats import calculate_progress, calculate_stats
 from ai import Quiz, make_quiz_verified
-from progress import add_my_word, load_progress, migrate_words, save_progress
+from progress import add_my_word, load_progress, migrate_words, remove_my_word, save_progress
 from reports import reported_words
 from study import run_today_session
 from wordbank import load_word_bank
@@ -19,6 +19,8 @@ from wordbank import load_word_bank
 LINE = "=" * 40
 THIN_LINE = "-" * 40
 MENU = {"1": "오늘의 학습", "2": "내 단어 추가", "3": "진도 보기", "4": "목록 보기", "5": "종료"}
+# 입력하다 말고 빠져나올 때 치는 글자
+CANCEL_KEY = "0"
 
 
 # wordbook 명령어들의 인자 구조를 정의한다
@@ -84,6 +86,9 @@ def print_result(quiz: Quiz, is_correct: bool) -> None:
 
 # 내가 직접 외우고 싶은 단어를 학습 기록에 넣는다 (다음 세트에 먼저 나온다)
 def run_add_my_word(word: str, meaning: str) -> None:
+    if word.strip() == CANCEL_KEY or meaning.strip() == CANCEL_KEY:
+        print("취소했습니다. 아무것도 저장하지 않았습니다.")
+        return
     if not word.strip():
         print("단어를 입력해주세요. (아무것도 넣지 않았습니다)")
         return
@@ -159,14 +164,20 @@ def print_stats(path: str) -> None:
     print(f"  완전히 외운 단어 수: {stats['mastered_words']}")
 
 
-# 내가 직접 넣은 단어(progress.json의 my_words)를 번호를 붙여 보여준다
-def print_my_words() -> None:
-    my_words = load_progress().get("my_words", {})
-    if not my_words:
+# 내가 직접 넣은 단어(progress.json의 my_words)를 번호를 붙여 보여주고, 번호를 치면 지운다
+def run_my_words(input_func: Callable[[str], str]) -> None:
+    words = list(load_progress().get("my_words", {}).items())
+    if not words:
         print("아직 직접 넣은 단어가 없습니다. 2번으로 넣어보세요.")
         return
-    for i, (word, meaning) in enumerate(my_words.items(), 1):
+    for i, (word, meaning) in enumerate(words, 1):
         print(f"  {i}. {word} - {meaning}")
+    answer = input_func("\n지울 단어 번호 (그냥 엔터면 돌아가기) > ").strip()
+    if not answer.isdigit() or not 1 <= int(answer) <= len(words):
+        return
+    word = words[int(answer) - 1][0]
+    save_progress(remove_my_word(load_progress(), word))
+    print(f"'{word}'를 지웠습니다.")
 
 
 # 추가된 단어 전체를 번호를 붙여 목록으로 보여준다
@@ -197,13 +208,13 @@ def run_menu_action(
     if choice == "1":
         run_study(input_func, today)
     elif choice == "2":
-        word = input_func("추가할 영어 단어 > ")
-        meaning = input_func("뜻 > ")
+        word = input_func("추가할 영어 단어 (0을 치면 취소) > ")
+        meaning = input_func("뜻 (0을 치면 취소) > ") if word.strip() != CANCEL_KEY else CANCEL_KEY
         run_add_my_word(word, meaning)
     elif choice == "3":
         print_progress(today)
     elif choice == "4":
-        print_my_words()
+        run_my_words(input_func)
     else:
         print("1~5 중에서 골라주세요.")
 

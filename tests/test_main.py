@@ -147,7 +147,7 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
     # 메뉴에서 4번(목록 보기)을 고르면 단어 목록이 화면에 출력된다
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 2}}, str(path))
-    answers = iter(["4", "", "5"])
+    answers = iter(["4", "", "", "5"])
     main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "apple" in output
@@ -158,7 +158,7 @@ def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsy
     # 목록 보기 다음에 다른 메뉴로 가면, 목록을 지운 뒤에 새 화면이 나온다 (앞 화면이 남지 않는다)
     monkeypatch.chdir(tmp_path)
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, "words.json")
-    answers = iter(["4", "", "9", "", "5"])
+    answers = iter(["4", "", "", "9", "", "5"])
     main([], path="words.json", input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     list_pos = output.index("1. apple - 사과")
@@ -215,7 +215,7 @@ def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, m
 def test_menu_list_shows_words_added_through_the_menu(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴 2번으로 넣은 단어는 메뉴 4번(목록 보기)에 나와야 한다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "활기찬", "", "4", "", "5"])
+    answers = iter(["2", "brisk", "활기찬", "", "4", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "1. brisk - 활기찬" in output
@@ -248,3 +248,41 @@ def test_empty_word_is_not_added_as_my_word(tmp_path, capsys, monkeypatch) -> No
     from progress import load_progress
     assert load_progress()["my_words"] == {}
     assert "단어를 입력" in capsys.readouterr().out
+
+
+def test_zero_cancels_adding_a_word(tmp_path, capsys, monkeypatch) -> None:
+    # 단어 추가 화면에서 0을 치면 아무것도 저장하지 않고 메뉴로 돌아간다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "0", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert load_progress()["my_words"] == {}
+    assert "취소" in capsys.readouterr().out
+
+
+def test_zero_cancels_at_the_meaning_step_too(tmp_path, capsys, monkeypatch) -> None:
+    # 뜻을 적는 칸에서 0을 쳐도 저장하지 않는다 (단어를 잘못 친 걸 그때 알아챌 수 있다)
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "brisk", "0", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert load_progress()["my_words"] == {}
+
+
+def test_menu_list_can_delete_a_word_by_number(tmp_path, capsys, monkeypatch) -> None:
+    # 목록 보기에서 번호를 치면 그 단어를 지운다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "brisk", "활기찬", "", "2", "d", "d", "", "4", "2", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert list(load_progress()["my_words"]) == ["brisk"]
+    assert "지웠습니다" in capsys.readouterr().out
+
+
+def test_menu_list_enter_goes_back_without_deleting(tmp_path, capsys, monkeypatch) -> None:
+    # 목록 보기에서 그냥 엔터를 치면 아무것도 지우지 않고 돌아간다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "brisk", "활기찬", "", "4", "", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert list(load_progress()["my_words"]) == ["brisk"]
