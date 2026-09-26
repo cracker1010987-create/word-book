@@ -154,6 +154,13 @@ def ask_answer(prompt: str, input_func, report: Callable[[], None]) -> str:
         report()
 
 
+# 보기 순서를 섞는다 (AI가 정답을 늘 1번에 놓는 버릇이 있어서, 찍어서 맞히지 못하게 한다)
+def shuffled_options(options: list[str], rng: random.Random) -> list[str]:
+    mixed = list(options)
+    rng.shuffle(mixed)
+    return mixed
+
+
 # 보기 목록을 번호를 붙여 보여준다
 def print_options(options: list[str]) -> None:
     for number, option in enumerate(options, 1):
@@ -201,11 +208,12 @@ def ask_spelling(word: str, meaning: str, input_func, report) -> bool:
 
 
 # 미리 만들어둔 예문 빈칸 퀴즈를 내고 채점한다 (풀 때는 AI를 부르지 않는다)
-def ask_sentence(word: str, quiz: dict, input_func, report) -> bool:
+def ask_sentence(word: str, quiz: dict, input_func, report, rng: random.Random) -> bool:
+    options = shuffled_options(quiz["options"], rng)
     print(textwrap.fill(quiz["sentence"], width=60) + "\n")
-    print_options(quiz["options"])
+    print_options(options)
     picked = chosen_option(
-        ask_answer("정답 입력 (번호 또는 영어 단어, 이상한 문제면 ?) > ", input_func, report), quiz["options"]
+        ask_answer("정답 입력 (번호 또는 영어 단어, 이상한 문제면 ?) > ", input_func, report), options
     )
     correct = grade_answer(picked, quiz["answer"])
     print("정답입니다!" if correct else f"오답입니다. 정답은 '{quiz['answer']}' 입니다.")
@@ -230,7 +238,7 @@ def ask_item(
         print("(예문 퀴즈를 아직 못 만들어서 영어 쓰기로 대신합니다)\n")
     if not quiz:
         return ask_spelling(word, meanings.get(word, ""), input_func, make_reporter(reports, word, "spelling"))
-    return ask_sentence(word, quiz, input_func, make_reporter(reports, word, "sentence"))
+    return ask_sentence(word, quiz, input_func, make_reporter(reports, word, "sentence"), rng)
 
 
 # 오늘이 세트 몇 일차이고 어떤 종류의 문제를 푸는지 화면 맨 위에 알려준다

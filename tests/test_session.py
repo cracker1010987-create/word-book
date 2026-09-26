@@ -1,6 +1,6 @@
 # 오늘 풀 문제 목록(세트 단어 + 복습 단어)을 만드는 함수를 확인하는 테스트
 from progress import default_progress
-from session import build_today_session
+from session import kind_for_review_stage, build_today_session
 from sets import record_study_day, start_new_set
 
 BANK = [{"word": w, "meaning_ko": "뜻", "pos": "noun"} for w in ["alpha", "beta", "gamma", "delta"]]
@@ -77,3 +77,28 @@ def test_without_a_set_only_reviews_are_given() -> None:
 def test_nothing_to_study_gives_an_empty_list() -> None:
     # 세트도 복습도 없으면 빈 목록이다
     assert build_today_session(default_progress(), BANK, "2026-01-01") == []
+
+
+def test_review_kind_changes_with_the_stage() -> None:
+    # 복습 단계마다 문제 종류를 돌려가며 낸다 (같은 예문을 계속 보지 않게)
+    assert kind_for_review_stage(1) == "sentence"
+    assert kind_for_review_stage(2) == "spelling"
+    assert kind_for_review_stage(3) == "meaning_choice"
+
+
+def test_review_kind_cycles_after_three_stages() -> None:
+    # 4단계부터는 다시 처음 종류로 돌아간다
+    assert kind_for_review_stage(4) == "sentence"
+    assert kind_for_review_stage(5) == "spelling"
+
+
+def test_today_session_uses_the_review_kind_of_each_word() -> None:
+    # 오늘 복습 목록의 문제 종류가 단어의 복습 단계를 따른다
+    progress = default_progress()
+    progress["words"] = {
+        "invoice": {"stage": 1, "next_review": "2026-01-01", "recent_results": [], "graduated": False},
+        "warranty": {"stage": 2, "next_review": "2026-01-01", "recent_results": [], "graduated": False},
+    }
+    session = build_today_session(progress, BANK, "2026-01-01")
+    kinds = {item["word"]: item["kind"] for item in session}
+    assert kinds == {"invoice": "sentence", "warranty": "spelling"}

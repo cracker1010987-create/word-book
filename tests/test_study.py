@@ -5,6 +5,7 @@ from progress import default_progress
 from sets import NEW_WORD_RECORD, record_study_day, start_new_set
 from study import (
     ask_item,
+    shuffled_options,
     ensure_current_set,
     ensure_quiz_cache,
     record_answer,
@@ -332,3 +333,32 @@ def test_third_day_makes_only_the_quizzes_it_still_needs() -> None:
         input_func=lambda prompt: "invoice", rng=random.Random(0), pregenerate=pregenerate,
     )
     assert pregenerate.calls == [["warranty"]]
+
+
+def test_shuffled_options_keeps_all_four_choices() -> None:
+    # 보기를 섞어도 보기 4개는 그대로다 (정답이 사라지면 안 된다)
+    options = ["invoice", "receipt", "estimate", "manifest"]
+    assert sorted(shuffled_options(options, random.Random(1))) == sorted(options)
+
+
+def test_shuffled_options_does_not_always_put_the_answer_first() -> None:
+    # 지금은 AI가 정답을 항상 1번에 놓는다. 섞어서 위치가 흩어지는지 본다
+    rng = random.Random(0)
+    positions = {shuffled_options(["invoice", "a", "b", "c"], rng).index("invoice") for _ in range(30)}
+    assert len(positions) >= 3
+
+
+def test_sentence_quiz_is_graded_by_the_shuffled_number() -> None:
+    # 섞은 뒤에도 화면에 보이는 번호로 채점된다 (1번을 찍으면 맞는 게 아니다)
+    progress = default_progress()
+    progress["quiz_cache"] = {"invoice": {**CACHED_QUIZ, "answer": "invoice",
+                                          "options": ["invoice", "receipt", "estimate", "manifest"]}}
+    item = {"word": "invoice", "kind": "sentence", "source": "set"}
+    seen: list[str] = []
+    def watch(prompt: str) -> str:
+        seen.append(prompt)
+        return "1"
+    always_first = ask_item(item, BANK, progress, watch, random.Random(7))
+    # 섞인 결과에서 정답이 1번이 아니라면 1번을 찍은 것은 틀려야 한다
+    shuffled = shuffled_options(["invoice", "receipt", "estimate", "manifest"], random.Random(7))
+    assert always_first is (shuffled[0] == "invoice")
