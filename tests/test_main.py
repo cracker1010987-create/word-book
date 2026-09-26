@@ -136,7 +136,7 @@ def fake_clear() -> None:
 def test_interactive_menu_progress_then_quit(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴에서 3번(진도 보기)을 고르면 단어장 전체 진도가 화면에 출력된다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["3", "", "5"])
+    answers = iter(["3", "", "", "5"])
     main([], path="words.json", input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "전체 4059단어" in output
@@ -206,7 +206,7 @@ def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, m
     # 예전 words.json이 있으면 처음 실행할 때 내 단어로 옮긴다
     monkeypatch.chdir(tmp_path)
     save_words({"elaborate": {"meaning": "정교한", "wrong_count": 2}}, "words.json")
-    answers = iter(["3", "", "5"])
+    answers = iter(["3", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"]["elaborate"] == "정교한"
@@ -235,7 +235,7 @@ def test_progress_view_shows_how_many_problems_i_reported(tmp_path, capsys, monk
     from progress import default_progress, save_progress
     from reports import report_problem
     save_progress(report_problem(default_progress(), "reimburse", "sentence", "2026-01-01"))
-    answers = iter(["3", "", "5"])
+    answers = iter(["3", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-02", clear_func=fake_clear)
     assert "신고한 문제: 1개" in capsys.readouterr().out
 
@@ -286,3 +286,22 @@ def test_menu_list_enter_goes_back_without_deleting(tmp_path, capsys, monkeypatc
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert list(load_progress()["my_words"]) == ["brisk"]
+
+
+def test_progress_view_can_change_the_set_size(tmp_path, capsys, monkeypatch) -> None:
+    # 진도 보기에서 설정을 골라 세트 크기를 바꿀 수 있다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["3", "1", "20", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert load_progress()["settings"]["set_size"] == 20
+    assert "20" in capsys.readouterr().out
+
+
+def test_progress_view_enter_leaves_settings_alone(tmp_path, capsys, monkeypatch) -> None:
+    # 진도 보기에서 그냥 엔터를 치면 설정은 그대로다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["3", "", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress, DEFAULT_SETTINGS
+    assert load_progress()["settings"] == DEFAULT_SETTINGS

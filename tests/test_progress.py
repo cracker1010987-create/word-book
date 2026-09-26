@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-from progress import remove_my_word, add_my_word, default_progress, load_progress, migrate_words, save_progress
+from progress import change_setting, remove_my_word, add_my_word, default_progress, load_progress, migrate_words, save_progress
 
 
 def test_default_progress_has_settings_and_empty_records() -> None:
@@ -129,3 +129,23 @@ def test_removing_a_word_that_is_in_the_current_set_leaves_the_set_alone() -> No
     after = remove_my_word(progress, "brisk")
     assert after["current_set"]["words"] == ["brisk"]
     assert after["my_words"] == {}
+
+
+def test_change_setting_updates_one_number() -> None:
+    # 설정 하나만 바꾸고 나머지는 그대로 둔다
+    after = change_setting(default_progress(), "set_size", 20)
+    assert after["settings"]["set_size"] == 20
+    assert after["settings"]["study_days_per_set"] == 3
+
+
+def test_change_setting_refuses_a_number_that_makes_no_sense() -> None:
+    # 0이나 음수처럼 말이 안 되는 값은 받지 않는다 (세트 크기가 0이면 앱이 멈춘다)
+    progress = default_progress()
+    assert change_setting(progress, "set_size", 0) is progress
+    assert change_setting(progress, "set_size", -5) is progress
+
+
+def test_change_setting_ignores_an_unknown_name() -> None:
+    # 없는 설정 이름은 무시한다
+    progress = default_progress()
+    assert change_setting(progress, "없는설정", 10) is progress

@@ -24,6 +24,13 @@ def add_my_word(progress: dict, word: str, meaning: str) -> dict:
     return migrate_words({word: {"meaning": meaning}}, progress)
 
 
+# 설정값 하나를 바꾼다. 없는 이름이나 말이 안 되는 값(0 이하)은 그냥 무시한다
+def change_setting(progress: dict, name: str, value: int) -> dict:
+    if name not in DEFAULT_SETTINGS or value < 1:
+        return progress
+    return {**progress, "settings": {**progress["settings"], name: value}}
+
+
 # 내 단어를 지운다. 목록·대기줄·학습 기록에서 빼되, 이미 이번 세트에 들어간 단어는 세트에 그대로 둔다
 def remove_my_word(progress: dict, word: str) -> dict:
     current = progress["current_set"]

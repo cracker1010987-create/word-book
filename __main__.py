@@ -11,7 +11,14 @@ from review import pick_word_to_quiz, record_result
 from storage import add_word, load_words, save_words
 from stats import calculate_progress, calculate_stats
 from ai import Quiz, make_quiz_verified
-from progress import add_my_word, load_progress, migrate_words, remove_my_word, save_progress
+from progress import (
+    add_my_word,
+    change_setting,
+    load_progress,
+    migrate_words,
+    remove_my_word,
+    save_progress,
+)
 from reports import reported_words
 from study import run_today_session
 from wordbank import load_word_bank
@@ -156,6 +163,32 @@ def print_progress(today: str) -> None:
         print("  완주일은 며칠 더 공부해봐야 알 수 있습니다.")
 
 
+# 진도 보기 아래에서 바꿀 수 있는 설정들 (보여줄 이름, 저장할 이름)
+SETTING_CHOICES = {
+    "1": ("한 세트 단어 수", "set_size"),
+    "2": ("세트 하나를 며칠 동안", "study_days_per_set"),
+    "3": ("하루 복습 문제 수", "daily_review_limit"),
+}
+
+
+# 설정을 보여주고, 번호를 고르면 새 값을 받아 저장한다
+def run_settings(input_func: Callable[[str], str]) -> None:
+    settings = load_progress()["settings"]
+    print("\n  [설정]")
+    for number, (label, name) in SETTING_CHOICES.items():
+        print(f"  {number}. {label}: {settings[name]}")
+    picked = input_func("\n바꿀 설정 번호 (그냥 엔터면 돌아가기) > ").strip()
+    if picked not in SETTING_CHOICES:
+        return
+    label, name = SETTING_CHOICES[picked]
+    answer = input_func(f"{label}에 넣을 새 숫자 > ").strip()
+    if not answer.isdigit():
+        print("숫자를 입력해주세요. 바꾸지 않았습니다.")
+        return
+    save_progress(change_setting(load_progress(), name, int(answer)))
+    print(f"{label}을(를) {answer}로 바꿨습니다. 다음 세트부터 적용됩니다.")
+
+
 # 단어 데이터를 통계로 계산해서 화면에 출력한다
 def print_stats(path: str) -> None:
     stats = calculate_stats(load_words(path))
@@ -213,6 +246,7 @@ def run_menu_action(
         run_add_my_word(word, meaning)
     elif choice == "3":
         print_progress(today)
+        run_settings(input_func)
     elif choice == "4":
         run_my_words(input_func)
     else:

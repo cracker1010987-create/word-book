@@ -2,7 +2,7 @@
 import random
 
 from progress import default_progress
-from sets import record_study_day, start_new_set
+from sets import NEW_WORD_RECORD, record_study_day, start_new_set
 from study import (
     ask_item,
     ensure_current_set,
@@ -38,11 +38,11 @@ def fake_pregenerate(words, bank, **kwargs) -> dict:
     return {word: {**CACHED_QUIZ, "answer": word, "options": [word, "aaa", "bbb", "ccc"]} for word in words}
 
 
-def test_ensure_current_set_starts_the_first_set_and_caches_quizzes() -> None:
-    # 세트가 없으면 새로 시작하고, 그 세트 단어의 예문 퀴즈를 미리 만들어 저장해둔다
+def test_ensure_current_set_starts_the_first_set_without_making_quizzes() -> None:
+    # 세트를 시작할 때는 예문 퀴즈를 만들지 않는다 (1일차는 뜻 고르기라 기다릴 이유가 없다)
     progress = ensure_current_set(small_progress(), BANK, "2026-01-01", pregenerate=fake_pregenerate)
     assert progress["current_set"]["words"] == ["invoice", "warranty"]
-    assert sorted(progress["quiz_cache"]) == ["invoice", "warranty"]
+    assert progress["quiz_cache"] == {}
 
 
 def test_ensure_current_set_keeps_an_unfinished_set() -> None:
@@ -278,3 +278,57 @@ def test_reported_sentence_quiz_is_dropped_from_the_cache_after_the_session() ->
     )
     assert "invoice" not in after["quiz_cache"]
     assert after["reports"] == [{"word": "invoice", "kind": "sentence", "date": "2026-01-03"}]
+
+
+class CountingPregenerate:
+    # 몇 번, 어떤 단어로 예문 퀴즈를 만들라고 했는지 세는 가짜 생성기
+    def __init__(self) -> None:
+        self.calls: list[list[str]] = []
+
+    def __call__(self, words, bank, **kwargs) -> dict:
+        self.calls.append(list(words))
+        return {word: {**CACHED_QUIZ, "answer": word, "options": [word, "aaa", "bbb", "ccc"]} for word in words}
+
+
+def answer_but_skip_known_words(answer: str):
+    # "이미 아는 단어" 질문에는 그냥 엔터를 치고, 문제에는 정해둔 답을 내는 입력기
+    return lambda prompt: "" if "아는 단어" in prompt else answer
+
+
+def test_first_day_does_not_wait_for_sentence_quizzes() -> None:
+    # 1일차는 뜻 고르기만 하므로 예문 퀴즈를 미리 만들지 않는다 (기다릴 이유가 없다)
+    pregenerate = CountingPregenerate()
+    run_today_session(
+        small_progress(), BANK, "2026-01-01",
+        input_func=answer_but_skip_known_words("1"), rng=random.Random(0), pregenerate=pregenerate,
+    )
+    assert pregenerate.calls == []
+
+
+def test_second_day_prepares_sentence_quizzes_after_studying() -> None:
+    # 2일차 공부가 끝난 뒤에 3일차에 쓸 예문 퀴즈를 만들어둔다
+    pregenerate = CountingPregenerate()
+    progress = run_today_session(
+        small_progress(), BANK, "2026-01-01",
+        input_func=answer_but_skip_known_words("1"), rng=random.Random(0), pregenerate=pregenerate,
+    )
+    progress = run_today_session(
+        progress, BANK, "2026-01-02",
+        input_func=answer_but_skip_known_words("invoice"), rng=random.Random(0), pregenerate=pregenerate,
+    )
+    assert pregenerate.calls == [["invoice", "warranty"]]
+    assert sorted(progress["quiz_cache"]) == ["invoice", "warranty"]
+
+
+def test_third_day_makes_only_the_quizzes_it_still_needs() -> None:
+    # 3일차인데 예문 퀴즈가 없으면, 그날 필요한 단어만 먼저 만든다
+    progress = small_progress()
+    progress["current_set"] = {"number": 1, "words": ["invoice", "warranty"], "study_dates": ["2026-01-01", "2026-01-02"]}
+    progress["words"] = {word: dict(NEW_WORD_RECORD) for word in ["invoice", "warranty"]}
+    progress["quiz_cache"] = {"invoice": {**CACHED_QUIZ, "answer": "invoice"}}
+    pregenerate = CountingPregenerate()
+    run_today_session(
+        progress, BANK, "2026-01-03",
+        input_func=lambda prompt: "invoice", rng=random.Random(0), pregenerate=pregenerate,
+    )
+    assert pregenerate.calls == [["warranty"]]

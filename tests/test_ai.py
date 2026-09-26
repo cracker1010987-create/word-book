@@ -17,6 +17,7 @@ from ai import (
     make_quiz_verified,
     pregenerate_sentence_quizzes,
     similar_meaning,
+    summarize_failures,
 )
 
 
@@ -595,3 +596,45 @@ class AlwaysBadDistractorChain:
         return DistractorCheck(
             also_correct=[False] * count, too_unrelated=[False] * count, distractors_are_synonyms=True
         )
+
+
+def test_only_the_first_few_failures_are_printed(capsys) -> None:
+    # 키가 틀렸을 때처럼 전부 실패하면, 오류를 단어마다 쏟지 않고 몇 개만 보여준다
+    failures = [("apple", "연결 실패"), ("banana", "연결 실패"), ("car", "연결 실패"), ("desk", "연결 실패")]
+    summarize_failures(failures, total=4)
+    output = capsys.readouterr().out
+    assert output.count("연결 실패") <= 2
+    assert "4개 모두" in output
+
+
+def test_a_few_failures_are_reported_as_a_count(capsys) -> None:
+    # 몇 개만 실패하면 몇 개 실패했는지 알려준다 (나머지는 정상이니 겁줄 필요 없다)
+    summarize_failures([("apple", "일시 오류")], total=50)
+    output = capsys.readouterr().out
+    assert "1개" in output
+
+
+def test_nothing_is_printed_when_everything_worked(capsys) -> None:
+    # 다 성공하면 아무 말도 하지 않는다
+    summarize_failures([], total=50)
+    assert capsys.readouterr().out == ""
+
+
+def test_pregenerate_stops_calling_the_api_after_many_failures() -> None:
+    # 계속 실패하면(키가 없거나 인터넷이 끊긴 경우) 50번 다 시도하지 않고 일찍 멈춘다
+    class AlwaysFailingChain:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def invoke(self, inputs: dict) -> Quiz:
+            self.calls += 1
+            raise RuntimeError("연결 실패")
+
+    chain = AlwaysFailingChain()
+    bank = [{"word": f"word{i}", "meaning_ko": "뜻", "pos": "noun"} for i in range(30)]
+    made = pregenerate_sentence_quizzes(
+        [entry["word"] for entry in bank], bank, chain=chain,
+        grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain(), max_workers=1,
+    )
+    assert made == {}
+    assert chain.calls < 30

@@ -8,7 +8,7 @@ from choice_quiz import make_meaning_choice_quiz
 from grading import grade_answer
 from reports import report_problem
 from schedule import update_after_review
-from session import build_today_session
+from session import build_today_session, study_day_number
 from sets import close_set, is_set_finished, mark_known_words, record_study_day, start_new_set
 from wordbank import load_word_bank
 
@@ -26,17 +26,46 @@ def quiz_making_minutes(count: int) -> int:
 
 # 지금 세트 단어 중 예문 퀴즈가 아직 없는 단어만 골라 만들어 채운다
 # (아는 단어를 걸러내면 세트 단어가 바뀌므로, 세트를 시작할 때 한 번 만들고 끝내면 빈칸이 생긴다)
+def fill_quiz_cache(
+    progress: dict, bank: list[dict], words: list[str],
+    pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes,
+) -> dict:
+    missing = [word for word in words if word not in progress["quiz_cache"]]
+    if not missing:
+        return progress
+    print(f"\n예문 퀴즈 {len(missing)}개를 미리 만드는 중입니다. {quiz_making_minutes(len(missing))}분쯤 걸립니다...")
+    return {**progress, "quiz_cache": {**progress["quiz_cache"], **pregenerate(missing, bank)}}
+
+
+# 지금 세트 단어의 예문 퀴즈를 모두 채운다
 def ensure_quiz_cache(
     progress: dict, bank: list[dict], pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes
 ) -> dict:
     current = progress["current_set"]
     if not current:
         return progress
-    missing = [word for word in current["words"] if word not in progress["quiz_cache"]]
-    if not missing:
+    return fill_quiz_cache(progress, bank, current["words"], pregenerate=pregenerate)
+
+
+# 오늘 낼 문제 중 예문 빈칸으로 낼 것만 먼저 만든다 (1일차에는 만들 게 없어서 기다림도 없다)
+def ensure_quizzes_for_session(
+    progress: dict, bank: list[dict], session: list[dict],
+    pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes,
+) -> dict:
+    needed = [item["word"] for item in session if item["kind"] == "sentence"]
+    return fill_quiz_cache(progress, bank, needed, pregenerate=pregenerate)
+
+
+# 2일차 공부가 끝나면, 3일차에 쓸 예문 퀴즈를 미리 만들어둔다 (풀 때 안 기다리게)
+def prepare_next_day_quizzes(
+    progress: dict, bank: list[dict], today: str,
+    pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes,
+) -> dict:
+    current = progress["current_set"]
+    if not current or study_day_number(current, today) != 2:
         return progress
-    print(f"\n예문 퀴즈 {len(missing)}개를 미리 만드는 중입니다. {quiz_making_minutes(len(missing))}분쯤 걸립니다...")
-    return {**progress, "quiz_cache": {**progress["quiz_cache"], **pregenerate(missing, bank)}}
+    print("\n다음 학습에 쓸 예문 퀴즈를 미리 만들어두겠습니다. 끝나면 꺼도 됩니다.")
+    return ensure_quiz_cache(progress, bank, pregenerate=pregenerate)
 
 
 # 세트를 마감할 때 통과한 단어와 이월된 단어를 화면에 알려준다
@@ -82,7 +111,7 @@ def ensure_current_set(
     input_func: Callable[[str], str] | None = None,
 ) -> dict:
     if progress["current_set"] and not is_set_finished(progress):
-        return ensure_quiz_cache(progress, bank, pregenerate=pregenerate)
+        return progress
     if progress["current_set"]:
         closed = close_set(progress, today)
         print_close_summary(progress, closed)
@@ -91,7 +120,7 @@ def ensure_current_set(
     # 아는 단어를 먼저 걸러내야 최종 세트 단어로 예문 퀴즈를 만든다 (헛수고 방지)
     if input_func:
         progress = ask_known_words(progress, bank, input_func, today)
-    return ensure_quiz_cache(progress, bank, pregenerate=pregenerate)
+    return progress
 
 
 # 채점 결과를 기록한다. 세트 단어는 최근 결과에 쌓고, 복습 단어는 복습 단계를 올리거나 내린다
@@ -238,6 +267,7 @@ def run_today_session(
     rng = rng or random.Random()
     progress = ensure_current_set(progress, bank, today, pregenerate=pregenerate, input_func=input_func)
     session = build_today_session(progress, bank, today)
+    progress = ensure_quizzes_for_session(progress, bank, session, pregenerate=pregenerate)
     print_session_header(progress, session, today)
     correct_count = 0
     reports: list[dict] = []
@@ -248,4 +278,5 @@ def run_today_session(
         correct_count += int(is_correct)
         progress = record_answer(progress, item, is_correct, today)
     print(f"\n{LINE}\n오늘 {len(session)}문제 중 {correct_count}개를 맞혔습니다.")
+    progress = prepare_next_day_quizzes(progress, bank, today, pregenerate=pregenerate)
     return record_study_day(save_reports(progress, reports, today), today)

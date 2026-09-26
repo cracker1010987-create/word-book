@@ -445,6 +445,22 @@ def generate_all_meanings(
     return meanings
 
 
+# 연달아 이만큼 실패하면 키나 인터넷 문제로 보고 그만 시도한다
+FAILURES_BEFORE_GIVING_UP = 5
+
+
+# 못 만든 단어들을 한 번에 정리해서 알려준다 (단어마다 오류를 쏟지 않는다)
+def summarize_failures(failures: list[tuple[str, str]], total: int) -> None:
+    if not failures:
+        return
+    if len(failures) >= total:
+        print(f"\n예문 퀴즈 {total}개 모두 만들지 못했습니다. .env의 OPENAI_API_KEY와 인터넷 연결을 확인해주세요.")
+    else:
+        print(f"\n예문 퀴즈 {len(failures)}개를 못 만들었습니다. 그 단어는 영어 쓰기로 대신 냅니다.")
+    for word, error in failures[:2]:
+        print(f"  ({word}: {error})")
+
+
 def pregenerate_sentence_quizzes(
     words: list[str],
     bank: list[dict],
@@ -463,17 +479,26 @@ def pregenerate_sentence_quizzes(
     meanings = {entry["word"]: entry["meaning_ko"] for entry in bank}
     targets = [word for word in words if word in meanings]
     # 단어 하나에서 API 오류가 나도 나머지는 만들어야 하므로, 실패한 단어만 건너뛴다
+    failures: list[tuple[str, str]] = []
+    made_any = False
+
     def make_one(word: str) -> tuple[str, dict | None]:
+        nonlocal made_any
+        # 계속 실패하는 중이면 더 부르지 않는다 (키가 없으면 50번 다 기다릴 이유가 없다)
+        if len(failures) >= FAILURES_BEFORE_GIVING_UP and not made_any:
+            return word, None
         try:
             quiz = make_quiz_verified(
                 word, meanings[word], chain=chain, grammar_chain=grammar_chain,
                 distractor_chain=distractor_chain, bank=bank,
             )
+            made_any = True
             return word, quiz.model_dump()
         except Exception as error:
-            print(f"  ('{word}' 예문 퀴즈를 못 만들었습니다: {error})")
+            failures.append((word, str(error)))
             return word, None
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        made = pool.map(make_one, targets)
-        return {word: quiz for word, quiz in made if quiz}
+        made = {word: quiz for word, quiz in pool.map(make_one, targets) if quiz}
+    summarize_failures(failures, len(targets))
+    return made
