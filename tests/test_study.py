@@ -236,3 +236,45 @@ def test_known_words_asked_only_when_a_set_starts() -> None:
     def should_not_be_called(prompt: str) -> str:
         raise AssertionError("진행 중인 세트에서는 묻지 않아야 한다")
     ensure_current_set(started, BANK, "2026-01-02", pregenerate=fake_pregenerate, input_func=should_not_be_called)
+
+
+def set_item(word: str, kind: str) -> dict:
+    # 세트 단어 문제 하나를 만든다 (테스트에서 ask_item에 넘길 용도)
+    return {"word": word, "kind": kind, "source": "set"}
+
+
+def test_question_mark_reports_the_problem_and_then_asks_again(capsys) -> None:
+    # 답 대신 ?를 치면 신고로 받아들이고, 같은 문제를 다시 물어본다
+    progress = default_progress()
+    reports: list[dict] = []
+    answers = iter(["?", "invoice"])
+    is_correct = ask_item(
+        set_item("invoice", "spelling"), BANK, progress,
+        lambda prompt: next(answers), random.Random(0), reports,
+    )
+    assert reports == [{"word": "invoice", "kind": "spelling"}]
+    assert is_correct is True
+    assert "신고" in capsys.readouterr().out
+
+
+def test_normal_answer_does_not_report_anything() -> None:
+    # 평소처럼 답하면 신고 기록은 생기지 않는다
+    reports: list[dict] = []
+    ask_item(
+        set_item("invoice", "spelling"), BANK, default_progress(),
+        lambda prompt: "invoice", random.Random(0), reports,
+    )
+    assert reports == []
+
+
+def test_reported_sentence_quiz_is_dropped_from_the_cache_after_the_session() -> None:
+    # 예문 퀴즈를 신고하고 하루 학습을 끝내면, 그 퀴즈는 버려지고 신고가 기록에 남는다
+    progress = ensure_current_set(small_progress(), BANK, "2026-01-01", pregenerate=fake_pregenerate)
+    progress["current_set"]["study_dates"] = ["2026-01-01", "2026-01-02"]
+    answers = iter(["?", "invoice", "warranty"])
+    after = run_today_session(
+        progress, BANK, "2026-01-03",
+        input_func=lambda prompt: next(answers), rng=random.Random(0), pregenerate=fake_pregenerate,
+    )
+    assert "invoice" not in after["quiz_cache"]
+    assert after["reports"] == [{"word": "invoice", "kind": "sentence", "date": "2026-01-03"}]

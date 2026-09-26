@@ -12,6 +12,7 @@ from storage import add_word, load_words, save_words
 from stats import calculate_progress, calculate_stats
 from ai import Quiz, make_quiz_verified
 from progress import add_my_word, load_progress, migrate_words, save_progress
+from reports import reported_words
 from study import run_today_session
 from wordbank import load_word_bank
 
@@ -138,6 +139,9 @@ def print_progress(today: str) -> None:
     print(f"  전체 {result['total']}단어 중 {result['graduated']}단어 완료 ({result['percent']}%)")
     print(f"  복습 중: {result['reviewing']}단어 | 이번 세트: {result['in_set']}단어")
     print(f"  아직 안 본 단어: {result['not_started']}단어 | 공부한 날: {progress.get('total_study_days', 0)}일")
+    reported = reported_words(progress)
+    if reported:
+        print(f"  신고한 문제: {len(progress['reports'])}개 (단어: {', '.join(reported[:5])})")
     if result["finish_date"]:
         print(f"  지금 속도면 앞으로 {result['days_left']}일, {result['finish_date']}쯤 끝납니다.")
     else:

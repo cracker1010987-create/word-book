@@ -227,3 +227,14 @@ def test_menu_list_with_no_my_words_shows_message(tmp_path, capsys, monkeypatch)
     answers = iter(["4", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     assert "직접 넣은 단어가 없습니다" in capsys.readouterr().out
+
+
+def test_progress_view_shows_how_many_problems_i_reported(tmp_path, capsys, monkeypatch) -> None:
+    # 진도 보기에서 내가 신고한 문제가 몇 개인지 보여준다
+    monkeypatch.chdir(tmp_path)
+    from progress import default_progress, save_progress
+    from reports import report_problem
+    save_progress(report_problem(default_progress(), "reimburse", "sentence", "2026-01-01"))
+    answers = iter(["3", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-02", clear_func=fake_clear)
+    assert "신고한 문제: 1개" in capsys.readouterr().out

@@ -6,6 +6,7 @@ from typing import Any, Callable
 from ai import pregenerate_sentence_quizzes
 from choice_quiz import make_meaning_choice_quiz
 from grading import grade_answer
+from reports import report_problem
 from schedule import update_after_review
 from session import build_today_session
 from sets import close_set, is_set_finished, mark_known_words, record_study_day, start_new_set
@@ -14,6 +15,8 @@ from wordbank import load_word_bank
 LINE = "-" * 40
 # 문제 종류를 화면에 보여줄 때 쓰는 이름
 KIND_NAMES = {"meaning_choice": "뜻 고르기", "spelling": "영어 쓰기", "sentence": "예문 빈칸"}
+# 답 대신 이 글자를 치면 "이 문제 이상해요" 신고가 된다
+REPORT_KEY = "?"
 
 
 # 지금 세트 단어 중 예문 퀴즈가 아직 없는 단어만 골라 만들어 채운다
@@ -100,6 +103,23 @@ def record_answer(progress: dict, item: dict, is_correct: bool, today: str) -> d
     return {**progress, "words": {**progress["words"], word: updated}, "carry_over": carry_over}
 
 
+# 문제 하나를 신고할 때 부를 함수를 만든다 (문제마다 단어와 종류가 다르다)
+def make_reporter(reports: list[dict], word: str, kind: str) -> Callable[[], None]:
+    def report() -> None:
+        reports.append({"word": word, "kind": kind})
+        print("신고했습니다. 이 문제는 다음에 새로 만들겠습니다.\n")
+    return report
+
+
+# 답을 받는다. ?를 치면 신고로 기록하고 같은 문제를 다시 물어본다
+def ask_answer(prompt: str, input_func, report: Callable[[], None]) -> str:
+    while True:
+        answer = input_func(prompt)
+        if answer.strip() != REPORT_KEY:
+            return answer
+        report()
+
+
 # 보기 목록을 번호를 붙여 보여준다
 def print_options(options: list[str]) -> None:
     for number, option in enumerate(options, 1):
@@ -116,11 +136,11 @@ def chosen_option(answer: str, options: list[str]) -> str:
 
 
 # 뜻 고르기 문제를 내고 번호로 답을 받아 채점한다
-def ask_meaning_choice(word: str, bank: list[dict], input_func, rng: random.Random) -> bool:
+def ask_meaning_choice(word: str, bank: list[dict], input_func, rng: random.Random, report) -> bool:
     quiz = make_meaning_choice_quiz(word, bank, rng)
     print(f"{word} 의 뜻은?\n")
     print_options(quiz["options"])
-    picked = chosen_option(input_func("번호 입력 > "), quiz["options"])
+    picked = chosen_option(ask_answer("번호 입력 (이상한 문제면 ?) > ", input_func, report), quiz["options"])
     correct = picked == quiz["answer"]
     print("정답입니다!" if correct else f"오답입니다. 정답은 '{quiz['answer']}' 입니다.")
     return correct
@@ -139,18 +159,20 @@ def with_object_particle(word: str) -> str:
 
 
 # 뜻을 보여주고 영어 단어를 직접 쓰게 한다
-def ask_spelling(word: str, meaning: str, input_func) -> bool:
+def ask_spelling(word: str, meaning: str, input_func, report) -> bool:
     print(f"'{meaning}'{object_particle(meaning)} 뜻하는 영어 단어는?\n")
-    correct = grade_answer(input_func("영어로 입력 > "), word)
+    correct = grade_answer(ask_answer("영어로 입력 (이상한 문제면 ?) > ", input_func, report), word)
     print("정답입니다!" if correct else f"오답입니다. 정답은 '{word}' 입니다.")
     return correct
 
 
 # 미리 만들어둔 예문 빈칸 퀴즈를 내고 채점한다 (풀 때는 AI를 부르지 않는다)
-def ask_sentence(word: str, quiz: dict, input_func) -> bool:
+def ask_sentence(word: str, quiz: dict, input_func, report) -> bool:
     print(textwrap.fill(quiz["sentence"], width=60) + "\n")
     print_options(quiz["options"])
-    picked = chosen_option(input_func("정답 입력 (번호 또는 영어 단어) > "), quiz["options"])
+    picked = chosen_option(
+        ask_answer("정답 입력 (번호 또는 영어 단어, 이상한 문제면 ?) > ", input_func, report), quiz["options"]
+    )
     correct = grade_answer(picked, quiz["answer"])
     print("정답입니다!" if correct else f"오답입니다. 정답은 '{quiz['answer']}' 입니다.")
     if quiz.get("explanation"):
@@ -159,19 +181,22 @@ def ask_sentence(word: str, quiz: dict, input_func) -> bool:
 
 
 # 문제 하나를 종류에 맞게 내고 채점 결과를 돌려준다
-def ask_item(item: dict, bank: list[dict], progress: dict, input_func, rng: random.Random) -> bool:
+def ask_item(
+    item: dict, bank: list[dict], progress: dict, input_func, rng: random.Random,
+    reports: list[dict] | None = None,
+) -> bool:
     word = item["word"]
+    reports = reports if reports is not None else []
     # 단어장 뜻을 먼저 쓰되, 단어장에 없는 내 단어는 내가 적어둔 뜻을 쓴다
     meanings = {**progress.get("my_words", {}), **{entry["word"]: entry["meaning_ko"] for entry in bank}}
     if item["kind"] == "meaning_choice":
-        return ask_meaning_choice(word, bank, input_func, rng)
-    if item["kind"] == "spelling":
-        return ask_spelling(word, meanings.get(word, ""), input_func)
-    quiz = progress["quiz_cache"].get(word)
-    if not quiz:
+        return ask_meaning_choice(word, bank, input_func, rng, make_reporter(reports, word, "meaning_choice"))
+    quiz = progress["quiz_cache"].get(word) if item["kind"] == "sentence" else None
+    if item["kind"] == "sentence" and not quiz:
         print("(예문 퀴즈를 아직 못 만들어서 영어 쓰기로 대신합니다)\n")
-        return ask_spelling(word, meanings.get(word, ""), input_func)
-    return ask_sentence(word, quiz, input_func)
+    if not quiz:
+        return ask_spelling(word, meanings.get(word, ""), input_func, make_reporter(reports, word, "spelling"))
+    return ask_sentence(word, quiz, input_func, make_reporter(reports, word, "sentence"))
 
 
 # 오늘이 세트 몇 일차이고 어떤 종류의 문제를 푸는지 화면 맨 위에 알려준다
@@ -183,6 +208,16 @@ def print_session_header(progress: dict, session: list[dict], today: str) -> Non
     day = len(current["study_dates"]) + (0 if today in current["study_dates"] else 1) if current else 0
     print(f"\n세트 {current['number'] if current else '-'} · {day}일차 · 오늘 {len(session)}문제")
     print(f"  세트 단어 {len(set_items)}문제({kind}) + 복습 {reviews}문제")
+    print("  문제가 이상하면 답 대신 ? 를 입력하세요.")
+
+
+# 오늘 신고한 문제들을 학습 기록에 남긴다 (신고한 예문 퀴즈는 버려서 다음에 새로 만든다)
+def save_reports(progress: dict, reports: list[dict], today: str) -> dict:
+    for entry in reports:
+        progress = report_problem(progress, entry["word"], entry["kind"], today)
+    if reports:
+        print(f"신고한 문제 {len(reports)}개를 기록했습니다.")
+    return progress
 
 
 # 오늘 풀 문제를 차례로 내고, 결과를 기록한 학습 기록을 돌려준다
@@ -200,11 +235,12 @@ def run_today_session(
     session = build_today_session(progress, bank, today)
     print_session_header(progress, session, today)
     correct_count = 0
+    reports: list[dict] = []
     for number, item in enumerate(session, 1):
         label = "복습" if item["source"] == "review" else "세트 단어"
         print(f"\n{LINE}\n{label} {number}/{len(session)}\n")
-        is_correct = ask_item(item, bank, progress, input_func, rng)
+        is_correct = ask_item(item, bank, progress, input_func, rng, reports)
         correct_count += int(is_correct)
         progress = record_answer(progress, item, is_correct, today)
     print(f"\n{LINE}\n오늘 {len(session)}문제 중 {correct_count}개를 맞혔습니다.")
-    return record_study_day(progress, today)
+    return record_study_day(save_reports(progress, reports, today), today)

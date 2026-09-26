@@ -15,6 +15,7 @@ def default_progress() -> dict:
         "carry_over": [],
         "quiz_cache": {},
         "my_words": {},
+        "reports": [],
     }
 
 
