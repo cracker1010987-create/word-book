@@ -102,8 +102,6 @@ def migrate_old_words_once(path: str) -> None:
 def run_study(input_func: Callable[[str], str], today: str) -> None:
     progress = load_progress()
     bank = load_word_bank()
-    if not progress["current_set"]:
-        print("세트를 준비하는 중입니다. 예문 퀴즈를 미리 만드느라 1~2분 걸릴 수 있습니다...\n")
     progress = run_today_session(progress, bank, today, input_func=input_func)
     save_progress(progress)
     done = len(progress["current_set"]["study_dates"]) if progress["current_set"] else 0
@@ -154,6 +152,16 @@ def print_stats(path: str) -> None:
     print(f"  완전히 외운 단어 수: {stats['mastered_words']}")
 
 
+# 내가 직접 넣은 단어(progress.json의 my_words)를 번호를 붙여 보여준다
+def print_my_words() -> None:
+    my_words = load_progress().get("my_words", {})
+    if not my_words:
+        print("아직 직접 넣은 단어가 없습니다. 2번으로 넣어보세요.")
+        return
+    for i, (word, meaning) in enumerate(my_words.items(), 1):
+        print(f"  {i}. {word} - {meaning}")
+
+
 # 추가된 단어 전체를 번호를 붙여 목록으로 보여준다
 def print_word_list(path: str) -> None:
     words = load_words(path)
@@ -188,7 +196,7 @@ def run_menu_action(
     elif choice == "3":
         print_progress(today)
     elif choice == "4":
-        print_word_list(path)
+        print_my_words()
     else:
         print("1~5 중에서 골라주세요.")
 

@@ -201,3 +201,38 @@ def test_my_own_word_uses_the_meaning_i_wrote(capsys) -> None:
     ask_item({"word": "brisk", "kind": "spelling", "source": "set"}, BANK, progress,
              lambda prompt: "brisk", random.Random(1))
     assert "활기찬, 빠른" in capsys.readouterr().out
+
+
+def test_new_set_asks_which_words_i_already_know(capsys) -> None:
+    # 새 세트를 시작하면 단어 목록을 보여주고 아는 단어 번호를 물어본다
+    answers = iter(["1"])
+    progress = ensure_current_set(
+        small_progress(), BANK, "2026-01-01",
+        pregenerate=fake_pregenerate, input_func=lambda prompt: next(answers, ""),
+    )
+    output = capsys.readouterr().out
+    assert "아는 단어" in output
+    # 1번(invoice)을 안다고 했으므로 졸업 처리되고 다음 단어로 채워진다
+    assert progress["words"]["invoice"]["graduated"] is True
+    assert "invoice" not in progress["current_set"]["words"]
+    assert len(progress["current_set"]["words"]) == 2
+
+
+def test_pressing_enter_keeps_every_word_in_the_set() -> None:
+    # 그냥 엔터를 치면 아는 단어가 없는 것으로 보고 세트를 그대로 둔다
+    progress = ensure_current_set(
+        small_progress(), BANK, "2026-01-01",
+        pregenerate=fake_pregenerate, input_func=lambda prompt: "",
+    )
+    assert progress["current_set"]["words"] == ["invoice", "warranty"]
+    assert all(not record["graduated"] for record in progress["words"].values())
+
+
+def test_known_words_asked_only_when_a_set_starts() -> None:
+    # 이미 진행 중인 세트에서는 다시 묻지 않는다
+    started = ensure_current_set(
+        small_progress(), BANK, "2026-01-01", pregenerate=fake_pregenerate, input_func=lambda prompt: ""
+    )
+    def should_not_be_called(prompt: str) -> str:
+        raise AssertionError("진행 중인 세트에서는 묻지 않아야 한다")
+    ensure_current_set(started, BANK, "2026-01-02", pregenerate=fake_pregenerate, input_func=should_not_be_called)

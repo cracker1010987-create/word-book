@@ -8,7 +8,7 @@ from choice_quiz import make_meaning_choice_quiz
 from grading import grade_answer
 from schedule import update_after_review
 from session import build_today_session
-from sets import close_set, is_set_finished, record_study_day, start_new_set
+from sets import close_set, is_set_finished, mark_known_words, record_study_day, start_new_set
 from wordbank import load_word_bank
 
 LINE = "-" * 40
@@ -27,6 +27,7 @@ def ensure_quiz_cache(
     missing = [word for word in current["words"] if word not in progress["quiz_cache"]]
     if not missing:
         return progress
+    print(f"\n예문 퀴즈 {len(missing)}개를 미리 만드는 중입니다. 2~4분 걸릴 수 있습니다...")
     return {**progress, "quiz_cache": {**progress["quiz_cache"], **pregenerate(missing, bank)}}
 
 
@@ -40,9 +41,37 @@ def print_close_summary(before: dict, after: dict) -> None:
     print(f"  다음 세트로 이월({len(carried)}개): {', '.join(carried) if carried else '없음'}\n")
 
 
+# 입력한 "1, 3" 같은 번호들을 실제 단어로 바꾼다 (번호가 아니거나 범위를 벗어나면 무시한다)
+def picked_words(answer: str, words: list[str]) -> list[str]:
+    picked = []
+    for piece in answer.replace(" ", "").split(","):
+        if piece.isdigit() and 1 <= int(piece) <= len(words):
+            picked.append(words[int(piece) - 1])
+    return picked
+
+
+# 새 세트 단어를 보여주고 이미 아는 단어를 받아 바로 졸업시킨다 (그만큼 새 단어로 채워진다)
+def ask_known_words(progress: dict, bank: list[dict], input_func, today: str) -> dict:
+    words = progress["current_set"]["words"]
+    meanings = {**progress.get("my_words", {}), **{entry["word"]: entry["meaning_ko"] for entry in bank}}
+    print(f"\n세트 {progress['current_set']['number']} 단어 {len(words)}개입니다.")
+    for number, word in enumerate(words, 1):
+        print(f"  {number}) {word} - {meanings.get(word, '')}")
+    answer = input_func("\n이미 아는 단어 번호를 쉼표로 입력하세요 (없으면 엔터) > ")
+    known = picked_words(answer, words)
+    if not known:
+        return progress
+    print(f"\n아는 단어 {len(known)}개를 졸업 처리하고 새 단어로 채웁니다: {', '.join(known)}")
+    return mark_known_words(progress, known, bank, today)
+
+
 # 세트가 없거나 다 끝났으면 마감하고 새 세트를 시작한다. 세트 단어의 예문 퀴즈도 미리 만들어둔다
 def ensure_current_set(
-    progress: dict, bank: list[dict], today: str, pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes
+    progress: dict,
+    bank: list[dict],
+    today: str,
+    pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes,
+    input_func: Callable[[str], str] | None = None,
 ) -> dict:
     if progress["current_set"] and not is_set_finished(progress):
         return ensure_quiz_cache(progress, bank, pregenerate=pregenerate)
@@ -51,6 +80,9 @@ def ensure_current_set(
         print_close_summary(progress, closed)
         progress = closed
     progress = start_new_set(progress, bank, today)
+    # 아는 단어를 먼저 걸러내야 최종 세트 단어로 예문 퀴즈를 만든다 (헛수고 방지)
+    if input_func:
+        progress = ask_known_words(progress, bank, input_func, today)
     return ensure_quiz_cache(progress, bank, pregenerate=pregenerate)
 
 
@@ -164,7 +196,7 @@ def run_today_session(
 ) -> dict:
     bank = bank if bank is not None else load_word_bank()
     rng = rng or random.Random()
-    progress = ensure_current_set(progress, bank, today, pregenerate=pregenerate)
+    progress = ensure_current_set(progress, bank, today, pregenerate=pregenerate, input_func=input_func)
     session = build_today_session(progress, bank, today)
     print_session_header(progress, session, today)
     correct_count = 0

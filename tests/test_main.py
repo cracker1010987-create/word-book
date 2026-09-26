@@ -154,14 +154,14 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
     assert "사과" in output
 
 
-def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsys) -> None:
+def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsys, monkeypatch) -> None:
     # 목록 보기 다음에 다른 메뉴로 가면, 목록을 지운 뒤에 새 화면이 나온다 (앞 화면이 남지 않는다)
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
+    monkeypatch.chdir(tmp_path)
+    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, "words.json")
     answers = iter(["4", "", "9", "", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
+    main([], path="words.json", input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
-    list_pos = output.index("틀린 횟수: 0")
+    list_pos = output.index("1. apple - 사과")
     next_screen_pos = output.index("1~5 중에서")
     assert list_pos < output.rfind(CLEAR_MARK, 0, next_screen_pos)
 
@@ -210,3 +210,20 @@ def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, m
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"]["elaborate"] == "정교한"
+
+
+def test_menu_list_shows_words_added_through_the_menu(tmp_path, capsys, monkeypatch) -> None:
+    # 메뉴 2번으로 넣은 단어는 메뉴 4번(목록 보기)에 나와야 한다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "brisk", "활기찬", "", "4", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    output = capsys.readouterr().out
+    assert "1. brisk - 활기찬" in output
+
+
+def test_menu_list_with_no_my_words_shows_message(tmp_path, capsys, monkeypatch) -> None:
+    # 내 단어가 하나도 없으면 목록 보기에서 안내 메시지가 나온다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["4", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    assert "직접 넣은 단어가 없습니다" in capsys.readouterr().out
