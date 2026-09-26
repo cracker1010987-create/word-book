@@ -11,10 +11,12 @@ from ai import (
     check_grammar,
     generate_all_meanings,
     generate_meanings,
+    distractors_cluster,
     is_valid_quiz,
     make_quiz,
     make_quiz_verified,
     pregenerate_sentence_quizzes,
+    similar_meaning,
 )
 
 
@@ -498,3 +500,98 @@ def test_pregenerate_skips_a_word_that_fails_instead_of_stopping_everything() ->
         grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain(),
     )
     assert sorted(quizzes) == ["invoice"]
+
+
+# 뜻이 뭉치는지 코드로 확인할 때 쓰는 작은 단어장
+CLUSTER_BANK = [
+    {"word": "reimburse", "meaning_ko": "환급하다", "pos": "verb"},
+    {"word": "charge", "meaning_ko": "요금을 청구하다, 요금, 담당", "pos": "verb"},
+    {"word": "bill", "meaning_ko": "청구서, 계산서", "pos": "noun"},
+    {"word": "invoice", "meaning_ko": "송장", "pos": "noun"},
+    {"word": "postpone", "meaning_ko": "연기하다", "pos": "verb"},
+    {"word": "hire", "meaning_ko": "고용하다", "pos": "verb"},
+]
+
+
+def cluster_quiz(options: list[str], answer: str = "reimburse") -> Quiz:
+    # 뜻 뭉침 검사에 넣을 퀴즈 하나를 만든다
+    return Quiz(sentence="The company will ___ your travel costs.", options=options, answer=answer, explanation="")
+
+
+def test_similar_meaning_sees_through_endings_and_particles() -> None:
+    # '요금을 청구하다'와 '청구서'는 같은 뜻으로 본다 (조사와 '~하다'는 떼고 비교한다)
+    assert similar_meaning("요금을 청구하다, 요금, 담당", "청구서, 계산서") is True
+    assert similar_meaning("환급하다", "송장") is False
+    # '~하다'만 같다고 비슷하다고 보면 안 된다 (연기하다 vs 고용하다)
+    assert similar_meaning("연기하다", "고용하다") is False
+
+
+def test_distractors_cluster_when_two_of_them_mean_the_same() -> None:
+    # 오답 3개 중 둘이 같은 뜻이면(charge/bill) 뭉친 것으로 보고 걸러낸다
+    quiz = cluster_quiz(["reimburse", "charge", "bill", "invoice"])
+    assert distractors_cluster(quiz, CLUSTER_BANK) is True
+
+
+def test_distractors_do_not_cluster_when_meanings_are_all_different() -> None:
+    # 오답끼리 뜻이 서로 다르면 통과한다
+    quiz = cluster_quiz(["reimburse", "postpone", "hire", "invoice"])
+    assert distractors_cluster(quiz, CLUSTER_BANK) is False
+
+
+def test_words_missing_from_the_bank_are_not_treated_as_clustered() -> None:
+    # 단어장에 없는 보기는 뜻을 모르니 뭉쳤다고 단정하지 않는다
+    quiz = cluster_quiz(["reimburse", "aaa", "bbb", "ccc"])
+    assert distractors_cluster(quiz, CLUSTER_BANK) is False
+
+
+def test_make_quiz_verified_retries_when_distractor_meanings_cluster() -> None:
+    # AI 검사를 통과해도 오답 뜻이 뭉쳐 있으면 코드가 걸러서 다시 만든다
+    clustered = cluster_quiz(["reimburse", "charge", "bill", "invoice"])
+    clean = cluster_quiz(["reimburse", "postpone", "hire", "invoice"])
+    chain = SequentialFakeChain([clustered, clean])
+    quiz = make_quiz_verified(
+        "reimburse", "환급하다", chain=chain,
+        grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain(),
+        bank=CLUSTER_BANK,
+    )
+    assert quiz is clean
+    assert chain.calls == 2
+
+
+def test_quiz_is_not_cluster_checked_without_a_bank() -> None:
+    # 단어장을 안 넘기면(예전처럼 부를 때) 뜻 뭉침 검사는 건너뛴다
+    clustered = cluster_quiz(["reimburse", "charge", "bill", "invoice"])
+    chain = SequentialFakeChain([clustered])
+    quiz = make_quiz_verified(
+        "reimburse", "환급하다", chain=chain,
+        grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain(),
+    )
+    assert quiz is clustered
+
+
+def test_only_sharing_a_negative_ending_is_not_the_same_meaning() -> None:
+    # '결석한'과 '신뢰할 수 없는'은 '없는'만 같을 뿐 같은 뜻이 아니다
+    assert similar_meaning("없는, 결석한", "신뢰할 수 없는") is False
+    assert similar_meaning("믿을 수 있는", "먹을 수 있는") is False
+
+
+def test_fallback_prefers_a_quiz_whose_distractors_do_not_cluster() -> None:
+    # 끝까지 다 통과하는 퀴즈를 못 만들면, 그래도 뜻이 안 뭉친 쪽을 돌려준다
+    clustered = cluster_quiz(["reimburse", "charge", "bill", "invoice"])
+    clean = cluster_quiz(["reimburse", "postpone", "hire", "invoice"])
+    chain = SequentialFakeChain([clustered, clean, clustered])
+    quiz = make_quiz_verified(
+        "reimburse", "환급하다", chain=chain,
+        grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysBadDistractorChain(),
+        bank=CLUSTER_BANK,
+    )
+    assert quiz is clean
+
+
+class AlwaysBadDistractorChain:
+    # 오답 검사를 항상 떨어뜨리는 가짜 체인 (되돌림 동작을 확인할 때 쓴다)
+    def invoke(self, inputs: dict) -> DistractorCheck:
+        count = len(inputs["options"])
+        return DistractorCheck(
+            also_correct=[False] * count, too_unrelated=[False] * count, distractors_are_synonyms=True
+        )

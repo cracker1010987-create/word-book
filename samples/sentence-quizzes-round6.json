@@ -1,0 +1,112 @@
+{
+  "reimburse": {
+    "sentence": "To restore the money employees had already spent on emergency hotel rooms, the company will ___ them for the exact amount shown on their receipts.",
+    "options": [
+      "reimburse",
+      "charge",
+      "bill",
+      "debit"
+    ],
+    "answer": "reimburse",
+    "explanation": "“restore the money”와 직원들이 이미 지출한 “the exact amount shown on their receipts”라는 단서 때문에 회사가 그 비용을 돌려주는 reimburse가 맞습니다. charge, bill, debit도 “them for the exact amount”와 문법적으로 결합하지만, 각각 직원에게 금액을 청구하거나 계좌에서 인출한다는 뜻이어서 이미 쓴 돈을 돌려주는 상황과 맞지 않습니다."
+  },
+  "itinerary": {
+    "sentence": "Before her ten-day trip, Mina checked the ___ for the exact train times, hotel addresses, and museum reservations, all arranged in chronological order.",
+    "options": [
+      "itinerary",
+      "brochure",
+      "guidebook",
+      "checklist"
+    ],
+    "answer": "itinerary",
+    "explanation": "“Exact train times, hotel addresses, and museum reservations”이 “chronological order”로 정리되어 있다는 점은 여행의 전체 일정을 보여 주는 itinerary를 가리킨다. brochure는 홍보 자료, guidebook은 여행 안내서, checklist는 할 일 목록이므로 이처럼 이동 순서와 예약 내용을 한데 정리한 문서에는 맞지 않는다."
+  },
+  "punctual": {
+    "sentence": "She was ___ for every shift, arriving ten minutes early and never making her coworkers wait.",
+    "options": [
+      "punctual",
+      "late",
+      "absent",
+      "unreliable"
+    ],
+    "answer": "punctual",
+    "explanation": "“arriving ten minutes early”와 “never making her coworkers wait”라는 구체적인 단서가 시간을 지키는 태도를 가리키므로 punctual이 맞습니다. late는 늦는 경우, absent는 근무에 나오지 않는 경우, unreliable은 일관되게 믿기 어려운 경우를 뜻하므로 이 상황과 맞지 않습니다."
+  },
+  "warranty": {
+    "sentence": "The camera came with the ___, which promised free repairs for manufacturing defects for one year but excluded damage from drops.",
+    "options": [
+      "warranty",
+      "return policy",
+      "maintenance plan",
+      "replacement policy"
+    ],
+    "answer": "warranty",
+    "explanation": "“Free repairs for manufacturing defects for one year”이라는 약속은 제품의 보증을 뜻하므로 warranty가 맞다. return policy는 보통 환불이나 반품 조건을, maintenance plan은 정기적인 관리 서비스를, replacement policy는 제품 교체 조건을 가리키므로 이 문장의 ‘결함 수리 약속’과 맞지 않는다."
+  },
+  "tenant": {
+    "sentence": "The ___ paid monthly rent directly to the building owner and occupied the apartment under a one-year lease.",
+    "options": [
+      "tenant",
+      "landlord",
+      "homeowner",
+      "property manager"
+    ],
+    "answer": "tenant",
+    "explanation": "“paid monthly rent directly to the building owner”와 “occupied the apartment under a one-year lease”라는 구체적인 단서가 아파트에 거주하며 임대료를 내는 사람을 가리키므로 tenant가 맞습니다. landlord는 보통 임대료를 받는 쪽이고, homeowner는 소유자이며, property manager는 건물 관리를 담당하는 사람이므로 이 문맥에 맞지 않습니다."
+  },
+  "postpone": {
+    "sentence": "After the safety inspection found a serious crack in the stage, the organizers decided to ___ the concert, moving it from Tuesday to Friday when repairs would be finished.",
+    "options": [
+      "postpone",
+      "advance",
+      "cancel",
+      "resume"
+    ],
+    "answer": "postpone",
+    "explanation": "“moving it from Tuesday to Friday”와 “repairs would be finished”라는 단서처럼 행사를 뒤로 미루는 상황이므로 postpone이 맞다. advance는 앞당기는 뜻이고, cancel은 행사를 없애는 것이며, resume은 중단된 행사를 다시 시작하는 뜻이라 이 문맥에 맞지 않는다."
+  },
+  "invoice": {
+    "sentence": "The supplier sent the ___ for this single shipment, itemizing the 40 boxes delivered, the agreed unit prices, sales tax, and a payment deadline; no payment had yet been made.",
+    "options": [
+      "invoice",
+      "receipt",
+      "estimate",
+      "purchase order"
+    ],
+    "answer": "invoice",
+    "explanation": "“40 boxes delivered”의 품목별 가격과 세금, 그리고 “a payment deadline”을 적어 아직 지불하지 않은 금액을 청구하는 문서이므로 invoice가 맞다. receipt는 이미 지불한 뒤 받는 영수증이고, estimate는 실제 배송 내역이 아닌 예상 금액이며, purchase order는 구매자가 주문할 때 작성하는 문서라서 이 상황에 맞지 않는다."
+  },
+  "preliminary": {
+    "sentence": "The researchers ran ___ tests on just six devices to catch obvious safety problems before recruiting hundreds of volunteers for the full clinical trial.",
+    "options": [
+      "preliminary",
+      "final",
+      "interim",
+      "follow-up"
+    ],
+    "answer": "preliminary",
+    "explanation": "“on just six devices”와 “before recruiting hundreds of volunteers for the full clinical trial”은 본격적인 시험에 앞서 소규모로 먼저 확인하는 단계라는 단서이므로 preliminary가 맞다. final은 마지막 단계, interim은 진행 중간 단계, follow-up은 이전 검사나 치료 뒤에 하는 후속 단계라서 이 문맥의 시간 순서와 맞지 않는다."
+  },
+  "vendor": {
+    "sentence": "A ___ at the weekend market collected payment directly from shoppers and handed them jars of honey.",
+    "options": [
+      "vendor",
+      "customer",
+      "producer",
+      "courier"
+    ],
+    "answer": "vendor",
+    "explanation": "“collected payment directly from shoppers”와 “handed them jars of honey”라는 행동은 시장에서 물건을 파는 사람을 가리키므로 vendor가 맞습니다. customer는 물건을 사는 사람이고, producer는 물건을 만드는 사람이며, courier는 물건을 배달하는 사람이므로 이 문맥에 맞지 않습니다."
+  },
+  "deadline": {
+    "sentence": "When the website stopped accepting entries at 11:59 p.m. Friday, Maya realized the contest ___ had passed.",
+    "options": [
+      "deadline",
+      "launch date",
+      "judging date",
+      "announcement date"
+    ],
+    "answer": "deadline",
+    "explanation": "“stopped accepting entries at 11:59 p.m.”라는 단서는 더 이상 제출할 수 있는 마지막 시점이 지났다는 뜻이므로 deadline이 맞습니다. launch date는 대회 시작일, judging date는 심사일, announcement date는 발표일이라 제출 접수 중단을 가리키지 않습니다."
+  }
+}

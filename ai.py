@@ -161,6 +161,56 @@ def shares_root_with_sentence(word: str, sentence: str) -> bool:
     return any(other.lower().startswith(target[:5]) for other in re.findall(r"[A-Za-z]+", sentence))
 
 
+# 뜻을 비교하기 전에 떼어내는 꼬리말 (이것까지 같다고 보면 '연기하다'와 '고용하다'가 같은 뜻이 된다)
+MEANING_ENDINGS = ("하다", "되다", "시키다", "스럽다", "롭다", "적인")
+MEANING_PARTICLES = ("에서", "으로", "을", "를", "의", "이", "가", "은", "는", "에", "로")
+# 뜻이 아니라 말버릇에 가까운 낱말들. 이것까지 비교하면 '결석한'과 '신뢰할 수 없는'이 같은 뜻이 된다
+MEANING_STOPWORDS = ("수", "것", "등", "있는", "없는", "않은", "않는", "있다", "없다", "같은")
+
+
+# 뜻 한 조각에서 조사와 '~하다' 같은 꼬리를 뗀다 ("요금을 청구하다" → "요금청구")
+def clean_sense(sense: str) -> str:
+    cleaned = []
+    for word in sense.strip().split():
+        if word in MEANING_STOPWORDS:
+            continue
+        for tail in MEANING_ENDINGS + MEANING_PARTICLES:
+            if word.endswith(tail) and len(word) > len(tail) + 1:
+                word = word[: -len(tail)]
+                break
+        cleaned.append(word)
+    return "".join(cleaned)
+
+
+# 한국어 뜻을 쉼표로 쪼개서 비교하기 좋게 다듬는다
+def split_senses(meaning_ko: str) -> list[str]:
+    return [clean_sense(piece) for piece in meaning_ko.split(",") if clean_sense(piece)]
+
+
+# 두 낱말이 두 글자 이상 겹치는지 본다 ("요금청구"와 "청구서"는 "청구"가 겹친다)
+def shares_two_letters(one: str, other: str) -> bool:
+    pairs = {one[i : i + 2] for i in range(len(one) - 1)}
+    return any(other[i : i + 2] in pairs for i in range(len(other) - 1))
+
+
+# 두 단어의 한국어 뜻이 사실상 같은 뜻인지 본다 (뜻 조각끼리 하나라도 겹치면 같다고 본다)
+def similar_meaning(one: str, other: str) -> bool:
+    return any(
+        shares_two_letters(mine, yours) for mine in split_senses(one) for yours in split_senses(other)
+    )
+
+
+# 오답 3개가 서로 같은 뜻으로 뭉쳐 있는지 단어장 뜻으로 확인한다 (단어장에 없는 보기는 건너뛴다)
+def distractors_cluster(quiz: Quiz, bank: list[dict]) -> bool:
+    meanings = {entry["word"].lower(): entry["meaning_ko"] for entry in bank}
+    known = [
+        meanings[option.lower()]
+        for option in quiz.options
+        if option.lower() != quiz.answer.lower() and option.lower() in meanings
+    ]
+    return any(similar_meaning(one, other) for i, one in enumerate(known) for other in known[i + 1 :])
+
+
 class DistractorCheck(BaseModel):
     # 오답 보기가 제 역할을 하는지(정답이 둘이 되지 않는지, 너무 뜬금없지 않은지) 판정하는 모델
     also_correct: list[bool] = Field(
@@ -204,18 +254,32 @@ def build_distractor_check_chain() -> Any:
                 "둘 다 False가 좋은 오답이다. 정답 보기도 순서대로 판정하되, 정답은 "
                 "also_correct가 True인 게 당연하다. 관대하게 봐주지 마라.",
             ),
-            ("human", "문장: {sentence}\n보기 (이 순서 그대로 판정): {options}\n정답: {answer}"),
+            ("human", "문장: {sentence}\n보기 (이 순서 그대로 판정): {options}\n정답: {answer}\n{meanings}"),
         ]
     )
     return prompt | llm.with_structured_output(DistractorCheck)
 
 
-def check_distractors(quiz: Quiz, distractor_chain: Any = None) -> bool:
+# 보기 단어들의 한국어 뜻을 판정 AI에게 같이 알려줄 문장으로 만든다 (뜻을 보여줘야 뭉침을 잘 잡는다)
+def options_meanings_text(quiz: Quiz, bank: list[dict] | None) -> str:
+    if not bank:
+        return ""
+    meanings = {entry["word"].lower(): entry["meaning_ko"] for entry in bank}
+    known = [f"{option}={meanings[option.lower()]}" for option in quiz.options if option.lower() in meanings]
+    return ("보기의 한국어 뜻: " + ", ".join(known)) if known else ""
+
+
+def check_distractors(quiz: Quiz, distractor_chain: Any = None, bank: list[dict] | None = None) -> bool:
     # 오답 3개가 모두 제 역할을 하는지 확인한다 (정답 보기는 판정에서 뺀다)
     if distractor_chain is None:
         distractor_chain = build_distractor_check_chain()
     result = distractor_chain.invoke(
-        {"sentence": quiz.sentence, "options": quiz.options, "answer": quiz.answer}
+        {
+            "sentence": quiz.sentence,
+            "options": quiz.options,
+            "answer": quiz.answer,
+            "meanings": options_meanings_text(quiz, bank),
+        }
     )
     if result.distractors_are_synonyms or result.answer_stands_out:
         return False
@@ -257,20 +321,27 @@ def make_quiz_verified(
     grammar_chain: Any = None,
     distractor_chain: Any = None,
     max_attempts: int = 3,
+    bank: list[dict] | None = None,
 ) -> Quiz:
-    # 모양 확인 → 문법 검사 → 오답 검사를 모두 통과할 때까지(최대 max_attempts번) 다시 만든다
+    # 모양 확인 → 뜻 뭉침 검사 → 문법 검사 → 오답 검사를 통과할 때까지(최대 max_attempts번) 다시 만든다
     quiz = None
     valid_fallback = None
+    unclustered_fallback = None
     for _ in range(max_attempts):
         quiz = make_quiz(word, meaning, chain=chain)
         if not is_valid_quiz(quiz, word):
             continue
         valid_fallback = quiz
+        # 단어장 뜻으로 먼저 걸러낸다 (AI를 부르기 전이라 돈도 시간도 안 든다)
+        if bank and distractors_cluster(quiz, bank):
+            continue
+        unclustered_fallback = quiz
         if not check_grammar(quiz, grammar_chain=grammar_chain):
             continue
-        if check_distractors(quiz, distractor_chain=distractor_chain):
+        if check_distractors(quiz, distractor_chain=distractor_chain, bank=bank):
             return quiz
-    return valid_fallback or put_answer_in_options(quiz, word)
+    # 다 통과한 퀴즈가 없으면, 그나마 오답이 안 뭉친 퀴즈를 먼저 돌려준다
+    return unclustered_fallback or valid_fallback or put_answer_in_options(quiz, word)
 
 
 class WordMeaning(BaseModel):
@@ -396,7 +467,7 @@ def pregenerate_sentence_quizzes(
         try:
             quiz = make_quiz_verified(
                 word, meanings[word], chain=chain, grammar_chain=grammar_chain,
-                distractor_chain=distractor_chain,
+                distractor_chain=distractor_chain, bank=bank,
             )
             return word, quiz.model_dump()
         except Exception as error:

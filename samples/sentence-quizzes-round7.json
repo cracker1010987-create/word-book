@@ -1,0 +1,112 @@
+{
+  "reimburse": {
+    "sentence": "After she submitted receipts showing that she had paid $180 for the conference, the company agreed to ___ her travel expenses within ten days.",
+    "options": [
+      "reimburse",
+      "deduct",
+      "estimate",
+      "document"
+    ],
+    "answer": "reimburse",
+    "explanation": "“she had paid $180”이라는 영수증과 “within ten days”라는 지급 시점이 회사가 지출한 돈을 되돌려 주겠다는 상황을 가리키므로 reimburse가 맞습니다. deduct는 비용을 빼는 것, estimate는 금액을 추산하는 것, document는 기록하는 것이어서 이 문맥의 지급 약속과 맞지 않습니다."
+  },
+  "itinerary": {
+    "sentence": "At the airport, Daniel opened the ___ for his two-week journey; it listed every hotel, train departure, and museum reservation in chronological order.",
+    "options": [
+      "itinerary",
+      "brochure",
+      "checklist",
+      "passport"
+    ],
+    "answer": "itinerary",
+    "explanation": "“every hotel, train departure, and museum reservation in chronological order”처럼 여행의 여러 이동과 방문 계획을 순서대로 정리한 것이므로 itinerary가 맞습니다. brochure는 여행 정보를 소개하는 책자이고, checklist는 해야 할 일을 확인하는 목록이며, passport는 신분과 국적을 증명하는 여행 서류이므로 이 구체적인 목록을 뜻하지 않습니다."
+  },
+  "punctual": {
+    "sentence": "At exactly 10:00, the agreed starting time, Lena was ___ for the interview, having arrived neither before nor after the appointment.",
+    "options": [
+      "punctual",
+      "early",
+      "late",
+      "tardy"
+    ],
+    "answer": "punctual",
+    "explanation": "“At exactly 10:00”과 “neither before nor after”라는 구체적인 단서가 약속된 시간에 맞춰 도착했다는 뜻을 나타내므로 punctual이 맞습니다. early와 late는 각각 약속 시간보다 이르거나 늦은 경우이고, tardy도 늦었다는 뜻이어서 이 문맥과 맞지 않습니다."
+  },
+  "warranty": {
+    "sentence": "The camera’s ___ lasted for two years and covered free repairs for manufacturing defects, even when the lens stopped working during ordinary use.",
+    "options": [
+      "warranty",
+      "insurance",
+      "return policy",
+      "financing agreement"
+    ],
+    "answer": "warranty",
+    "explanation": "“lasted for two years”와 “covered free repairs for manufacturing defects”라는 단서가 제품의 결함을 일정 기간 수리해 주는 warranty를 가리킨다. insurance는 보통 사고나 손상을 보장하고, return policy는 반품 조건을 정하며, financing agreement는 구매 대금 지불 조건을 뜻하므로 이 문맥의 무료 결함 수리와 맞지 않는다."
+  },
+  "tenant": {
+    "sentence": "After signing a one-year lease for the entire apartment and paying rent directly to its property owner each month, Maria was the ___, not the property owner.",
+    "options": [
+      "tenant",
+      "landlord",
+      "sublessor",
+      "property manager"
+    ],
+    "answer": "tenant",
+    "explanation": "“signing a one-year lease,” “paying rent directly,” 그리고 “the entire apartment”라는 단서는 Maria가 그 집에 살면서 임대료를 내는 사람임을 보여 주므로 tenant가 맞다. landlord는 집을 빌려주는 사람, sublessor는 자신이 빌린 공간을 다른 사람에게 다시 빌려주는 사람, property manager는 건물을 관리하는 사람이므로 이 문맥에서는 맞지 않는다."
+  },
+  "postpone": {
+    "sentence": "Because the factory flooded, the manager had to ___ the product launch instead of holding it on the advertised date.",
+    "options": [
+      "postpone",
+      "accelerate",
+      "approve",
+      "announce"
+    ],
+    "answer": "postpone",
+    "explanation": "“Because the factory flooded”와 “instead of holding it on the advertised date”는 출시를 예정일보다 뒤로 미뤄야 했다는 상황을 보여 주므로 postpone이 맞다. accelerate는 더 앞당기는 것, approve는 승인하는 것, announce는 발표하는 것이어서 이 문맥의 조치를 나타내지 못한다."
+  },
+  "invoice": {
+    "sentence": "After the equipment was delivered, the accounting team sent the client an official ___ listing the exact amount owed, the payment deadline, and the bank details for payment.",
+    "options": [
+      "invoice",
+      "purchase order",
+      "delivery note",
+      "credit memo"
+    ],
+    "answer": "invoice",
+    "explanation": "“the exact amount owed”와 “the payment deadline”을 적어 고객에게 결제를 요청하는 문서이므로 invoice가 맞습니다. purchase order는 물품을 주문할 때 작성하고, delivery note는 배송된 물품을 확인하는 문서이며, credit memo는 환불이나 금액 조정을 알리는 문서라서 이 상황에 맞지 않습니다."
+  },
+  "preliminary": {
+    "sentence": "Before beginning the full safety evaluation, the engineers conducted a ___ inspection to spot obvious cracks and decide which parts required closer testing.",
+    "options": [
+      "preliminary",
+      "conclusive",
+      "comprehensive",
+      "retrospective"
+    ],
+    "answer": "preliminary",
+    "explanation": "“Before beginning the full safety evaluation”과 “spot obvious cracks and decide which parts required closer testing”이라는 단서에서, 전체 평가에 앞서 기본적인 확인을 하는 preliminary가 맞다. conclusive는 결론을 내리는 검사, comprehensive는 모든 부분을 빠짐없이 다루는 검사, retrospective는 과거의 일을 되돌아보는 검사이므로 이 상황에는 맞지 않다."
+  },
+  "vendor": {
+    "sentence": "At the food-truck festival, the ___ charged visitors for cups of lemonade and handed them their drinks immediately.",
+    "options": [
+      "vendor",
+      "customer",
+      "broker",
+      "manufacturer"
+    ],
+    "answer": "vendor",
+    "explanation": "“charged visitors”와 “handed them their drinks”는 현장에서 상품을 직접 팔고 건네는 사람을 가리키므로 vendor가 맞다. customer는 돈을 내는 손님이고, broker는 거래를 중개하며, manufacturer는 물건을 만드는 주체라서 이 장면의 직접 판매 역할과 맞지 않는다."
+  },
+  "deadline": {
+    "sentence": "The company missed the ___ to submit its tax form, and the government imposed a penalty for filing after the specified date.",
+    "options": [
+      "deadline",
+      "appointment",
+      "reminder",
+      "opportunity"
+    ],
+    "answer": "deadline",
+    "explanation": "“imposed a penalty for filing after the specified date”라는 결과는 세금 서류를 제출해야 하는 마감 기한을 놓쳤다는 뜻이므로 deadline이 맞다. appointment는 정해진 만남 시간, reminder는 알림, opportunity는 기회를 뜻해 이처럼 기한이 지나 벌금을 부과받는 상황과 맞지 않는다."
+  }
+}
