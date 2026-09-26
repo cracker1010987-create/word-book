@@ -6,17 +6,39 @@ from pathlib import Path
 SOURCES = ("NGSL", "TSL")
 # 어느 폴더에서 실행하든 이 파일 옆의 data/word_bank.json을 찾도록 이 파일 위치를 기준으로 잡는다
 DEFAULT_BANK_PATH = Path(__file__).resolve().parent / "data" / "word_bank.json"
+# AI가 만든 뜻 중 아쉬운 것을 손으로 고쳐두는 파일 (단어장을 다시 만들어도 이 고침은 남는다)
+DEFAULT_FIXES_PATH = Path(__file__).resolve().parent / "data" / "meaning_fixes.json"
+FIXABLE_FIELDS = ("meaning_ko", "pos")
+
+
+# 손으로 고쳐둔 뜻 목록을 읽는다. 파일이 없으면 고칠 게 없다는 뜻이다
+def load_meaning_fixes(path: str | None = None) -> dict:
+    fixes_path = Path(path) if path else DEFAULT_FIXES_PATH
+    if not fixes_path.exists():
+        return {}
+    return json.loads(fixes_path.read_text(encoding="utf-8"))
+
+
+# 단어장 뜻 중에 손으로 고쳐둔 것이 있으면 바꿔 끼운다 (단어장에 없는 단어는 무시한다)
+def apply_meaning_fixes(entries: list[dict], fixes: dict) -> list[dict]:
+    fixed = []
+    for entry in entries:
+        fix = fixes.get(entry["word"], {})
+        changes = {field: fix[field] for field in FIXABLE_FIELDS if field in fix}
+        fixed.append({**entry, **changes})
+    return fixed
 
 
 # 완성된 단어장 파일을 읽어 순서 그대로 돌려준다. 파일이 없으면 만드는 방법을 알려준다
-def load_word_bank(path: str | None = None) -> list[dict]:
+def load_word_bank(path: str | None = None, fixes_path: str | None = None) -> list[dict]:
     bank_path = Path(path) if path else DEFAULT_BANK_PATH
     if not bank_path.exists():
         raise FileNotFoundError(
             f"단어장 파일({bank_path})이 없습니다. "
             "먼저 '.venv\\Scripts\\python.exe scripts\\build_word_bank.py'로 만들어주세요."
         )
-    return json.loads(bank_path.read_text(encoding="utf-8"))
+    entries = json.loads(bank_path.read_text(encoding="utf-8"))
+    return apply_meaning_fixes(entries, load_meaning_fixes(fixes_path))
 
 
 # 악센트를 뗀 철자로 바꾼다 (café → cafe)

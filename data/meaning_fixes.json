@@ -1,0 +1,19 @@
+{
+  "present": {
+    "meaning_ko": "선물, 현재의, 발표하다",
+    "note": "토익에서 자주 쓰는 '발표하다'가 빠져 있었다"
+  },
+  "charge": {
+    "meaning_ko": "요금을 청구하다, 요금, 담당",
+    "note": "in charge of(담당)가 빠져 있었다"
+  },
+  "preliminary": {
+    "meaning_ko": "예비의, 사전 준비",
+    "pos": "adjective",
+    "note": "형용사 쓰임이 더 흔하다"
+  },
+  "clap": {
+    "meaning_ko": "손뼉 치다, 박수",
+    "note": "'쨍하는 소리'는 틀린 뜻이었다"
+  }
+}
