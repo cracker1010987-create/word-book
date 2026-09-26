@@ -238,3 +238,13 @@ def test_progress_view_shows_how_many_problems_i_reported(tmp_path, capsys, monk
     answers = iter(["3", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-02", clear_func=fake_clear)
     assert "신고한 문제: 1개" in capsys.readouterr().out
+
+
+def test_empty_word_is_not_added_as_my_word(tmp_path, capsys, monkeypatch) -> None:
+    # 메뉴 2번에서 그냥 엔터를 치면 빈 단어가 저장되면 안 된다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "", "", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert load_progress()["my_words"] == {}
+    assert "단어를 입력" in capsys.readouterr().out

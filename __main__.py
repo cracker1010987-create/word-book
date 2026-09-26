@@ -84,6 +84,9 @@ def print_result(quiz: Quiz, is_correct: bool) -> None:
 
 # 내가 직접 외우고 싶은 단어를 학습 기록에 넣는다 (다음 세트에 먼저 나온다)
 def run_add_my_word(word: str, meaning: str) -> None:
+    if not word.strip():
+        print("단어를 입력해주세요. (아무것도 넣지 않았습니다)")
+        return
     progress = add_my_word(load_progress(), word.strip(), meaning.strip())
     save_progress(progress)
     print(f"'{word.strip()}'를 내 단어로 넣었습니다. 다음 세트에 먼저 나옵니다.")

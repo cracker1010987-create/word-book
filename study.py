@@ -19,6 +19,11 @@ KIND_NAMES = {"meaning_choice": "뜻 고르기", "spelling": "영어 쓰기", "s
 REPORT_KEY = "?"
 
 
+# 예문 퀴즈를 만드는 데 몇 분쯤 걸릴지 어림한다 (1분에 8개쯤 만든다)
+def quiz_making_minutes(count: int) -> int:
+    return max(1, round(count / 8))
+
+
 # 지금 세트 단어 중 예문 퀴즈가 아직 없는 단어만 골라 만들어 채운다
 # (아는 단어를 걸러내면 세트 단어가 바뀌므로, 세트를 시작할 때 한 번 만들고 끝내면 빈칸이 생긴다)
 def ensure_quiz_cache(
@@ -30,7 +35,7 @@ def ensure_quiz_cache(
     missing = [word for word in current["words"] if word not in progress["quiz_cache"]]
     if not missing:
         return progress
-    print(f"\n예문 퀴즈 {len(missing)}개를 미리 만드는 중입니다. 2~4분 걸릴 수 있습니다...")
+    print(f"\n예문 퀴즈 {len(missing)}개를 미리 만드는 중입니다. {quiz_making_minutes(len(missing))}분쯤 걸립니다...")
     return {**progress, "quiz_cache": {**progress["quiz_cache"], **pregenerate(missing, bank)}}
 
 
