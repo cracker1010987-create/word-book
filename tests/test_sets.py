@@ -226,3 +226,10 @@ def test_close_set_does_not_change_the_original_record() -> None:
     close_set(before, "2026-01-03")
     assert before["current_set"] is not None
     assert before["words"]["the"]["stage"] == 0
+
+
+def test_record_study_day_also_counts_total_study_days() -> None:
+    # 세트가 바뀌어도 이어지도록, 공부한 날 총합도 따로 센다 (진도 예상에 쓰임)
+    progress = record_study_day(record_study_day(started_set(), "2026-01-01"), "2026-01-02")
+    assert progress["total_study_days"] == 2
+    assert record_study_day(progress, "2026-01-02")["total_study_days"] == 2

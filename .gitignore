@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 data/meanings_cache.json
 data/build_log.txt
+progress.json

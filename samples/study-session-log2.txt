@@ -1,0 +1,218 @@
+=== 아는 단어 걸러내기 (the/be/mister를 안다고 체크) ===
+바뀐 세트 단어: ['and', 'of', 'vacation']
+
+########## 2026-09-20 ##########
+
+세트 1 · 1일차 · 오늘 3문제
+  세트 단어 3문제(뜻 고르기) + 복습 0문제
+
+----------------------------------------
+세트 단어 1/3
+
+and 의 뜻은?
+
+  1) 또는
+  2) 그리고
+  3) ~ 아래에, ~에게 어울리지 않는
+  4) 누구든지
+
+번호 입력 > 1
+오답입니다. 정답은 '그리고' 입니다.
+
+----------------------------------------
+세트 단어 2/3
+
+of 의 뜻은?
+
+  1) ~에 더하여, 양수
+  2) ~까지
+  3) ~의, ~로 이루어진
+  4) 탑승하여
+
+번호 입력 > 2
+오답입니다. 정답은 '~의, ~로 이루어진' 입니다.
+
+----------------------------------------
+세트 단어 3/3
+
+vacation 의 뜻은?
+
+  1) 말투, 어조
+  2) 차이, 차액
+  3) 휴가
+  4) 발달, 개발, 개발 과정
+
+번호 입력 > 3
+정답입니다!
+
+----------------------------------------
+오늘 3문제 중 1개를 맞혔습니다.
+
+########## 2026-09-21 ##########
+
+세트 1 · 2일차 · 오늘 3문제
+  세트 단어 3문제(영어 쓰기) + 복습 0문제
+
+----------------------------------------
+세트 단어 1/3
+
+'그리고'를 뜻하는 영어 단어는?
+
+영어로 입력 > and
+정답입니다!
+
+----------------------------------------
+세트 단어 2/3
+
+'~의, ~로 이루어진'을 뜻하는 영어 단어는?
+
+영어로 입력 > wrongword
+오답입니다. 정답은 'of' 입니다.
+
+----------------------------------------
+세트 단어 3/3
+
+'휴가'를 뜻하는 영어 단어는?
+
+영어로 입력 > vacation
+정답입니다!
+
+----------------------------------------
+오늘 3문제 중 2개를 맞혔습니다.
+
+########## 2026-09-22 ##########
+
+세트 1 · 3일차 · 오늘 3문제
+  세트 단어 3문제(예문 빈칸) + 복습 0문제
+
+----------------------------------------
+세트 단어 1/3
+
+The log records that the alarm rang ___ the sprinklers
+activated at 2:14, while technicians later confirmed that
+both events occurred.
+
+  1) and
+  2) but
+  3) or
+  4) yet
+
+정답 입력 (번호 또는 영어 단어) > and
+정답입니다!
+
+해설: “both events occurred”라는 단서가 알람이 울린 일과
+스프링클러가 작동한 일을 함께 연결하므로 **and**가 맞습니다.
+**or**는 둘 중 하나라는 뜻이라 뒤의 “both”와 맞지 않고,
+**but**와 **yet**은 대조를 나타내지만 문장에는 대조 상황이
+없습니다.
+
+----------------------------------------
+세트 단어 2/3
+
+The museum displayed a detailed portrait ___ the queen,
+showing her crown and the familiar scar above her left
+eyebrow.
+
+  1) of
+  2) about
+  3) from
+  4) beside
+
+정답 입력 (번호 또는 영어 단어) > of
+정답입니다!
+
+해설: “showing her crown and the familiar
+scar”라는 단서는 그 그림이 여왕을 묘사한 것임을 가리키므로 정답은
+of이다. about은 여왕을 주제로 한 설명이나 작품일 수 있고,
+from은 출처를, beside는 위치를 나타내므로 이 문맥의 의미와
+맞지 않는다.
+
+----------------------------------------
+세트 단어 3/3
+
+After saving her paid leave for a year, Jina took a ___,
+flew overseas, checked into a hotel by the sea, and spent
+seven days sightseeing and swimming rather than attending
+meetings.
+
+  1) vacation
+  2) staycation
+  3) sabbatical
+  4) business trip
+
+정답 입력 (번호 또는 영어 단어) > vacation
+정답입니다!
+
+해설: “flew overseas,” “checked into a hotel
+by the sea,” “spent seven days
+sightseeing and swimming,” 그리고 “rather
+than attending meetings”이라는 단서들은 일에서 벗어나
+여행과 휴식을 즐기는 상황을 가리키므로 vacation이 맞습니다.
+staycation은 집 근처나 집에서 보내는 휴가이고,
+sabbatical은 보통 장기간의 연구·업무 중단이며, business
+trip은 회의나 업무를 위한 출장이므로 이 문맥에 맞지 않습니다.
+
+----------------------------------------
+오늘 3문제 중 3개를 맞혔습니다.
+
+########## 2026-09-23 (세트 마감 후 새 세트) ##########
+
+세트 1 마감!
+  통과(2개): and, vacation
+  다음 세트로 이월(1개): of
+
+
+세트 2 · 1일차 · 오늘 3문제
+  세트 단어 3문제(뜻 고르기) + 복습 0문제
+
+----------------------------------------
+세트 단어 1/3
+
+of 의 뜻은?
+
+  1) ~인지 아닌지
+  2) ~의, ~로 이루어진
+  3) (남성 존칭) ~님
+  4) ~인지 아닌지, ~인지 또는 ~인지
+
+번호 입력 > 1
+오답입니다. 정답은 '~의, ~로 이루어진' 입니다.
+
+----------------------------------------
+세트 단어 2/3
+
+to 의 뜻은?
+
+  1) ~만큼, ~할 때
+  2) ~인지 아닌지
+  3) ~로, ~하기 위해
+  4) ~에도 불구하고
+
+번호 입력 > 1
+오답입니다. 정답은 '~로, ~하기 위해' 입니다.
+
+----------------------------------------
+세트 단어 3/3
+
+a 의 뜻은?
+
+  1) 하나의, 어떤
+  2) ~ 후에, ~ 뒤에, ~ 때문에
+  3) ~부터, ~에서 나온
+  4) ~너머에, ~을 넘어, ~외에
+
+번호 입력 > 1
+정답입니다!
+
+----------------------------------------
+오늘 3문제 중 1개를 맞혔습니다.
+
+--- 기록 ---
+  the {'stage': 0, 'next_review': None, 'recent_results': [], 'graduated': True, 'known_on': '2026-09-20'}
+  be {'stage': 0, 'next_review': None, 'recent_results': [], 'graduated': True, 'known_on': '2026-09-20'}
+  mister {'stage': 0, 'next_review': None, 'recent_results': [], 'graduated': True, 'known_on': '2026-09-20'}
+  and {'stage': 1, 'next_review': '2026-09-26', 'recent_results': [], 'graduated': False}
+  of {'stage': 0, 'next_review': None, 'recent_results': [False], 'graduated': False}
+  vacation {'stage': 1, 'next_review': '2026-09-26', 'recent_results': [], 'graduated': False}
+  to {'stage': 0, 'next_review': None, 'recent_results': [False], 'graduated': False}
+  a {'stage': 0, 'next_review': None, 'recent_results': [True], 'graduated': False}

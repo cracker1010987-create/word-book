@@ -133,42 +133,14 @@ def fake_clear() -> None:
     print(CLEAR_MARK)
 
 
-def test_interactive_menu_add_then_quit(tmp_path: Path) -> None:
-    # 1번(단어 추가) → 엔터(메뉴로) → 5번(종료)으로 단어를 추가할 수 있다
-    path = tmp_path / "words.json"
-    answers = iter(["1", "apple", "사과", "", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
-    assert load_words(str(path)) == {"apple": {"meaning": "사과", "wrong_count": 0}}
-
-
-def test_interactive_menu_quiz_then_quit(tmp_path: Path) -> None:
-    # 메뉴에서 2번(퀴즈)을 고르면 run_quiz와 똑같이 동작한다 (오답으로 실제 변화가 있는지 확인)
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["2", "banana", "", "5"])
-    main(
-        [],
-        path=str(path),
-        chain=FakeChain(),
-        grammar_chain=FakeGrammarChain(),
-        distractor_chain=FakeDistractorChain(),
-        input_func=lambda prompt: next(answers),
-        today="2026-01-01",
-        clear_func=fake_clear,
-    )
-    words = load_words(str(path))
-    assert words["apple"]["wrong_count"] == 1
-    assert words["apple"]["last_wrong_date"] == "2026-01-01"
-
-
-def test_interactive_menu_stats_then_quit(tmp_path, capsys) -> None:
-    # 메뉴에서 3번(통계)을 고르면 통계가 화면에 출력된다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
+def test_interactive_menu_progress_then_quit(tmp_path, capsys, monkeypatch) -> None:
+    # 메뉴에서 3번(진도 보기)을 고르면 단어장 전체 진도가 화면에 출력된다
+    monkeypatch.chdir(tmp_path)
     answers = iter(["3", "", "5"])
-    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
+    main([], path="words.json", input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     output = capsys.readouterr().out
-    assert "총 단어 수: 1" in output
+    assert "전체 4059단어" in output
+    assert "공부한 날" in output
 
 
 def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
@@ -182,44 +154,16 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
     assert "사과" in output
 
 
-def test_quiz_after_list_starts_on_cleared_screen(tmp_path, capsys) -> None:
-    # 목록 보기 다음에 퀴즈를 풀면, 목록을 지운 뒤에 문제가 나와서 단어/뜻을 보고 풀 수 없다
+def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsys) -> None:
+    # 목록 보기 다음에 다른 메뉴로 가면, 목록을 지운 뒤에 새 화면이 나온다 (앞 화면이 남지 않는다)
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["4", "", "2", "apple", "", "5"])
-    main(
-        [],
-        path=str(path),
-        chain=FakeChain(),
-        grammar_chain=FakeGrammarChain(),
-        distractor_chain=FakeDistractorChain(),
-        input_func=lambda prompt: next(answers),
-        today="2026-01-01",
-        clear_func=fake_clear,
-    )
+    answers = iter(["4", "", "9", "", "5"])
+    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     list_pos = output.index("틀린 횟수: 0")
-    quiz_pos = output.index("I ate an ___")
-    last_clear_before_quiz = output.rfind(CLEAR_MARK, 0, quiz_pos)
-    assert list_pos < last_clear_before_quiz
-
-
-def test_interactive_quiz_shows_explanation_with_label(tmp_path, capsys) -> None:
-    # 퀴즈 결과에서 해설이 '해설' 제목 아래에 따로 나온다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    answers = iter(["2", "apple", "", "5"])
-    main(
-        [],
-        path=str(path),
-        chain=FakeChain(),
-        grammar_chain=FakeGrammarChain(),
-        distractor_chain=FakeDistractorChain(),
-        input_func=lambda prompt: next(answers),
-        today="2026-01-01",
-        clear_func=fake_clear,
-    )
-    assert "해설" in capsys.readouterr().out
+    next_screen_pos = output.index("1~5 중에서")
+    assert list_pos < output.rfind(CLEAR_MARK, 0, next_screen_pos)
 
 
 def test_interactive_menu_invalid_choice_shows_message(tmp_path, capsys) -> None:
@@ -245,3 +189,24 @@ def test_list_command_with_no_words_shows_message(tmp_path, capsys) -> None:
     path = tmp_path / "words.json"
     main(["list"], path=str(path))
     assert "단어" in capsys.readouterr().out
+
+
+def test_menu_add_my_word_saves_into_the_progress_file(tmp_path, capsys, monkeypatch) -> None:
+    # 메뉴 2번(내 단어 추가)은 새 구조(progress.json)에 저장하고, 다음 세트에 먼저 나오게 한다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "brisk", "활기찬, 빠른", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    progress = load_progress()
+    assert progress["my_words"]["brisk"] == "활기찬, 빠른"
+    assert progress["carry_over"] == ["brisk"]
+
+
+def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, monkeypatch) -> None:
+    # 예전 words.json이 있으면 처음 실행할 때 내 단어로 옮긴다
+    monkeypatch.chdir(tmp_path)
+    save_words({"elaborate": {"meaning": "정교한", "wrong_count": 2}}, "words.json")
+    answers = iter(["3", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    from progress import load_progress
+    assert load_progress()["my_words"]["elaborate"] == "정교한"

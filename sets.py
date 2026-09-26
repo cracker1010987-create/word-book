@@ -39,7 +39,13 @@ def close_set(progress: dict, today: str) -> dict:
         else:
             records[word] = {**record, "stage": 0, "next_review": None}
             carry_over.append(word)
-    return {**progress, "current_set": None, "words": records, "carry_over": carry_over}
+    return {
+        **progress,
+        "current_set": None,
+        "last_set_number": current["number"],
+        "words": records,
+        "carry_over": carry_over,
+    }
 
 
 # 오늘 공부했다는 것을 세트에 기록한다 (같은 날 여러 번 공부해도 하루로 센다)
@@ -47,7 +53,12 @@ def record_study_day(progress: dict, today: str) -> dict:
     current = progress["current_set"]
     if not current or today in current["study_dates"]:
         return progress
-    return {**progress, "current_set": {**current, "study_dates": [*current["study_dates"], today]}}
+    return {
+        **progress,
+        "current_set": {**current, "study_dates": [*current["study_dates"], today]},
+        # 세트가 바뀌어도 이어지도록 공부한 날 총합을 따로 센다 (진도 예상에 쓰임)
+        "total_study_days": progress.get("total_study_days", 0) + 1,
+    }
 
 
 # 공부한 날이 정해진 일수(기본 3일)를 채웠는지 본다 (달력이 아니라 공부한 날 기준)
@@ -82,6 +93,8 @@ def start_new_set(progress: dict, bank: list[dict], today: str) -> dict:
     records = {**progress["words"]}
     for word in words:
         records.setdefault(word, dict(NEW_WORD_RECORD))
-    number = progress["current_set"]["number"] + 1 if progress["current_set"] else 1
+    # 세트를 마감하면 current_set이 비워지므로, 마지막 세트 번호를 기억해뒀다가 이어서 매긴다
+    last_number = progress["current_set"]["number"] if progress["current_set"] else progress.get("last_set_number", 0)
+    number = last_number + 1
     new_set = {"number": number, "words": words, "study_dates": []}
     return {**progress, "current_set": new_set, "words": records, "carry_over": []}

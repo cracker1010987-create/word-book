@@ -391,12 +391,18 @@ def pregenerate_sentence_quizzes(
         distractor_chain = build_distractor_check_chain()
     meanings = {entry["word"]: entry["meaning_ko"] for entry in bank}
     targets = [word for word in words if word in meanings]
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        made = pool.map(
-            lambda word: make_quiz_verified(
+    # 단어 하나에서 API 오류가 나도 나머지는 만들어야 하므로, 실패한 단어만 건너뛴다
+    def make_one(word: str) -> tuple[str, dict | None]:
+        try:
+            quiz = make_quiz_verified(
                 word, meanings[word], chain=chain, grammar_chain=grammar_chain,
                 distractor_chain=distractor_chain,
-            ),
-            targets,
-        )
-        return {word: quiz.model_dump() for word, quiz in zip(targets, made)}
+            )
+            return word, quiz.model_dump()
+        except Exception as error:
+            print(f"  ('{word}' 예문 퀴즈를 못 만들었습니다: {error})")
+            return word, None
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        made = pool.map(make_one, targets)
+        return {word: quiz for word, quiz in made if quiz}

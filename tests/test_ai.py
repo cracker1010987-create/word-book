@@ -476,3 +476,25 @@ def test_is_valid_quiz_rejects_sentence_sharing_the_answer_word_root() -> None:
         explanation="해설",
     )
     assert is_valid_quiz(quiz, "applicant") is False
+
+
+class FailingChain:
+    # 특정 단어에서만 API 오류가 나는 상황을 흉내내는 가짜 체인
+    def __init__(self, quizzes: dict, failing_word: str) -> None:
+        self.quizzes = quizzes
+        self.failing_word = failing_word
+
+    def invoke(self, inputs: dict) -> Quiz:
+        if inputs["word"] == self.failing_word:
+            raise RuntimeError("API 오류")
+        return self.quizzes[inputs["word"]]
+
+
+def test_pregenerate_skips_a_word_that_fails_instead_of_stopping_everything() -> None:
+    # 단어 하나에서 오류가 나도 나머지 단어의 퀴즈는 만들어 돌려준다 (학습이 멈추지 않게)
+    chain = FailingChain({"invoice": quiz_for("invoice")}, failing_word="warranty")
+    quizzes = pregenerate_sentence_quizzes(
+        ["invoice", "warranty"], QUIZ_BANK, chain=chain,
+        grammar_chain=AlwaysFitGrammarChain(), distractor_chain=AlwaysGoodDistractorChain(),
+    )
+    assert sorted(quizzes) == ["invoice"]

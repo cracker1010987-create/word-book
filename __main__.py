@@ -9,12 +9,15 @@ from typing import Any, Callable
 from grading import grade_answer
 from review import pick_word_to_quiz, record_result
 from storage import add_word, load_words, save_words
-from stats import calculate_stats
+from stats import calculate_progress, calculate_stats
 from ai import Quiz, make_quiz_verified
+from progress import add_my_word, load_progress, migrate_words, save_progress
+from study import run_today_session
+from wordbank import load_word_bank
 
 LINE = "=" * 40
 THIN_LINE = "-" * 40
-MENU = {"1": "단어 추가", "2": "퀴즈 풀기", "3": "통계 보기", "4": "목록 보기", "5": "종료"}
+MENU = {"1": "오늘의 학습", "2": "내 단어 추가", "3": "진도 보기", "4": "목록 보기", "5": "종료"}
 
 
 # wordbook 명령어들의 인자 구조를 정의한다
@@ -78,6 +81,35 @@ def print_result(quiz: Quiz, is_correct: bool) -> None:
     print(THIN_LINE)
 
 
+# 내가 직접 외우고 싶은 단어를 학습 기록에 넣는다 (다음 세트에 먼저 나온다)
+def run_add_my_word(word: str, meaning: str) -> None:
+    progress = add_my_word(load_progress(), word.strip(), meaning.strip())
+    save_progress(progress)
+    print(f"'{word.strip()}'를 내 단어로 넣었습니다. 다음 세트에 먼저 나옵니다.")
+
+
+# 예전 words.json이 남아 있으면 처음 한 번 내 단어로 옮긴다
+def migrate_old_words_once(path: str) -> None:
+    old_words = load_words(path)
+    progress = load_progress()
+    if not old_words or all(word in progress.get("my_words", {}) for word in old_words):
+        return
+    save_progress(migrate_words(old_words, progress))
+    print(f"예전에 직접 넣은 단어 {len(old_words)}개를 내 단어로 옮겼습니다.\n")
+
+
+# 오늘의 학습을 진행한다: 학습 기록을 읽어 문제를 풀고, 끝나면 저장한다
+def run_study(input_func: Callable[[str], str], today: str) -> None:
+    progress = load_progress()
+    bank = load_word_bank()
+    if not progress["current_set"]:
+        print("세트를 준비하는 중입니다. 예문 퀴즈를 미리 만드느라 1~2분 걸릴 수 있습니다...\n")
+    progress = run_today_session(progress, bank, today, input_func=input_func)
+    save_progress(progress)
+    done = len(progress["current_set"]["study_dates"]) if progress["current_set"] else 0
+    print(f"\n오늘 학습을 마쳤습니다. 이번 세트는 {done}일째입니다.")
+
+
 # 단어 하나를 골라 퀴즈를 내고, 답을 받아 채점한 뒤 결과를 반영하고 알려준다
 def run_quiz(
     path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
@@ -99,6 +131,19 @@ def run_quiz(
     record_result(words, word, is_correct, today)
     save_words(words, path)
     print_result(quiz, is_correct)
+
+
+# 단어장 전체 진도와 예상 완주일을 화면에 출력한다
+def print_progress(today: str) -> None:
+    progress = load_progress()
+    result = calculate_progress(progress, load_word_bank(), today)
+    print(f"  전체 {result['total']}단어 중 {result['graduated']}단어 완료 ({result['percent']}%)")
+    print(f"  복습 중: {result['reviewing']}단어 | 이번 세트: {result['in_set']}단어")
+    print(f"  아직 안 본 단어: {result['not_started']}단어 | 공부한 날: {progress.get('total_study_days', 0)}일")
+    if result["finish_date"]:
+        print(f"  지금 속도면 앞으로 {result['days_left']}일, {result['finish_date']}쯤 끝납니다.")
+    else:
+        print("  완주일은 며칠 더 공부해봐야 알 수 있습니다.")
 
 
 # 단어 데이터를 통계로 계산해서 화면에 출력한다
@@ -135,13 +180,13 @@ def run_menu_action(
     input_func: Callable[[str], str], today: str,
 ) -> None:
     if choice == "1":
+        run_study(input_func, today)
+    elif choice == "2":
         word = input_func("추가할 영어 단어 > ")
         meaning = input_func("뜻 > ")
-        run_add(word, meaning, path)
-    elif choice == "2":
-        run_quiz(path, chain, grammar_chain, distractor_chain, input_func, today)
+        run_add_my_word(word, meaning)
     elif choice == "3":
-        print_stats(path)
+        print_progress(today)
     elif choice == "4":
         print_word_list(path)
     else:
@@ -153,6 +198,7 @@ def run_interactive(
     path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
     input_func: Callable[[str], str], today: str, clear_func: Callable[[], None],
 ) -> None:
+    migrate_old_words_once(path)
     while True:
         choice = ask_menu_choice(input_func, clear_func)
         if choice == "5":
