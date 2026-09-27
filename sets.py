@@ -1,14 +1,15 @@
 # 50단어 세트를 만들고 관리하는 함수들
 from schedule import next_review_date
+from wordbank import study_order
 
 NEW_WORD_RECORD = {"stage": 0, "next_review": None, "recent_results": [], "graduated": False}
 RESULTS_NEEDED_TO_PASS = 2
 
 
-# 아직 한 번도 세트에 넣은 적 없는 단어를 단어장 순서대로 고른다 (복습 중이거나 졸업한 단어는 건너뛴다)
+# 아직 한 번도 세트에 넣은 적 없는 단어를 외울 순서대로 고른다 (복습 중이거나 졸업한 단어는 건너뛴다)
 def pick_new_words(progress: dict, bank: list[dict], count: int) -> list[str]:
     new_words = []
-    for entry in bank:
+    for entry in study_order(bank, progress["settings"].get("skip_basic_rank", 0)):
         if len(new_words) >= count:
             break
         if entry["word"] not in progress["words"]:

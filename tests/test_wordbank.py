@@ -11,6 +11,7 @@ from wordbank import (
     make_bank_entries,
     merge_word_lists,
     normalize_word,
+    study_order,
 )
 
 
@@ -179,3 +180,41 @@ def test_real_word_bank_has_the_known_bad_meanings_fixed() -> None:
     assert "발표하다" in meanings["present"]
     assert "담당" in meanings["charge"]
     assert "쨍하는 소리" not in meanings["clap"]
+
+
+ORDER_BANK = [
+    {"word": "say", "sources": ["NGSL"], "ngsl_rank": 30, "meaning_ko": "말하다"},
+    {"word": "supervisor", "sources": ["TSL"], "tsl_rank": 13, "meaning_ko": "감독자"},
+    {"word": "asset", "sources": ["NGSL"], "ngsl_rank": 1501, "meaning_ko": "자산"},
+    {"word": "report", "sources": ["NGSL", "TSL"], "ngsl_rank": 400, "tsl_rank": 50, "meaning_ko": "보고서"},
+]
+
+
+def test_study_order_puts_toeic_words_first() -> None:
+    # 토익(TSL) 단어를 먼저 외우게 앞으로 보낸다
+    order = [entry["word"] for entry in study_order(ORDER_BANK, 1500)]
+    assert order[:2] == ["supervisor", "report"]
+
+
+def test_study_order_drops_basic_words_below_the_line() -> None:
+    # 기준 순위 안에 드는 기초 단어(say, NGSL 30위)는 아예 빼고, 그보다 어려운 단어는 남긴다
+    order = [entry["word"] for entry in study_order(ORDER_BANK, 1500)]
+    assert "say" not in order
+    assert "asset" in order
+
+
+def test_a_basic_word_that_is_also_a_toeic_word_stays() -> None:
+    # NGSL 400위라도 토익 목록에 있으면 남긴다 (report)
+    assert "report" in [entry["word"] for entry in study_order(ORDER_BANK, 1500)]
+
+
+def test_study_order_keeps_words_with_no_rank_information() -> None:
+    # 순위 정보가 없는 단어(내 단어 등)는 판단할 수 없으니 그대로 둔다
+    plain = [{"word": "brisk", "meaning_ko": "활기찬"}]
+    assert study_order(plain, 1500) == plain
+
+
+def test_zero_means_do_not_skip_anything() -> None:
+    # 0으로 두면 기초 단어를 건너뛰지 않는다 (순서만 토익 먼저)
+    order = [entry["word"] for entry in study_order(ORDER_BANK, 0)]
+    assert sorted(order) == sorted(entry["word"] for entry in ORDER_BANK)

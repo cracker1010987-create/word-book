@@ -1,6 +1,13 @@
 # 세트를 만들고 관리하는 함수들을 확인하는 테스트
 from progress import default_progress
-from sets import close_set, is_set_finished, mark_known_words, record_study_day, start_new_set
+from sets import (
+    close_set,
+    is_set_finished,
+    mark_known_words,
+    pick_new_words,
+    record_study_day,
+    start_new_set,
+)
 
 BANK = [{"word": w, "meaning_ko": "뜻", "pos": "noun"} for w in ["the", "be", "client", "invoice", "flight"]]
 
@@ -233,3 +240,15 @@ def test_record_study_day_also_counts_total_study_days() -> None:
     progress = record_study_day(record_study_day(started_set(), "2026-01-01"), "2026-01-02")
     assert progress["total_study_days"] == 2
     assert record_study_day(progress, "2026-01-02")["total_study_days"] == 2
+
+
+def test_new_words_follow_the_study_order() -> None:
+    # 새 단어를 고를 때 토익 단어를 먼저, 기초 단어는 건너뛴다
+    from progress import default_progress
+    bank = [
+        {"word": "say", "sources": ["NGSL"], "ngsl_rank": 30, "meaning_ko": "말하다"},
+        {"word": "supervisor", "sources": ["TSL"], "tsl_rank": 13, "meaning_ko": "감독자"},
+        {"word": "asset", "sources": ["NGSL"], "ngsl_rank": 1501, "meaning_ko": "자산"},
+    ]
+    progress = default_progress()
+    assert pick_new_words(progress, bank, 3) == ["supervisor", "asset"]

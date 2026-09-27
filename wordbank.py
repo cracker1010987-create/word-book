@@ -11,6 +11,20 @@ DEFAULT_FIXES_PATH = Path(__file__).resolve().parent / "data" / "meaning_fixes.j
 FIXABLE_FIELDS = ("meaning_ko", "pos")
 
 
+# 외울 순서를 만든다: 토익(TSL) 단어를 먼저, 그다음 기초를 뺀 NGSL 단어
+# (섞어두면 1일차에 the/say 같은 기초 단어가 절반이라 토익·수능 준비에는 헛돈다)
+def study_order(bank: list[dict], skip_basic_rank: int) -> list[dict]:
+    toeic = [entry for entry in bank if "TSL" in entry.get("sources", [])]
+    rest = [
+        entry
+        for entry in bank
+        if "TSL" not in entry.get("sources", [])
+        # 순위를 모르는 단어(내 단어 등)는 건너뛸지 판단할 수 없으니 남긴다
+        and (entry.get("ngsl_rank") is None or entry["ngsl_rank"] > skip_basic_rank)
+    ]
+    return toeic + rest
+
+
 # 손으로 고쳐둔 뜻 목록을 읽는다. 파일이 없으면 고칠 게 없다는 뜻이다
 def load_meaning_fixes(path: str | None = None) -> dict:
     fixes_path = Path(path) if path else DEFAULT_FIXES_PATH

@@ -3,7 +3,15 @@ import json
 from pathlib import Path
 
 DEFAULT_PROGRESS_PATH = "progress.json"
-DEFAULT_SETTINGS = {"set_size": 50, "study_days_per_set": 3, "daily_review_limit": 30}
+DEFAULT_SETTINGS = {
+    "set_size": 50,
+    "study_days_per_set": 3,
+    "daily_review_limit": 30,
+    # NGSL 빈도 순위가 이 안에 드는 기초 단어는 아예 건너뛴다 (0이면 안 건너뜀)
+    "skip_basic_rank": 1500,
+}
+# 설정마다 허용하는 가장 작은 값 (기초 건너뛰기는 0 = 안 건너뜀이 말이 된다)
+SMALLEST_VALUES = {"skip_basic_rank": 0}
 
 
 # 학습 기록이 아직 없을 때 쓰는 기본값을 만든다
@@ -26,7 +34,7 @@ def add_my_word(progress: dict, word: str, meaning: str) -> dict:
 
 # 설정값 하나를 바꾼다. 없는 이름이나 말이 안 되는 값(0 이하)은 그냥 무시한다
 def change_setting(progress: dict, name: str, value: int) -> dict:
-    if name not in DEFAULT_SETTINGS or value < 1:
+    if name not in DEFAULT_SETTINGS or value < SMALLEST_VALUES.get(name, 1):
         return progress
     return {**progress, "settings": {**progress["settings"], name: value}}
 

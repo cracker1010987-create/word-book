@@ -168,6 +168,7 @@ SETTING_CHOICES = {
     "1": ("한 세트 단어 수", "set_size"),
     "2": ("세트 하나를 며칠 동안", "study_days_per_set"),
     "3": ("하루 복습 문제 수", "daily_review_limit"),
+    "4": ("기초 단어 건너뛰기 (NGSL 순위, 0이면 안 건너뜀)", "skip_basic_rank"),
 }
 
 

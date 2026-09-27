@@ -6,9 +6,12 @@ from progress import change_setting, remove_my_word, add_my_word, default_progre
 
 
 def test_default_progress_has_settings_and_empty_records() -> None:
-    # 처음 시작할 때의 기본값: 세트 50단어, 공부한 날 3일, 하루 복습 30개, 기록은 비어 있음
+    # 처음 시작할 때의 기본값: 세트 50단어, 공부한 날 3일, 하루 복습 30개,
+    # 기초 단어는 NGSL 1500위까지 건너뜀, 기록은 비어 있음
     progress = default_progress()
-    assert progress["settings"] == {"set_size": 50, "study_days_per_set": 3, "daily_review_limit": 30}
+    assert progress["settings"] == {
+        "set_size": 50, "study_days_per_set": 3, "daily_review_limit": 30, "skip_basic_rank": 1500,
+    }
     assert progress["current_set"] is None
     assert progress["words"] == {}
     assert progress["carry_over"] == []
@@ -149,3 +152,8 @@ def test_change_setting_ignores_an_unknown_name() -> None:
     # 없는 설정 이름은 무시한다
     progress = default_progress()
     assert change_setting(progress, "없는설정", 10) is progress
+
+
+def test_skip_basic_rank_can_be_turned_off_with_zero() -> None:
+    # 기초 건너뛰기는 0(안 건너뜀)이 말이 되는 값이라 허용한다
+    assert change_setting(default_progress(), "skip_basic_rank", 0)["settings"]["skip_basic_rank"] == 0
