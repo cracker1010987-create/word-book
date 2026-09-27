@@ -6,6 +6,7 @@ import textwrap
 from datetime import date
 from typing import Any, Callable
 
+from banks import BUILTIN_BANK_NAME, add_bank, bank_names, delete_bank, load_bank
 from grading import grade_answer
 from review import pick_word_to_quiz, record_result
 from storage import add_word, load_words, save_words
@@ -14,10 +15,14 @@ from ai import Quiz, make_quiz_verified
 from progress import (
     add_my_word,
     change_setting,
+    current_bank_progress,
+    load_book,
     load_progress,
     migrate_words,
     remove_my_word,
+    save_book,
     save_progress,
+    switch_bank,
 )
 from reports import reported_words
 from study import run_today_session
@@ -25,7 +30,15 @@ from wordbank import load_word_bank
 
 LINE = "=" * 40
 THIN_LINE = "-" * 40
-MENU = {"1": "오늘의 학습", "2": "내 단어", "3": "진도 보기", "4": "설정", "5": "종료"}
+MENU = {
+    "1": "오늘의 학습",
+    "2": "내 단어",
+    "3": "진도 보기",
+    "4": "단어장",
+    "5": "설정",
+    "6": "종료",
+}
+QUIT_CHOICE = "6"
 # 내 단어 화면에서 이 글자를 치면 단어를 추가한다
 ADD_KEY = "a"
 # 입력하다 말고 빠져나올 때 치는 글자
@@ -117,9 +130,9 @@ def migrate_old_words_once(path: str) -> None:
 
 
 # 오늘의 학습을 진행한다: 학습 기록을 읽어 문제를 풀고, 끝나면 저장한다
-def run_study(input_func: Callable[[str], str], today: str) -> None:
+def run_study(input_func: Callable[[str], str], today: str, banks_dir: str | None = None) -> None:
     progress = load_progress()
-    bank = load_word_bank()
+    bank = load_bank(load_book()["current_bank"], banks_dir=banks_dir)
     progress = run_today_session(progress, bank, today, input_func=input_func, save=save_progress)
     save_progress(progress)
     done = len(progress["current_set"]["study_dates"]) if progress["current_set"] else 0
@@ -150,9 +163,11 @@ def run_quiz(
 
 
 # 단어장 전체 진도와 예상 완주일을 화면에 출력한다
-def print_progress(today: str) -> None:
-    progress = load_progress()
-    result = calculate_progress(progress, load_word_bank(), today)
+def print_progress(today: str, banks_dir: str | None = None) -> None:
+    book = load_book()
+    progress = current_bank_progress(book)
+    result = calculate_progress(progress, load_bank(book["current_bank"], banks_dir=banks_dir), today)
+    print(f"  단어장: {book['current_bank']}")
     print(f"  전체 {result['total']}단어 중 {result['graduated']}단어 완료 ({result['percent']}%)")
     print(f"  복습 중: {result['reviewing']}단어 | 이번 세트: {result['in_set']}단어")
     print(f"  아직 안 본 단어: {result['not_started']}단어 | 공부한 날: {progress.get('total_study_days', 0)}일")
@@ -163,6 +178,76 @@ def print_progress(today: str) -> None:
         print(f"  지금 속도면 앞으로 {result['days_left']}일, {result['finish_date']}쯤 끝납니다.")
     else:
         print("  완주일은 며칠 더 공부해봐야 알 수 있습니다.")
+
+
+# 쓸 수 있는 단어장을 번호와 단어 수까지 보여준다
+def print_banks(names: list[str], current: str, banks_dir: str | None) -> None:
+    for number, name in enumerate(names, 1):
+        mark = "  ← 지금 쓰는 단어장" if name == current else ""
+        print(f"  {number}. {name} ({len(load_bank(name, banks_dir=banks_dir))}단어){mark}")
+
+
+# 파일에서 단어장을 새로 등록한다
+def add_bank_from_file(input_func: Callable[[str], str], banks_dir: str | None) -> None:
+    path = input_func("단어장 파일 경로 (apple,사과 형식의 csv) > ").strip().strip('"')
+    name = input_func("단어장 이름 > ").strip()
+    if not path or not name:
+        print("취소했습니다.")
+        return
+    try:
+        count = add_bank(path, name, banks_dir=banks_dir)
+    except (FileNotFoundError, ValueError) as error:
+        print(error)
+        return
+    print(f"'{name}' 단어장을 넣었습니다. {count}단어입니다.")
+
+
+# 단어장을 지운다 (지금 쓰는 단어장을 지웠으면 기본 단어장으로 돌아간다)
+def remove_bank(names: list[str], answer: str, banks_dir: str | None) -> None:
+    number = answer[1:].strip()
+    if not number.isdigit() or not 1 <= int(number) <= len(names):
+        return
+    name = names[int(number) - 1]
+    try:
+        delete_bank(name, banks_dir=banks_dir)
+    except (FileNotFoundError, ValueError) as error:
+        print(error)
+        return
+    book = load_book()
+    if book["current_bank"] == name:
+        book = switch_bank(book, BUILTIN_BANK_NAME)
+    save_book(book)
+    print(f"'{name}' 단어장을 지웠습니다. (학습 기록은 그대로 남아 있습니다)")
+
+
+# 단어장 한 화면: 목록을 보여주고 번호면 바꾸기, a면 추가, d+번호면 삭제
+def run_banks(input_func: Callable[[str], str], banks_dir: str | None = None) -> None:
+    book = load_book()
+    names = bank_names(banks_dir=banks_dir)
+    print_banks(names, book["current_bank"], banks_dir)
+    print("\n  번호) 그 단어장으로 바꾸기   a) 단어장 추가   d+번호) 단어장 삭제   엔터) 메뉴로")
+    answer = input_func("\n입력 > ").strip()
+    if answer.lower() == ADD_KEY:
+        add_bank_from_file(input_func, banks_dir)
+    elif answer.lower().startswith("d"):
+        remove_bank(names, answer, banks_dir)
+    elif answer.isdigit() and 1 <= int(answer) <= len(names):
+        save_book(switch_bank(book, names[int(answer) - 1]))
+        print(f"'{names[int(answer) - 1]}' 단어장으로 바꿨습니다.")
+
+
+# 단어장이 두 개 이상이면 앱을 켤 때 어떤 것으로 공부할지 물어본다
+def ask_which_bank(input_func: Callable[[str], str], clear_func, banks_dir: str | None) -> None:
+    names = bank_names(banks_dir=banks_dir)
+    if len(names) < 2:
+        return
+    book = load_book()
+    clear_func()
+    print_header("어떤 단어장으로 공부할까요?")
+    print_banks(names, book["current_bank"], banks_dir)
+    answer = input_func("\n번호 입력 (엔터면 지금 쓰던 단어장) > ").strip()
+    if answer.isdigit() and 1 <= int(answer) <= len(names):
+        save_book(switch_bank(book, names[int(answer) - 1]))
 
 
 # 진도 보기 아래에서 바꿀 수 있는 설정들 (보여줄 이름, 저장할 이름)
@@ -255,33 +340,37 @@ def ask_menu_choice(input_func: Callable[[str], str], clear_func: Callable[[], N
 # 메뉴에서 고른 기능 하나를 실행한다
 def run_menu_action(
     choice: str, path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
-    input_func: Callable[[str], str], today: str,
+    input_func: Callable[[str], str], today: str, banks_dir: str | None = None,
 ) -> None:
     if choice == "1":
-        run_study(input_func, today)
+        run_study(input_func, today, banks_dir)
     elif choice == "2":
         run_my_words(input_func)
     elif choice == "3":
-        print_progress(today)
+        print_progress(today, banks_dir)
     elif choice == "4":
+        run_banks(input_func, banks_dir)
+    elif choice == "5":
         run_settings(input_func)
     else:
-        print("1~5 중에서 골라주세요.")
+        print("1~6 중에서 골라주세요.")
 
 
 # 메뉴 → (화면 지우고) 기능 실행 → 엔터 대기 → 메뉴를 5번(종료)을 고를 때까지 반복한다
 def run_interactive(
     path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
     input_func: Callable[[str], str], today: str, clear_func: Callable[[], None],
+    banks_dir: str | None = None,
 ) -> None:
     migrate_old_words_once(path)
+    ask_which_bank(input_func, clear_func, banks_dir)
     while True:
         choice = ask_menu_choice(input_func, clear_func)
-        if choice == "5":
+        if choice == QUIT_CHOICE:
             break
         clear_func()
         print_header(MENU.get(choice, "잘못된 입력"))
-        run_menu_action(choice, path, chain, grammar_chain, distractor_chain, input_func, today)
+        run_menu_action(choice, path, chain, grammar_chain, distractor_chain, input_func, today, banks_dir)
         input_func("\n엔터를 누르면 메뉴로 돌아갑니다...")
 
 
@@ -295,6 +384,7 @@ def main(
     input_func: Callable[[str], str] = input,
     today: str | None = None,
     clear_func: Callable[[], None] = clear_screen,
+    banks_dir: str | None = None,
 ) -> None:
     args = build_parser().parse_args(argv)
     if args.command == "add":
@@ -306,7 +396,7 @@ def main(
     elif args.command == "list":
         print_word_list(path)
     else:
-        run_interactive(path, chain, grammar_chain, distractor_chain, input_func, today, clear_func)
+        run_interactive(path, chain, grammar_chain, distractor_chain, input_func, today, clear_func, banks_dir)
 
 
 if __name__ == "__main__":

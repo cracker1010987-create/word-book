@@ -2,7 +2,16 @@
 import json
 from pathlib import Path
 
-from progress import change_setting, remove_my_word, add_my_word, default_progress, load_progress, migrate_words, save_progress
+from progress import (
+    change_setting,
+    current_bank_progress,
+    default_book,
+    fill_book,
+    put_bank_progress,
+    remove_my_word,
+    switch_bank,
+)
+from progress import add_my_word, default_progress, load_progress, migrate_words, save_progress
 
 
 def test_default_progress_has_settings_and_empty_records() -> None:
@@ -157,3 +166,43 @@ def test_change_setting_ignores_an_unknown_name() -> None:
 def test_skip_basic_rank_can_be_turned_off_with_zero() -> None:
     # 기초 건너뛰기는 0(안 건너뜀)이 말이 되는 값이라 허용한다
     assert change_setting(default_progress(), "skip_basic_rank", 0)["settings"]["skip_basic_rank"] == 0
+
+
+def test_a_saved_file_keeps_each_bank_separately() -> None:
+    # 단어장마다 세트·복습·진도를 따로 담는다
+    book = default_book()
+    inner = current_bank_progress(book)
+    inner["carry_over"] = ["invoice"]
+    book = put_bank_progress(book, inner)
+    book = switch_bank(book, "내신1과")
+    assert current_bank_progress(book)["carry_over"] == []
+    book = switch_bank(book, "토익")
+    assert current_bank_progress(book)["carry_over"] == ["invoice"]
+
+
+def test_switching_to_a_new_bank_starts_that_bank_with_empty_records() -> None:
+    # 처음 고른 단어장은 빈 기록으로 시작한다
+    book = switch_bank(default_book(), "내신1과")
+    inner = current_bank_progress(book)
+    assert book["current_bank"] == "내신1과"
+    assert inner["words"] == {} and inner["current_set"] is None
+
+
+def test_old_flat_progress_file_is_moved_under_the_first_bank() -> None:
+    # 단어장이 하나였던 시절의 기록 파일을 열면 기본 단어장 기록으로 옮겨진다
+    old = {"settings": {"set_size": 20}, "current_set": None, "words": {"invoice": {}}, "carry_over": ["invoice"]}
+    book = fill_book(old)
+    assert book["current_bank"] == "토익"
+    inner = current_bank_progress(book)
+    assert inner["words"] == {"invoice": {}}
+    assert inner["settings"]["set_size"] == 20
+
+
+def test_each_bank_has_its_own_settings() -> None:
+    # 단어장마다 설정(세트 크기 등)도 따로 둔다
+    book = switch_bank(default_book(), "내신1과")
+    inner = current_bank_progress(book)
+    inner["settings"]["set_size"] = 10
+    book = put_bank_progress(book, inner)
+    book = switch_bank(book, "토익")
+    assert current_bank_progress(book)["settings"]["set_size"] == 50
