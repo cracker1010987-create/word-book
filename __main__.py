@@ -25,7 +25,9 @@ from wordbank import load_word_bank
 
 LINE = "=" * 40
 THIN_LINE = "-" * 40
-MENU = {"1": "오늘의 학습", "2": "내 단어 추가", "3": "진도 보기", "4": "목록 보기", "5": "종료"}
+MENU = {"1": "오늘의 학습", "2": "내 단어", "3": "진도 보기", "4": "설정", "5": "종료"}
+# 내 단어 화면에서 이 글자를 치면 단어를 추가한다
+ADD_KEY = "a"
 # 입력하다 말고 빠져나올 때 치는 글자
 CANCEL_KEY = "0"
 
@@ -198,15 +200,31 @@ def print_stats(path: str) -> None:
     print(f"  완전히 외운 단어 수: {stats['mastered_words']}")
 
 
-# 내가 직접 넣은 단어(progress.json의 my_words)를 번호를 붙여 보여주고, 번호를 치면 지운다
-def run_my_words(input_func: Callable[[str], str]) -> None:
-    words = list(load_progress().get("my_words", {}).items())
+# 내가 직접 넣은 단어 목록을 번호를 붙여 보여준다
+def print_my_words(words: list[tuple[str, str]]) -> None:
     if not words:
-        print("아직 직접 넣은 단어가 없습니다. 2번으로 넣어보세요.")
+        print("  아직 직접 넣은 단어가 없습니다.")
         return
     for i, (word, meaning) in enumerate(words, 1):
         print(f"  {i}. {word} - {meaning}")
-    answer = input_func("\n지울 단어 번호 (그냥 엔터면 돌아가기) > ").strip()
+
+
+# 단어 추가 화면 (단어 칸·뜻 칸 어디서든 0을 치면 취소)
+def ask_new_word(input_func: Callable[[str], str]) -> None:
+    word = input_func("추가할 영어 단어 (0을 치면 취소) > ")
+    meaning = input_func("뜻 (0을 치면 취소) > ") if word.strip() != CANCEL_KEY else CANCEL_KEY
+    run_add_my_word(word, meaning)
+
+
+# 내 단어 한 화면: 목록을 보여주고 a면 추가, 번호면 그 단어를 지운다
+def run_my_words(input_func: Callable[[str], str]) -> None:
+    words = list(load_progress().get("my_words", {}).items())
+    print_my_words(words)
+    print(f"\n  {ADD_KEY}) 단어 추가   번호) 그 단어 지우기   엔터) 메뉴로")
+    answer = input_func("\n입력 > ").strip()
+    if answer.lower() == ADD_KEY:
+        ask_new_word(input_func)
+        return
     if not answer.isdigit() or not 1 <= int(answer) <= len(words):
         return
     word = words[int(answer) - 1][0]
@@ -242,14 +260,11 @@ def run_menu_action(
     if choice == "1":
         run_study(input_func, today)
     elif choice == "2":
-        word = input_func("추가할 영어 단어 (0을 치면 취소) > ")
-        meaning = input_func("뜻 (0을 치면 취소) > ") if word.strip() != CANCEL_KEY else CANCEL_KEY
-        run_add_my_word(word, meaning)
+        run_my_words(input_func)
     elif choice == "3":
         print_progress(today)
-        run_settings(input_func)
     elif choice == "4":
-        run_my_words(input_func)
+        run_settings(input_func)
     else:
         print("1~5 중에서 골라주세요.")
 

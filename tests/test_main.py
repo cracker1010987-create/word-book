@@ -136,7 +136,7 @@ def fake_clear() -> None:
 def test_interactive_menu_progress_then_quit(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴에서 3번(진도 보기)을 고르면 단어장 전체 진도가 화면에 출력된다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["3", "", "", "5"])
+    answers = iter(["3", "", "5"])
     main([], path="words.json", input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "전체 4059단어" in output
@@ -147,7 +147,7 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
     # 메뉴에서 4번(목록 보기)을 고르면 단어 목록이 화면에 출력된다
     path = tmp_path / "words.json"
     save_words({"apple": {"meaning": "사과", "wrong_count": 2}}, str(path))
-    answers = iter(["4", "", "", "5"])
+    answers = iter(["2", "", "", "5"])
     main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "apple" in output
@@ -158,7 +158,7 @@ def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsy
     # 목록 보기 다음에 다른 메뉴로 가면, 목록을 지운 뒤에 새 화면이 나온다 (앞 화면이 남지 않는다)
     monkeypatch.chdir(tmp_path)
     save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, "words.json")
-    answers = iter(["4", "", "", "9", "", "5"])
+    answers = iter(["2", "", "", "9", "", "5"])
     main([], path="words.json", input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     list_pos = output.index("1. apple - 사과")
@@ -194,7 +194,7 @@ def test_list_command_with_no_words_shows_message(tmp_path, capsys) -> None:
 def test_menu_add_my_word_saves_into_the_progress_file(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴 2번(내 단어 추가)은 새 구조(progress.json)에 저장하고, 다음 세트에 먼저 나오게 한다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "활기찬, 빠른", "", "5"])
+    answers = iter(["2", "a", "brisk", "활기찬, 빠른", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     progress = load_progress()
@@ -206,7 +206,7 @@ def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, m
     # 예전 words.json이 있으면 처음 실행할 때 내 단어로 옮긴다
     monkeypatch.chdir(tmp_path)
     save_words({"elaborate": {"meaning": "정교한", "wrong_count": 2}}, "words.json")
-    answers = iter(["3", "", "", "5"])
+    answers = iter(["3", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"]["elaborate"] == "정교한"
@@ -215,7 +215,7 @@ def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, m
 def test_menu_list_shows_words_added_through_the_menu(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴 2번으로 넣은 단어는 메뉴 4번(목록 보기)에 나와야 한다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "활기찬", "", "4", "", "", "5"])
+    answers = iter(["2", "a", "brisk", "활기찬", "", "2", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "1. brisk - 활기찬" in output
@@ -224,7 +224,7 @@ def test_menu_list_shows_words_added_through_the_menu(tmp_path, capsys, monkeypa
 def test_menu_list_with_no_my_words_shows_message(tmp_path, capsys, monkeypatch) -> None:
     # 내 단어가 하나도 없으면 목록 보기에서 안내 메시지가 나온다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["4", "", "5"])
+    answers = iter(["2", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     assert "직접 넣은 단어가 없습니다" in capsys.readouterr().out
 
@@ -235,7 +235,7 @@ def test_progress_view_shows_how_many_problems_i_reported(tmp_path, capsys, monk
     from progress import default_progress, save_progress
     from reports import report_problem
     save_progress(report_problem(default_progress(), "reimburse", "sentence", "2026-01-01"))
-    answers = iter(["3", "", "", "5"])
+    answers = iter(["3", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-02", clear_func=fake_clear)
     assert "신고한 문제: 1개" in capsys.readouterr().out
 
@@ -243,7 +243,7 @@ def test_progress_view_shows_how_many_problems_i_reported(tmp_path, capsys, monk
 def test_empty_word_is_not_added_as_my_word(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴 2번에서 그냥 엔터를 치면 빈 단어가 저장되면 안 된다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "", "", "", "5"])
+    answers = iter(["2", "a", "", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"] == {}
@@ -253,7 +253,7 @@ def test_empty_word_is_not_added_as_my_word(tmp_path, capsys, monkeypatch) -> No
 def test_zero_cancels_adding_a_word(tmp_path, capsys, monkeypatch) -> None:
     # 단어 추가 화면에서 0을 치면 아무것도 저장하지 않고 메뉴로 돌아간다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "0", "", "5"])
+    answers = iter(["2", "a", "0", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"] == {}
@@ -263,7 +263,7 @@ def test_zero_cancels_adding_a_word(tmp_path, capsys, monkeypatch) -> None:
 def test_zero_cancels_at_the_meaning_step_too(tmp_path, capsys, monkeypatch) -> None:
     # 뜻을 적는 칸에서 0을 쳐도 저장하지 않는다 (단어를 잘못 친 걸 그때 알아챌 수 있다)
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "0", "", "5"])
+    answers = iter(["2", "a", "brisk", "0", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["my_words"] == {}
@@ -272,7 +272,7 @@ def test_zero_cancels_at_the_meaning_step_too(tmp_path, capsys, monkeypatch) -> 
 def test_menu_list_can_delete_a_word_by_number(tmp_path, capsys, monkeypatch) -> None:
     # 목록 보기에서 번호를 치면 그 단어를 지운다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "활기찬", "", "2", "d", "d", "", "4", "2", "", "5"])
+    answers = iter(["2", "a", "brisk", "활기찬", "", "2", "a", "d", "d", "", "2", "2", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert list(load_progress()["my_words"]) == ["brisk"]
@@ -282,26 +282,36 @@ def test_menu_list_can_delete_a_word_by_number(tmp_path, capsys, monkeypatch) ->
 def test_menu_list_enter_goes_back_without_deleting(tmp_path, capsys, monkeypatch) -> None:
     # 목록 보기에서 그냥 엔터를 치면 아무것도 지우지 않고 돌아간다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["2", "brisk", "활기찬", "", "4", "", "", "5"])
+    answers = iter(["2", "a", "brisk", "활기찬", "", "2", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert list(load_progress()["my_words"]) == ["brisk"]
 
 
-def test_progress_view_can_change_the_set_size(tmp_path, capsys, monkeypatch) -> None:
-    # 진도 보기에서 설정을 골라 세트 크기를 바꿀 수 있다
+def test_settings_menu_can_change_the_set_size(tmp_path, capsys, monkeypatch) -> None:
+    # 설정 메뉴(4번)에서 세트 크기를 바꿀 수 있다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["3", "1", "20", "", "5"])
+    answers = iter(["4", "1", "20", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["settings"]["set_size"] == 20
     assert "20" in capsys.readouterr().out
 
 
-def test_progress_view_enter_leaves_settings_alone(tmp_path, capsys, monkeypatch) -> None:
-    # 진도 보기에서 그냥 엔터를 치면 설정은 그대로다
+def test_settings_menu_enter_leaves_settings_alone(tmp_path, capsys, monkeypatch) -> None:
+    # 설정 메뉴에서 그냥 엔터를 치면 설정은 그대로다
     monkeypatch.chdir(tmp_path)
-    answers = iter(["3", "", "", "5"])
+    answers = iter(["4", "", "", "5"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress, DEFAULT_SETTINGS
     assert load_progress()["settings"] == DEFAULT_SETTINGS
+
+
+def test_my_words_screen_shows_list_and_add_and_delete_in_one_place(tmp_path, capsys, monkeypatch) -> None:
+    # 2번 한 곳에서 목록을 보고, a로 추가하고, 번호로 지울 수 있다
+    monkeypatch.chdir(tmp_path)
+    answers = iter(["2", "a", "brisk", "활기찬", "", "2", "", "", "5"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
+    output = capsys.readouterr().out
+    assert "1. brisk - 활기찬" in output
+    assert "단어 추가" in output

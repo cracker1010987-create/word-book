@@ -252,3 +252,18 @@ def test_new_words_follow_the_study_order() -> None:
     ]
     progress = default_progress()
     assert pick_new_words(progress, bank, 3) == ["supervisor", "asset"]
+
+
+def test_graduated_words_do_not_come_back_through_the_carry_over_list() -> None:
+    # 아는 단어로 체크해 졸업시킨 단어가 이월 목록에 남아 있어도 새 세트에 넣지 않는다
+    from progress import default_progress
+    bank = [
+        {"word": "apple", "sources": ["NGSL"], "ngsl_rank": 2000, "meaning_ko": "사과"},
+        {"word": "supervisor", "sources": ["TSL"], "tsl_rank": 13, "meaning_ko": "감독자"},
+    ]
+    progress = default_progress()
+    progress["settings"]["set_size"] = 2
+    progress["carry_over"] = ["apple"]
+    progress["words"] = {"apple": {"stage": 0, "next_review": None, "recent_results": [], "graduated": True}}
+    started = start_new_set(progress, bank, "2026-01-01")
+    assert started["current_set"]["words"] == ["supervisor"]

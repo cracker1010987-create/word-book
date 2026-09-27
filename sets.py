@@ -88,7 +88,8 @@ def mark_known_words(progress: dict, known_words: list[str], bank: list[dict], t
 
 # 이월된 단어를 먼저 넣고 남은 자리를 새 단어로 채운 새 세트를 시작한다
 def start_new_set(progress: dict, bank: list[dict], today: str) -> dict:
-    carried = list(progress["carry_over"])
+    # 이월 목록에 있어도 이미 졸업한 단어는 다시 넣지 않는다 (아는 단어로 체크한 단어 등)
+    carried = [word for word in progress["carry_over"] if not progress["words"].get(word, {}).get("graduated")]
     set_size = progress["settings"]["set_size"]
     words = carried + pick_new_words(progress, bank, set_size - len(carried))
     records = {**progress["words"]}
