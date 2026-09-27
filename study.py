@@ -19,6 +19,18 @@ KIND_NAMES = {"meaning_choice": "뜻 고르기", "spelling": "영어 쓰기", "s
 REPORT_KEY = "?"
 
 
+# 단어장에 없는 내 단어도 문제로 낼 수 있게 단어장 뒤에 붙인다
+# (안 붙이면 뜻 고르기에서 "단어장에 없는 단어입니다" 오류로 앱이 멈춘다)
+def bank_with_my_words(bank: list[dict], progress: dict) -> list[dict]:
+    in_bank = {entry["word"] for entry in bank}
+    extra = [
+        {"word": word, "meaning_ko": meaning, "pos": "other", "definition_en": ""}
+        for word, meaning in progress.get("my_words", {}).items()
+        if word not in in_bank and meaning
+    ]
+    return bank + extra if extra else bank
+
+
 # 예문 퀴즈를 만드는 데 몇 분쯤 걸릴지 어림한다 (1분에 8개쯤 만든다)
 def quiz_making_minutes(count: int) -> int:
     return max(1, round(count / 8))
@@ -270,10 +282,14 @@ def run_today_session(
     input_func: Callable[[str], str] = input,
     rng: random.Random | None = None,
     pregenerate: Callable[..., dict] = pregenerate_sentence_quizzes,
+    save: Callable[[dict], None] | None = None,
 ) -> dict:
-    bank = bank if bank is not None else load_word_bank()
+    bank = bank_with_my_words(bank if bank is not None else load_word_bank(), progress)
     rng = rng or random.Random()
+    save = save or (lambda _: None)
     progress = ensure_current_set(progress, bank, today, pregenerate=pregenerate, input_func=input_func)
+    # 중간에 멈춰도 여기까지는 남도록 바로 저장한다 (아는 단어 고른 것이 날아가지 않게)
+    save(progress)
     session = build_today_session(progress, bank, today)
     progress = ensure_quizzes_for_session(progress, bank, session, pregenerate=pregenerate)
     print_session_header(progress, session, today)
@@ -285,6 +301,7 @@ def run_today_session(
         is_correct = ask_item(item, bank, progress, input_func, rng, reports)
         correct_count += int(is_correct)
         progress = record_answer(progress, item, is_correct, today)
+        save(progress)
     print(f"\n{LINE}\n오늘 {len(session)}문제 중 {correct_count}개를 맞혔습니다.")
     progress = prepare_next_day_quizzes(progress, bank, today, pregenerate=pregenerate)
     return record_study_day(save_reports(progress, reports, today), today)

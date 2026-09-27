@@ -5,6 +5,7 @@ from progress import default_progress
 from sets import NEW_WORD_RECORD, record_study_day, start_new_set
 from study import (
     ask_item,
+    bank_with_my_words,
     shuffled_options,
     ensure_current_set,
     ensure_quiz_cache,
@@ -362,3 +363,75 @@ def test_sentence_quiz_is_graded_by_the_shuffled_number() -> None:
     # 섞인 결과에서 정답이 1번이 아니라면 1번을 찍은 것은 틀려야 한다
     shuffled = shuffled_options(["invoice", "receipt", "estimate", "manifest"], random.Random(7))
     assert always_first is (shuffled[0] == "invoice")
+
+
+def progress_with_my_word() -> dict:
+    # 단어장에 없는 내 단어 하나를 가진 학습 기록을 만든다
+    progress = small_progress()
+    progress["my_words"] = {"elaborate": "정교한, 상세히 설명하다"}
+    return progress
+
+
+def test_my_word_is_added_to_the_bank_so_it_can_be_asked() -> None:
+    # 단어장에 없는 내 단어도 문제로 낼 수 있게 단어장 뒤에 붙인다
+    extended = bank_with_my_words(BANK, progress_with_my_word())
+    assert [entry["word"] for entry in extended][-1] == "elaborate"
+    assert extended[-1]["meaning_ko"] == "정교한, 상세히 설명하다"
+
+
+def test_bank_is_unchanged_when_there_are_no_my_words() -> None:
+    # 내 단어가 없으면 단어장을 그대로 쓴다
+    assert bank_with_my_words(BANK, small_progress()) == BANK
+
+
+def test_my_word_already_in_the_bank_is_not_added_twice() -> None:
+    # 단어장에도 있는 단어를 내 단어로 넣었으면 두 번 넣지 않는다
+    progress = small_progress()
+    progress["my_words"] = {"invoice": "내가 적은 뜻"}
+    assert len(bank_with_my_words(BANK, progress)) == len(BANK)
+
+
+def test_meaning_quiz_for_a_my_word_does_not_crash() -> None:
+    # 내 단어가 세트에 들어가도 뜻 고르기 문제가 만들어진다 (예전엔 ValueError로 앱이 죽었다)
+    progress = progress_with_my_word()
+    bank = bank_with_my_words(BANK, progress)
+    item = {"word": "elaborate", "kind": "meaning_choice", "source": "set"}
+    assert ask_item(item, bank, progress, lambda prompt: "정교한, 상세히 설명하다", random.Random(0)) is True
+
+
+def test_today_session_with_a_my_word_runs_to_the_end() -> None:
+    # 내 단어가 섞인 세트로 하루 학습을 끝까지 돌릴 수 있다
+    progress = progress_with_my_word()
+    progress["carry_over"] = ["elaborate"]
+    progress["words"] = {"elaborate": dict(NEW_WORD_RECORD)}
+    after = run_today_session(
+        progress, BANK, "2026-01-01",
+        input_func=answer_but_skip_known_words("1"), rng=random.Random(0), pregenerate=fake_pregenerate,
+    )
+    assert "elaborate" in after["current_set"]["words"]
+
+
+def test_progress_is_saved_right_after_the_set_is_made() -> None:
+    # 세트를 만들고 아는 단어를 고른 직후에 저장한다 (여기서 멈춰도 고른 것이 남게)
+    saved: list[dict] = []
+    answers = iter(["1", "1", "1"])
+    run_today_session(
+        small_progress(), BANK, "2026-01-01",
+        input_func=lambda prompt: next(answers, "1"), rng=random.Random(0),
+        pregenerate=fake_pregenerate, save=saved.append,
+    )
+    assert saved[0]["current_set"]["number"] == 1
+
+
+def test_progress_is_saved_after_every_answer() -> None:
+    # 문제를 하나 풀 때마다 저장한다 (중간에 창을 닫아도 푼 것까지는 남는다)
+    saved: list[dict] = []
+    run_today_session(
+        small_progress(), BANK, "2026-01-01",
+        input_func=answer_but_skip_known_words("1"), rng=random.Random(0),
+        pregenerate=fake_pregenerate, save=saved.append,
+    )
+    # 세트 준비 1번 + 2문제 (마지막 저장은 부르는 쪽에서 한다)
+    assert len(saved) == 3
+    assert all(record["recent_results"] == [] for record in saved[0]["words"].values())
+    assert any(record["recent_results"] for record in saved[-1]["words"].values())

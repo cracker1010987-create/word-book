@@ -118,7 +118,7 @@ def migrate_old_words_once(path: str) -> None:
 def run_study(input_func: Callable[[str], str], today: str) -> None:
     progress = load_progress()
     bank = load_word_bank()
-    progress = run_today_session(progress, bank, today, input_func=input_func)
+    progress = run_today_session(progress, bank, today, input_func=input_func, save=save_progress)
     save_progress(progress)
     done = len(progress["current_set"]["study_dates"]) if progress["current_set"] else 0
     print(f"\n오늘 학습을 마쳤습니다. 이번 세트는 {done}일째입니다.")
