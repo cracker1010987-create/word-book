@@ -7,7 +7,8 @@ def calculate_progress(progress: dict, bank: list[dict], today: str) -> dict:
     graduated = sum(1 for record in records.values() if record["graduated"])
     reviewing = sum(1 for record in records.values() if not record["graduated"] and record["stage"] >= 1)
     in_set = sum(1 for record in records.values() if not record["graduated"] and record["stage"] == 0)
-    total = len(bank)
+    # 단어장 단어 + 단어장에 없는 내 단어까지가 외울 전체 단어다
+    total = len({entry["word"] for entry in bank} | set(records))
     started = graduated + reviewing + in_set
     days = progress.get("total_study_days", 0)
     return {

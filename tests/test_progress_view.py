@@ -54,3 +54,27 @@ def test_no_estimate_before_the_first_study_day() -> None:
     result = calculate_progress(progress_with({}), BANK, "2026-01-10")
     assert result["days_left"] is None
     assert result["finish_date"] is None
+
+
+def test_my_own_words_are_counted_in_the_total() -> None:
+    # 단어장에 없는 내 단어도 외우는 단어이므로 전체 수에 넣는다
+    # (안 넣으면 진도가 100%를 넘고 "아직 안 본 단어"가 음수가 된다)
+    progress = default_progress()
+    progress["words"] = {
+        "apple": {"stage": 0, "next_review": None, "recent_results": [], "graduated": True},
+        "elaborate": {"stage": 0, "next_review": None, "recent_results": [], "graduated": True},
+    }
+    bank = [{"word": "apple", "meaning_ko": "사과", "pos": "other"}]
+    result = calculate_progress(progress, bank, "2026-09-28")
+    assert result["total"] == 2
+    assert result["percent"] == 100.0
+    assert result["not_started"] == 0
+
+
+def test_total_is_the_bank_size_when_every_word_comes_from_the_bank() -> None:
+    # 평소(내 단어가 없을 때)는 단어장 크기가 그대로 전체 수다
+    progress = default_progress()
+    progress["words"] = {"apple": {"stage": 0, "next_review": None, "recent_results": [], "graduated": True}}
+    bank = [{"word": "apple", "meaning_ko": "사과", "pos": "other"},
+            {"word": "brave", "meaning_ko": "용감한", "pos": "other"}]
+    assert calculate_progress(progress, bank, "2026-09-28")["total"] == 2

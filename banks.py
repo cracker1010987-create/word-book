@@ -12,6 +12,8 @@ BUILTIN_BANK_NAME = "토익"
 DEFAULT_BANKS_DIR = Path(__file__).resolve().parent / "data" / "banks"
 BANK_SUFFIXES = (".csv", ".json")
 HEADER_WORDS = ("word", "단어", "english")
+# 파일 이름에 쓰면 안 되는 글자들 (이게 들어가면 엉뚱한 폴더에 파일이 생긴다)
+BAD_NAME_MARKS = ("/", "\\", "..", ":", "*", "?", '"', "<", ">", "|")
 
 
 # 단어장 폴더 경로를 정한다 (테스트에서는 임시 폴더를 넘긴다)
@@ -56,6 +58,23 @@ def bank_names(banks_dir: str | None = None) -> list[str]:
     return [BUILTIN_BANK_NAME] + mine
 
 
+# 단어장 이름으로 쓸 수 있는지 본다 (폴더를 건너뛰는 글자가 있으면 안 된다)
+def check_bank_name(name: str) -> str:
+    cleaned = name.strip()
+    if not cleaned:
+        raise ValueError("단어장 이름을 입력해주세요.")
+    if any(letter < " " for letter in cleaned):
+        raise ValueError("단어장 이름에 이상한 글자가 들어 있습니다.")
+    if any(mark in cleaned for mark in BAD_NAME_MARKS):
+        raise ValueError("단어장 이름에 / \ .. : * ? \" < > | 는 쓸 수 없습니다.")
+    return cleaned
+
+
+# 그 이름의 단어장이 이미 있는지 본다 (덮어쓰기 전에 물어보려고)
+def bank_exists(name: str, banks_dir: str | None = None) -> bool:
+    return find_bank_file(name, banks_dir) is not None
+
+
 # 그 단어장 파일의 경로를 찾는다 (없으면 None)
 def find_bank_file(name: str, banks_dir: str | None = None) -> Path | None:
     for suffix in BANK_SUFFIXES:
@@ -77,6 +96,7 @@ def load_bank(name: str | None = None, banks_dir: str | None = None) -> list[dic
 
 # CSV 파일을 단어장으로 등록한다 (폴더로 복사하고 몇 단어인지 돌려준다)
 def add_bank(source_path: str, name: str, banks_dir: str | None = None) -> int:
+    name = check_bank_name(name)
     source = Path(source_path)
     if not source.exists():
         raise FileNotFoundError(f"'{source_path}' 파일이 없습니다.")
@@ -91,6 +111,7 @@ def add_bank(source_path: str, name: str, banks_dir: str | None = None) -> int:
 
 # 단어장을 지운다 (기본 단어장은 지울 수 없다)
 def delete_bank(name: str, banks_dir: str | None = None) -> None:
+    name = check_bank_name(name)
     if name == BUILTIN_BANK_NAME:
         raise ValueError(f"기본 단어장('{BUILTIN_BANK_NAME}')은 지울 수 없습니다.")
     path = find_bank_file(name, banks_dir)

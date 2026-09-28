@@ -5,6 +5,7 @@ import pytest
 
 from banks import (
     BUILTIN_BANK_NAME,
+    bank_exists,
     add_bank,
     bank_names,
     delete_bank,
@@ -103,3 +104,31 @@ def test_delete_bank_refuses_to_remove_the_builtin_bank(tmp_path: Path) -> None:
     # 기본 단어장은 지울 수 없다 (앱이 쓸 단어가 없어진다)
     with pytest.raises(ValueError):
         delete_bank(BUILTIN_BANK_NAME, banks_dir=str(tmp_path))
+
+
+def test_bank_name_with_a_folder_mark_is_refused(tmp_path: Path) -> None:
+    # 이름에 ../ 나 / 가 들어가면 엉뚱한 폴더에 파일이 생기므로 막는다
+    source = tmp_path / "원본.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    for bad_name in ["../바깥", "내신/1과", "내신" + chr(92) + "1과", "내신" + chr(1)]:
+        with pytest.raises(ValueError):
+            add_bank(str(source), bad_name, banks_dir=str(tmp_path / "banks"))
+    assert not (tmp_path / "바깥.csv").exists()
+
+
+def test_empty_bank_name_is_refused(tmp_path: Path) -> None:
+    # 이름 없이 단어장을 만들 수 없다
+    source = tmp_path / "원본.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        add_bank(str(source), "   ", banks_dir=str(tmp_path / "banks"))
+
+
+def test_bank_exists_tells_whether_that_name_is_taken(tmp_path: Path) -> None:
+    # 같은 이름이 이미 있는지 미리 알 수 있다 (덮어쓰기 전에 물어보려고)
+    source = tmp_path / "원본.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    banks_dir = str(tmp_path / "banks")
+    assert bank_exists("내신", banks_dir=banks_dir) is False
+    add_bank(str(source), "내신", banks_dir=banks_dir)
+    assert bank_exists("내신", banks_dir=banks_dir) is True

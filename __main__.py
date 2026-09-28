@@ -6,7 +6,7 @@ import textwrap
 from datetime import date
 from typing import Any, Callable
 
-from banks import BUILTIN_BANK_NAME, add_bank, bank_names, delete_bank, load_bank
+from banks import BUILTIN_BANK_NAME, add_bank, bank_exists, bank_names, delete_bank, load_bank
 from grading import grade_answer
 from review import pick_word_to_quiz, record_result
 from storage import add_word, load_words, save_words
@@ -26,7 +26,6 @@ from progress import (
 )
 from reports import reported_words
 from study import run_today_session
-from wordbank import load_word_bank
 
 LINE = "=" * 40
 THIN_LINE = "-" * 40
@@ -194,6 +193,11 @@ def add_bank_from_file(input_func: Callable[[str], str], banks_dir: str | None) 
     if not path or not name:
         print("취소했습니다.")
         return
+    if bank_exists(name, banks_dir=banks_dir):
+        print(f"'{name}' 단어장이 이미 있습니다.")
+        if input_func("덮어쓸까요? (y / 엔터=취소) > ").strip().lower() != "y":
+            print("취소했습니다.")
+            return
     try:
         count = add_bank(path, name, banks_dir=banks_dir)
     except (FileNotFoundError, ValueError) as error:

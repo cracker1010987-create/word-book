@@ -411,3 +411,42 @@ def test_app_does_not_ask_when_there_is_only_one_bank(tmp_path, capsys, monkeypa
     main([], input_func=lambda prompt: next(answers), today="2026-01-01",
          clear_func=fake_clear, banks_dir=str(tmp_path / "banks"))
     assert "어떤 단어장" not in capsys.readouterr().out
+
+
+def test_adding_a_bank_with_a_name_already_used_asks_first(tmp_path, capsys, monkeypatch) -> None:
+    # 같은 이름이 이미 있으면 덮어쓸지 물어보고, 아니라고 하면 그대로 둔다
+    monkeypatch.chdir(tmp_path)
+    banks_dir = make_bank_file(tmp_path / "banks", "내신1과", SCHOOL_CSV)
+    source = tmp_path / "새파일.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    answers = iter(["", "4", "a", str(source), "내신1과", "n", "", "6"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01",
+         clear_func=fake_clear, banks_dir=banks_dir)
+    from banks import load_bank
+    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 3
+    assert "이미 있습니다" in capsys.readouterr().out
+
+
+def test_answering_yes_overwrites_the_bank(tmp_path, capsys, monkeypatch) -> None:
+    # 덮어쓰겠다고 하면 새 파일로 바뀐다
+    monkeypatch.chdir(tmp_path)
+    banks_dir = make_bank_file(tmp_path / "banks", "내신1과", SCHOOL_CSV)
+    source = tmp_path / "새파일.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    answers = iter(["", "4", "a", str(source), "내신1과", "y", "", "6"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01",
+         clear_func=fake_clear, banks_dir=banks_dir)
+    from banks import load_bank
+    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 1
+
+
+def test_a_bad_bank_name_shows_a_message(tmp_path, capsys, monkeypatch) -> None:
+    # 이름에 폴더 기호가 들어가면 안내만 하고 넘어간다
+    monkeypatch.chdir(tmp_path)
+    source = tmp_path / "새파일.csv"
+    source.write_text("apple,사과\n", encoding="utf-8")
+    answers = iter(["4", "a", str(source), "../바깥", "", "6"])
+    main([], input_func=lambda prompt: next(answers), today="2026-01-01",
+         clear_func=fake_clear, banks_dir=str(tmp_path / "banks"))
+    assert "쓸 수 없습니다" in capsys.readouterr().out
+    assert not (tmp_path / "바깥.csv").exists()
