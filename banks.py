@@ -11,6 +11,10 @@ BUILTIN_BANK_NAME = "토익"
 # 내가 넣은 단어장 파일들이 있는 폴더
 DEFAULT_BANKS_DIR = Path(__file__).resolve().parent / "data" / "banks"
 BANK_SUFFIXES = (".csv", ".json")
+# 뜻 고르기 문제는 보기 4개가 필요하므로 단어장도 최소 4단어는 있어야 한다
+MIN_BANK_WORDS = 4
+# 이보다 적으면 보기가 늘 비슷해져서 한 번 알려준다
+SMALL_BANK_WORDS = 10
 HEADER_WORDS = ("word", "단어", "english")
 # 파일 이름에 쓰면 안 되는 글자들 (이게 들어가면 엉뚱한 폴더에 파일이 생긴다)
 BAD_NAME_MARKS = ("/", "\\", "..", ":", "*", "?", '"', "<", ">", "|")
@@ -103,6 +107,10 @@ def add_bank(source_path: str, name: str, banks_dir: str | None = None) -> int:
     entries = read_bank_file(source)
     if not entries:
         raise ValueError("단어를 하나도 읽지 못했습니다. 'apple,사과' 처럼 한 줄에 단어와 뜻을 적어주세요.")
+    if len(entries) < MIN_BANK_WORDS:
+        raise ValueError(
+            f"단어가 {len(entries)}개뿐입니다. 뜻 고르기 문제를 내려면 최소 {MIN_BANK_WORDS}단어가 필요합니다."
+        )
     folder = banks_path(banks_dir)
     folder.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, folder / f"{name}{source.suffix or '.csv'}")

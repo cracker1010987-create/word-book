@@ -1,12 +1,11 @@
-# wordbook add 명령어가 main()을 통해 실제로 단어를 저장하는지 확인하는 테스트
+# 메뉴 모드(main)가 화면과 파일을 제대로 다루는지 확인하는 테스트
 # 주의: 파일명이 __main__.py라서 그냥 import하면 pytest 자신의 __main__.py가
 # 잡혀버린다(sys.modules["__main__"]을 이미 pytest가 선점하고 있기 때문).
 # 그래서 importlib으로 파일 경로를 직접 지정해서 불러온다.
 import importlib.util
+import json
 from pathlib import Path
 
-from ai import DistractorCheck, GrammarCheck, Quiz
-from storage import load_words, save_words
 
 _main_path = Path(__file__).resolve().parent.parent / "__main__.py"
 _spec = importlib.util.spec_from_file_location("wordbook_cli", _main_path)
@@ -15,114 +14,9 @@ _spec.loader.exec_module(wordbook_cli)
 main = wordbook_cli.main
 
 
-class FakeChain:
-    # 실제 LLM을 부르지 않고 미리 정해둔 Quiz를 리턴하는 가짜 체인
-    def invoke(self, inputs: dict) -> Quiz:
-        return Quiz(
-            sentence="I ate an ___ for breakfast.",
-            options=["apple", "banana", "car", "book"],
-            answer="apple",
-            explanation="아침 식사로 먹을 수 있는 과일은 apple(사과)입니다.",
-        )
-
-
-class FakeDistractorChain:
-    # 실제 LLM을 부르지 않고 오답 검사를 항상 통과시키는 가짜 체인
-    def invoke(self, inputs: dict) -> DistractorCheck:
-        count = len(inputs["options"])
-        return DistractorCheck(also_correct=[False] * count, too_unrelated=[False] * count)
-
-
-class FakeGrammarChain:
-    # 실제 LLM을 부르지 않고 항상 문법 통과(전부 True)를 리턴하는 가짜 문법 검사 체인
-    def invoke(self, inputs: dict) -> GrammarCheck:
-        return GrammarCheck(fits_by_option=[True] * len(inputs["options"]))
-
-
-def test_add_command_saves_word(tmp_path: Path) -> None:
-    # wordbook add apple 사과 실행 시 words.json에 반영된다
-    path = tmp_path / "words.json"
-    main(["add", "apple", "사과"], path=str(path))
-    assert load_words(str(path)) == {"apple": {"meaning": "사과", "wrong_count": 0}}
-
-
-def test_add_command_tells_user_when_word_is_new(tmp_path, capsys) -> None:
-    # 새 단어를 추가하면 새로 추가됐다고 알려준다
-    path = tmp_path / "words.json"
-    main(["add", "apple", "사과"], path=str(path))
-    assert "추가" in capsys.readouterr().out
-
-
-def test_add_command_tells_user_and_preserves_progress_when_word_exists(tmp_path, capsys) -> None:
-    # 이미 있는 단어를 다시 추가하면 업데이트됐다고 알려주고 wrong_count는 보존한다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 3}}, str(path))
-    main(["add", "apple", "사과(고친 뜻)"], path=str(path))
-    output = capsys.readouterr().out
-    assert "이미" in output
-    words = load_words(str(path))
-    assert words["apple"]["wrong_count"] == 3
-    assert words["apple"]["meaning"] == "사과(고친 뜻)"
-
-
-def test_quiz_command_records_correct_answer(tmp_path: Path) -> None:
-    # 정답을 맞히면 wrong_count가 그대로다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    main(
-        ["quiz"],
-        path=str(path),
-        chain=FakeChain(),
-        grammar_chain=FakeGrammarChain(),
-        distractor_chain=FakeDistractorChain(),
-        input_func=lambda prompt: "apple",
-        today="2026-01-01",
-    )
-    assert load_words(str(path))["apple"]["wrong_count"] == 0
-
-
-def test_quiz_command_records_wrong_answer(tmp_path: Path) -> None:
-    # 틀리면 wrong_count가 늘고 last_wrong_date가 기록된다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, str(path))
-    main(
-        ["quiz"],
-        path=str(path),
-        chain=FakeChain(),
-        grammar_chain=FakeGrammarChain(),
-        distractor_chain=FakeDistractorChain(),
-        input_func=lambda prompt: "banana",
-        today="2026-01-01",
-    )
-    words = load_words(str(path))
-    assert words["apple"]["wrong_count"] == 1
-    assert words["apple"]["last_wrong_date"] == "2026-01-01"
-
-
-def test_quiz_command_with_no_words_shows_message_instead_of_crashing(tmp_path, capsys) -> None:
-    # 단어가 하나도 없을 때 quiz를 실행하면 에러 없이 안내 메시지만 나온다
-    path = tmp_path / "words.json"
-    main(["quiz"], path=str(path))
-    output = capsys.readouterr().out
-    assert "단어" in output
-    assert load_words(str(path)) == {}
-
-
-def test_stats_command_prints_calculated_stats(tmp_path, capsys) -> None:
-    # wordbook stats 실행 시 calculate_stats 결과가 화면에 출력된다
-    path = tmp_path / "words.json"
-    save_words(
-        {
-            "apple": {"meaning": "사과", "wrong_count": 0},
-            "banana": {"meaning": "바나나", "wrong_count": 2},
-        },
-        str(path),
-    )
-    main(["stats"], path=str(path))
-    output = capsys.readouterr().out
-    assert "총 단어 수: 2" in output
-    assert "틀린 횟수 합계: 2" in output
-    assert "완전히 외운 단어 수: 1" in output
+def write_old_words(words: dict, path: str) -> None:
+    # v1 시절의 words.json을 만든다 (옮겨오기 테스트용)
+    Path(path).write_text(json.dumps(words, ensure_ascii=False), encoding="utf-8")
 
 
 CLEAR_MARK = "<<CLEAR>>"
@@ -143,12 +37,12 @@ def test_interactive_menu_progress_then_quit(tmp_path, capsys, monkeypatch) -> N
     assert "공부한 날" in output
 
 
-def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
-    # 메뉴에서 4번(목록 보기)을 고르면 단어 목록이 화면에 출력된다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 2}}, str(path))
+def test_interactive_menu_list_then_quit(tmp_path, capsys, monkeypatch) -> None:
+    # 메뉴에서 2번(내 단어)을 고르면 예전 words.json에서 옮겨온 단어가 화면에 출력된다
+    monkeypatch.chdir(tmp_path)
+    write_old_words({"apple": {"meaning": "사과", "wrong_count": 2}}, "words.json")
     answers = iter(["2", "", "", "6"])
-    main([], path=str(path), input_func=lambda prompt: next(answers), clear_func=fake_clear)
+    main([], path="words.json", input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
     assert "apple" in output
     assert "사과" in output
@@ -157,7 +51,7 @@ def test_interactive_menu_list_then_quit(tmp_path, capsys) -> None:
 def test_next_menu_screen_starts_after_clearing_the_previous_one(tmp_path, capsys, monkeypatch) -> None:
     # 목록 보기 다음에 다른 메뉴로 가면, 목록을 지운 뒤에 새 화면이 나온다 (앞 화면이 남지 않는다)
     monkeypatch.chdir(tmp_path)
-    save_words({"apple": {"meaning": "사과", "wrong_count": 0}}, "words.json")
+    write_old_words({"apple": {"meaning": "사과", "wrong_count": 0}}, "words.json")
     answers = iter(["2", "", "", "9", "", "6"])
     main([], path="words.json", input_func=lambda prompt: next(answers), clear_func=fake_clear)
     output = capsys.readouterr().out
@@ -174,23 +68,6 @@ def test_interactive_menu_invalid_choice_shows_message(tmp_path, capsys) -> None
     assert "1~6" in capsys.readouterr().out
 
 
-def test_list_command_shows_word_and_meaning(tmp_path, capsys) -> None:
-    # wordbook list 실행 시 단어와 뜻이 화면에 출력된다
-    path = tmp_path / "words.json"
-    save_words({"apple": {"meaning": "사과", "wrong_count": 1}}, str(path))
-    main(["list"], path=str(path))
-    output = capsys.readouterr().out
-    assert "apple" in output
-    assert "사과" in output
-
-
-def test_list_command_with_no_words_shows_message(tmp_path, capsys) -> None:
-    # 단어가 없을 때 wordbook list를 실행하면 안내 메시지가 나온다
-    path = tmp_path / "words.json"
-    main(["list"], path=str(path))
-    assert "단어" in capsys.readouterr().out
-
-
 def test_menu_add_my_word_saves_into_the_progress_file(tmp_path, capsys, monkeypatch) -> None:
     # 메뉴 2번(내 단어 추가)은 새 구조(progress.json)에 저장하고, 다음 세트에 먼저 나오게 한다
     monkeypatch.chdir(tmp_path)
@@ -205,7 +82,7 @@ def test_menu_add_my_word_saves_into_the_progress_file(tmp_path, capsys, monkeyp
 def test_old_words_file_is_moved_into_the_progress_file_once(tmp_path, capsys, monkeypatch) -> None:
     # 예전 words.json이 있으면 처음 실행할 때 내 단어로 옮긴다
     monkeypatch.chdir(tmp_path)
-    save_words({"elaborate": {"meaning": "정교한", "wrong_count": 2}}, "words.json")
+    write_old_words({"elaborate": {"meaning": "정교한", "wrong_count": 2}}, "words.json")
     answers = iter(["3", "", "6"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
@@ -324,7 +201,7 @@ def make_bank_file(folder, name: str, lines: str) -> str:
     return str(folder)
 
 
-SCHOOL_CSV = "apple,사과\nbrave,용감한\ncandid,솔직한\n"
+SCHOOL_CSV = "apple,사과\nbrave,용감한\ncandid,솔직한\ndiligent,성실한\n"
 
 
 def test_bank_menu_lists_banks_and_switches_by_number(tmp_path, capsys, monkeypatch) -> None:
@@ -346,7 +223,7 @@ def test_progress_view_counts_only_the_chosen_bank(tmp_path, capsys, monkeypatch
     answers = iter(["", "4", "2", "", "3", "", "6"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01",
          clear_func=fake_clear, banks_dir=banks_dir)
-    assert "전체 3단어" in capsys.readouterr().out
+    assert "전체 4단어" in capsys.readouterr().out
 
 
 def test_bank_menu_can_delete_a_bank(tmp_path, capsys, monkeypatch) -> None:
@@ -380,7 +257,7 @@ def test_bank_menu_adds_a_bank_from_a_file(tmp_path, capsys, monkeypatch) -> Non
          clear_func=fake_clear, banks_dir=banks_dir)
     from banks import bank_names
     assert "내신2과" in bank_names(banks_dir=banks_dir)
-    assert "3단어" in capsys.readouterr().out
+    assert "4단어" in capsys.readouterr().out
 
 
 def test_adding_a_bank_from_a_missing_file_shows_a_message(tmp_path, capsys, monkeypatch) -> None:
@@ -418,12 +295,12 @@ def test_adding_a_bank_with_a_name_already_used_asks_first(tmp_path, capsys, mon
     monkeypatch.chdir(tmp_path)
     banks_dir = make_bank_file(tmp_path / "banks", "내신1과", SCHOOL_CSV)
     source = tmp_path / "새파일.csv"
-    source.write_text("apple,사과\n", encoding="utf-8")
+    source.write_text("apple,사과\nbrave,용감한\ncandid,솔직한\neager,열성적인\n", encoding="utf-8")
     answers = iter(["", "4", "a", str(source), "내신1과", "n", "", "6"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01",
          clear_func=fake_clear, banks_dir=banks_dir)
     from banks import load_bank
-    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 3
+    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 4
     assert "이미 있습니다" in capsys.readouterr().out
 
 
@@ -432,19 +309,19 @@ def test_answering_yes_overwrites_the_bank(tmp_path, capsys, monkeypatch) -> Non
     monkeypatch.chdir(tmp_path)
     banks_dir = make_bank_file(tmp_path / "banks", "내신1과", SCHOOL_CSV)
     source = tmp_path / "새파일.csv"
-    source.write_text("apple,사과\n", encoding="utf-8")
+    source.write_text("apple,사과\nbrave,용감한\ncandid,솔직한\neager,열성적인\n", encoding="utf-8")
     answers = iter(["", "4", "a", str(source), "내신1과", "y", "", "6"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01",
          clear_func=fake_clear, banks_dir=banks_dir)
     from banks import load_bank
-    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 1
+    assert len(load_bank("내신1과", banks_dir=banks_dir)) == 4
 
 
 def test_a_bad_bank_name_shows_a_message(tmp_path, capsys, monkeypatch) -> None:
     # 이름에 폴더 기호가 들어가면 안내만 하고 넘어간다
     monkeypatch.chdir(tmp_path)
     source = tmp_path / "새파일.csv"
-    source.write_text("apple,사과\n", encoding="utf-8")
+    source.write_text("apple,사과\nbrave,용감한\ncandid,솔직한\neager,열성적인\n", encoding="utf-8")
     answers = iter(["4", "a", str(source), "../바깥", "", "6"])
     main([], input_func=lambda prompt: next(answers), today="2026-01-01",
          clear_func=fake_clear, banks_dir=str(tmp_path / "banks"))

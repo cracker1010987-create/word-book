@@ -461,3 +461,22 @@ prd.md를 기준으로 앱을 테스트 가능한 크기의 기능 조각으로 
      전체 수 = 단어장 단어 + 단어장에 없는 내 단어.
   3. **같은 이름으로 단어장을 추가하면 말없이 덮어썼다** → 덮어쓸지 물어본다.
 - **덤**: `__main__.py`에서 안 쓰는 `load_word_bank` import를 지웠다.
+
+### 61. ✅ 너무 작은 단어장 막기
+- **파일**: `banks.py`, `__main__.py`
+- **검사 방법**: pytest (3단어 이하는 거절, 딱 4단어는 통과)
+- **순서**: 5번째. 선행 조각: 59.
+- **결과**: 뜻 고르기는 보기가 4개 필요하므로 **4단어 미만 단어장은 받지 않는다**(`MIN_BANK_WORDS`).
+  10단어보다 적으면 "보기가 매번 비슷하게 나온다"고 한 번 알려준다.
+
+### 62. ✅ v1 잔재 정리
+- **파일**: 지움 — `storage.py`, `review.py`, `tests/test_storage.py`, `tests/test_review.py`,
+  `tests/test_stats.py` / 고침 — `__main__.py`, `stats.py`, `tests/test_main.py`
+- **검사 방법**: pytest (남은 267개가 모두 통과하는지) + 앱 실행
+- **순서**: 6번째. 선행 조각: 61.
+- **지운 것**: v1 명령어(`wordbook add/quiz/stats/list`)와 그 화면 함수들(`run_add`, `run_quiz`,
+  `print_question`, `print_result`, `print_stats`, `print_word_list`), `argparse` 파서,
+  `storage.py`·`review.py` 모듈 전체, `stats.calculate_stats`.
+  메뉴에서 쓰이지 않는데 테스트 29개가 붙잡고 있던 코드였다.
+- **남긴 것**: 예전 `words.json`을 "내 단어"로 한 번 옮기는 기능. `storage.load_words` 대신
+  `json`으로 직접 읽게 바꿨다. `grading.grade_answer`는 지금도 채점에 쓰인다.

@@ -5,6 +5,7 @@ import pytest
 
 from banks import (
     BUILTIN_BANK_NAME,
+    MIN_BANK_WORDS,
     bank_exists,
     add_bank,
     bank_names,
@@ -16,6 +17,8 @@ from banks import (
 CSV = """word,meaning
 apple,사과
 brave,용감한,adjective
+candid,솔직한
+diligent,성실한
 """
 
 
@@ -32,7 +35,7 @@ def test_csv_third_column_is_used_as_part_of_speech() -> None:
 
 def test_csv_header_row_is_skipped() -> None:
     # 첫 줄이 word,meaning 같은 제목 줄이면 단어로 세지 않는다
-    assert [entry["word"] for entry in read_csv_bank(CSV)] == ["apple", "brave"]
+    assert [entry["word"] for entry in read_csv_bank(CSV)] == ["apple", "brave", "candid", "diligent"]
 
 
 def test_csv_ignores_blank_lines_and_rows_without_a_meaning() -> None:
@@ -75,7 +78,7 @@ def test_add_bank_copies_the_file_and_tells_how_many_words(tmp_path: Path) -> No
     source.write_text(CSV, encoding="utf-8")
     banks_dir = tmp_path / "banks"
     count = add_bank(str(source), "내신2과", banks_dir=str(banks_dir))
-    assert count == 2
+    assert count == 4
     assert "내신2과" in bank_names(banks_dir=str(banks_dir))
 
 
@@ -127,8 +130,24 @@ def test_empty_bank_name_is_refused(tmp_path: Path) -> None:
 def test_bank_exists_tells_whether_that_name_is_taken(tmp_path: Path) -> None:
     # 같은 이름이 이미 있는지 미리 알 수 있다 (덮어쓰기 전에 물어보려고)
     source = tmp_path / "원본.csv"
-    source.write_text("apple,사과\n", encoding="utf-8")
+    source.write_text(CSV, encoding="utf-8")
     banks_dir = str(tmp_path / "banks")
     assert bank_exists("내신", banks_dir=banks_dir) is False
     add_bank(str(source), "내신", banks_dir=banks_dir)
     assert bank_exists("내신", banks_dir=banks_dir) is True
+
+
+def test_a_bank_with_too_few_words_is_refused(tmp_path: Path) -> None:
+    # 뜻 고르기는 보기 4개가 필요하므로, 단어가 4개보다 적은 단어장은 받지 않는다
+    source = tmp_path / "작은단어장.csv"
+    source.write_text("apple,사과\nbrave,용감한\n", encoding="utf-8")
+    with pytest.raises(ValueError) as error:
+        add_bank(str(source), "작은단어장", banks_dir=str(tmp_path / "banks"))
+    assert str(MIN_BANK_WORDS) in str(error.value)
+
+
+def test_a_bank_with_exactly_the_minimum_is_allowed(tmp_path: Path) -> None:
+    # 딱 4단어면 받는다 (보기 4개를 채울 수 있다)
+    source = tmp_path / "네단어.csv"
+    source.write_text("apple,사과\nbrave,용감한\ncandid,솔직한\ndiligent,성실한\n", encoding="utf-8")
+    assert add_bank(str(source), "네단어", banks_dir=str(tmp_path / "banks")) == MIN_BANK_WORDS

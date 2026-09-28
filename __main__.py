@@ -1,17 +1,21 @@
 # wordbook CLI 진입점. add/quiz/stats/list 명령어와 메뉴 모드를 연결한다
-import argparse
+import json
 import os
 import sys
-import textwrap
 from datetime import date
+from pathlib import Path
 from typing import Any, Callable
 
-from banks import BUILTIN_BANK_NAME, add_bank, bank_exists, bank_names, delete_bank, load_bank
-from grading import grade_answer
-from review import pick_word_to_quiz, record_result
-from storage import add_word, load_words, save_words
-from stats import calculate_progress, calculate_stats
-from ai import Quiz, make_quiz_verified
+from banks import (
+    BUILTIN_BANK_NAME,
+    SMALL_BANK_WORDS,
+    add_bank,
+    bank_exists,
+    bank_names,
+    delete_bank,
+    load_bank,
+)
+from stats import calculate_progress
 from progress import (
     add_my_word,
     change_setting,
@@ -44,22 +48,6 @@ ADD_KEY = "a"
 CANCEL_KEY = "0"
 
 
-# wordbook 명령어들의 인자 구조를 정의한다
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="wordbook")
-    subparsers = parser.add_subparsers(dest="command")
-
-    add_parser = subparsers.add_parser("add")
-    add_parser.add_argument("word")
-    add_parser.add_argument("meaning")
-
-    subparsers.add_parser("quiz")
-    subparsers.add_parser("stats")
-    subparsers.add_parser("list")
-
-    return parser
-
-
 # 터미널 화면을 깨끗하게 지운다 (윈도우는 cls, 그 외는 clear)
 def clear_screen() -> None:
     os.system("cls" if os.name == "nt" else "clear")
@@ -71,38 +59,6 @@ def print_header(title: str) -> None:
     print(f"  {title}")
     print(LINE)
     print()
-
-
-# 단어를 추가하고, 새 단어인지 이미 있던 단어인지 화면에 알려준다
-def run_add(word: str, meaning: str, path: str) -> None:
-    is_new = add_word(word, meaning, path)
-    if is_new:
-        print(f"'{word}' 단어를 추가했습니다.")
-    else:
-        print(f"'{word}'는 이미 있는 단어라서 뜻만 업데이트했습니다. (틀린 횟수는 그대로)")
-
-
-# 퀴즈 예문과 보기를 읽기 좋게 출력한다
-def print_question(quiz: Quiz) -> None:
-    print(textwrap.fill(quiz.sentence, width=60))
-    print()
-    for i, option in enumerate(quiz.options, 1):
-        print(f"  {i}) {option}")
-    print()
-
-
-# 채점 결과와 해설을 구분선 사이에 출력한다
-def print_result(quiz: Quiz, is_correct: bool) -> None:
-    print()
-    print(THIN_LINE)
-    if is_correct:
-        print("정답입니다!")
-    else:
-        print(f"오답입니다. 정답은 '{quiz.answer}' 입니다.")
-    print()
-    print("해설:")
-    print(textwrap.fill(quiz.explanation, width=40))
-    print(THIN_LINE)
 
 
 # 내가 직접 외우고 싶은 단어를 학습 기록에 넣는다 (다음 세트에 먼저 나온다)
@@ -120,7 +76,8 @@ def run_add_my_word(word: str, meaning: str) -> None:
 
 # 예전 words.json이 남아 있으면 처음 한 번 내 단어로 옮긴다
 def migrate_old_words_once(path: str) -> None:
-    old_words = load_words(path)
+    file_path = Path(path)
+    old_words = json.loads(file_path.read_text(encoding="utf-8")) if file_path.exists() else {}
     progress = load_progress()
     if not old_words or all(word in progress.get("my_words", {}) for word in old_words):
         return
@@ -136,29 +93,6 @@ def run_study(input_func: Callable[[str], str], today: str, banks_dir: str | Non
     save_progress(progress)
     done = len(progress["current_set"]["study_dates"]) if progress["current_set"] else 0
     print(f"\n오늘 학습을 마쳤습니다. 이번 세트는 {done}일째입니다.")
-
-
-# 단어 하나를 골라 퀴즈를 내고, 답을 받아 채점한 뒤 결과를 반영하고 알려준다
-def run_quiz(
-    path: str, chain: Any, grammar_chain: Any, distractor_chain: Any,
-    input_func: Callable[[str], str], today: str,
-) -> None:
-    words = load_words(path)
-    if not words:
-        print("아직 추가된 단어가 없습니다. 먼저 단어를 추가해주세요.")
-        return
-    word = pick_word_to_quiz(words)
-    print("문제를 만드는 중입니다...\n")
-    quiz = make_quiz_verified(
-        word, words[word]["meaning"], chain=chain, grammar_chain=grammar_chain,
-        distractor_chain=distractor_chain,
-    )
-    print_question(quiz)
-    user_answer = input_func("정답 입력 > ")
-    is_correct = grade_answer(user_answer, quiz.answer)
-    record_result(words, word, is_correct, today)
-    save_words(words, path)
-    print_result(quiz, is_correct)
 
 
 # 단어장 전체 진도와 예상 완주일을 화면에 출력한다
@@ -204,6 +138,8 @@ def add_bank_from_file(input_func: Callable[[str], str], banks_dir: str | None) 
         print(error)
         return
     print(f"'{name}' 단어장을 넣었습니다. {count}단어입니다.")
+    if count < SMALL_BANK_WORDS:
+        print("  (단어가 적어서 뜻 고르기 보기가 매번 비슷하게 나옵니다.)")
 
 
 # 단어장을 지운다 (지금 쓰는 단어장을 지웠으면 기본 단어장으로 돌아간다)
@@ -281,14 +217,6 @@ def run_settings(input_func: Callable[[str], str]) -> None:
     print(f"{label}을(를) {answer}로 바꿨습니다. 다음 세트부터 적용됩니다.")
 
 
-# 단어 데이터를 통계로 계산해서 화면에 출력한다
-def print_stats(path: str) -> None:
-    stats = calculate_stats(load_words(path))
-    print(f"  총 단어 수: {stats['total_words']}")
-    print(f"  틀린 횟수 합계: {stats['total_wrong_count']}")
-    print(f"  완전히 외운 단어 수: {stats['mastered_words']}")
-
-
 # 내가 직접 넣은 단어 목록을 번호를 붙여 보여준다
 def print_my_words(words: list[tuple[str, str]]) -> None:
     if not words:
@@ -319,16 +247,6 @@ def run_my_words(input_func: Callable[[str], str]) -> None:
     word = words[int(answer) - 1][0]
     save_progress(remove_my_word(load_progress(), word))
     print(f"'{word}'를 지웠습니다.")
-
-
-# 추가된 단어 전체를 번호를 붙여 목록으로 보여준다
-def print_word_list(path: str) -> None:
-    words = load_words(path)
-    if not words:
-        print("아직 추가된 단어가 없습니다.")
-        return
-    for i, (word, info) in enumerate(words.items(), 1):
-        print(f"  {i}. {word} - {info['meaning']} (틀린 횟수: {info['wrong_count']})")
 
 
 # 화면을 지우고 메인 메뉴를 그린 뒤, 사용자가 고른 번호를 돌려준다
@@ -378,7 +296,7 @@ def run_interactive(
         input_func("\n엔터를 누르면 메뉴로 돌아갑니다...")
 
 
-# 명령줄 인자를 받아 알맞은 명령어를 실행한다. 인자가 없으면 메뉴 모드로 들어간다
+# 앱을 시작한다 (인자는 받지 않고 바로 메뉴 모드로 들어간다)
 def main(
     argv: list[str] | None = None,
     path: str = "words.json",
@@ -390,18 +308,8 @@ def main(
     clear_func: Callable[[], None] = clear_screen,
     banks_dir: str | None = None,
 ) -> None:
-    args = build_parser().parse_args(argv)
-    if args.command == "add":
-        run_add(args.word, args.meaning, path)
-    elif args.command == "quiz":
-        run_quiz(path, chain, grammar_chain, distractor_chain, input_func, today)
-    elif args.command == "stats":
-        print_stats(path)
-    elif args.command == "list":
-        print_word_list(path)
-    else:
-        run_interactive(path, chain, grammar_chain, distractor_chain, input_func, today, clear_func, banks_dir)
+    run_interactive(path, chain, grammar_chain, distractor_chain, input_func, today, clear_func, banks_dir)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:], today=date.today().isoformat())
+    main(today=date.today().isoformat())
