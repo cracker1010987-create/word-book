@@ -29,7 +29,7 @@ from progress import (
     switch_bank,
 )
 from reports import reported_words
-from study import run_today_session
+from study import run_today_session, to_particle, with_object_particle
 
 LINE = "=" * 40
 THIN_LINE = "-" * 40
@@ -193,9 +193,9 @@ def ask_which_bank(input_func: Callable[[str], str], clear_func, banks_dir: str 
 # 진도 보기 아래에서 바꿀 수 있는 설정들 (보여줄 이름, 저장할 이름)
 SETTING_CHOICES = {
     "1": ("한 세트 단어 수", "set_size"),
-    "2": ("세트 하나를 며칠 동안", "study_days_per_set"),
+    "2": ("세트 하나를 외우는 날 수", "study_days_per_set"),
     "3": ("하루 복습 문제 수", "daily_review_limit"),
-    "4": ("기초 단어 건너뛰기 (NGSL 순위, 0이면 안 건너뜀)", "skip_basic_rank"),
+    "4": ("건너뛸 기초 단어 순위", "skip_basic_rank"),
 }
 
 
@@ -205,6 +205,7 @@ def run_settings(input_func: Callable[[str], str]) -> None:
     print("\n  [설정]")
     for number, (label, name) in SETTING_CHOICES.items():
         print(f"  {number}. {label}: {settings[name]}")
+    print("  (건너뛸 기초 단어 순위: NGSL 빈도 순위가 이 안에 드는 쉬운 단어는 안 나온다. 0이면 다 나온다.)")
     picked = input_func("\n바꿀 설정 번호 (그냥 엔터면 돌아가기) > ").strip()
     if picked not in SETTING_CHOICES:
         return
@@ -214,7 +215,7 @@ def run_settings(input_func: Callable[[str], str]) -> None:
         print("숫자를 입력해주세요. 바꾸지 않았습니다.")
         return
     save_progress(change_setting(load_progress(), name, int(answer)))
-    print(f"{label}을(를) {answer}로 바꿨습니다. 다음 세트부터 적용됩니다.")
+    print(f"{with_object_particle(label)} {answer}{to_particle(answer)} 바꿨습니다. 다음 세트부터 적용됩니다.")
 
 
 # 내가 직접 넣은 단어 목록을 번호를 붙여 보여준다

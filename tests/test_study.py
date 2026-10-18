@@ -5,6 +5,7 @@ from progress import default_progress
 from sets import NEW_WORD_RECORD, record_study_day, start_new_set
 from study import (
     ask_item,
+    to_particle,
     bank_with_my_words,
     shuffled_options,
     ensure_current_set,
@@ -435,3 +436,18 @@ def test_progress_is_saved_after_every_answer() -> None:
     assert len(saved) == 3
     assert all(record["recent_results"] == [] for record in saved[0]["words"].values())
     assert any(record["recent_results"] for record in saved[-1]["words"].values())
+
+
+def test_to_particle_picks_ro_or_euro_for_numbers() -> None:
+    # 숫자 뒤에 붙는 '로/으로'를 받침에 맞게 고른다 (10은 '십'이라 '으로')
+    assert to_particle("10") == "으로"
+    assert to_particle("3") == "으로"
+    assert to_particle("50") == "으로"
+    assert to_particle("5") == "로"
+    assert to_particle("1") == "로"
+
+
+def test_to_particle_handles_korean_words_too() -> None:
+    # 한국어 낱말에도 쓸 수 있다 (받침이 없거나 ㄹ이면 '로')
+    assert to_particle("단어") == "로"
+    assert to_particle("기본값") == "으로"

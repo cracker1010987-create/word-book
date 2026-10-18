@@ -206,6 +206,21 @@ def object_particle(word: str) -> str:
     return "을" if has_final_consonant else "를"
 
 
+# 숫자를 소리 나는 대로 읽었을 때 받침이 있는지 본다 (10은 '십'이라 받침이 있다)
+DIGITS_WITH_FINAL = ("0", "3", "6")
+
+
+# 뒤에 붙일 '로/으로'를 고른다 (받침이 없거나 ㄹ 받침이면 '로')
+def to_particle(word: str) -> str:
+    last = word.strip()[-1] if word.strip() else ""
+    if last.isdigit():
+        return "으로" if last in DIGITS_WITH_FINAL else "로"
+    if not ("가" <= last <= "힣"):
+        return "로"
+    final = (ord(last) - 0xAC00) % 28
+    return "로" if final in (0, 8) else "으로"  # 8은 ㄹ 받침
+
+
 # 한국어 낱말 뒤에 받침에 맞는 목적격 조사를 붙인다 ('송장을', '휴가를')
 def with_object_particle(word: str) -> str:
     return f"{word}{object_particle(word)}"

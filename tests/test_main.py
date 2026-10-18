@@ -172,7 +172,7 @@ def test_settings_menu_can_change_the_set_size(tmp_path, capsys, monkeypatch) ->
     main([], input_func=lambda prompt: next(answers), today="2026-01-01", clear_func=fake_clear)
     from progress import load_progress
     assert load_progress()["settings"]["set_size"] == 20
-    assert "20" in capsys.readouterr().out
+    assert "한 세트 단어 수를 20으로 바꿨습니다" in capsys.readouterr().out
 
 
 def test_settings_menu_enter_leaves_settings_alone(tmp_path, capsys, monkeypatch) -> None:
